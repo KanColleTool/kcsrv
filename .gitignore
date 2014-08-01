@@ -5,6 +5,7 @@
 
 *.sublime-workspace
 *.pyc
+*.db
 
 /config.py
 
