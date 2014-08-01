@@ -1,5 +1,14 @@
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import UserMixin, RoleMixin
+from sqlalchemy.orm import configure_mappers
+from sqlalchemy_continuum import make_versioned
+
+
+
+# Initialize SQLAlchemy-Continuum
+make_versioned()
+
+
 
 db = SQLAlchemy()
 
@@ -27,3 +36,8 @@ class User(db.Model, UserMixin):
 	
 	def __unicode__(self):
 		return self.email
+
+
+
+# Needed by SQLAlchemy-Continuum
+configure_mappers()
