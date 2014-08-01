@@ -4,6 +4,7 @@
 /local
 
 *.sublime-workspace
-
 *.pyc
+
+/config.py
 
