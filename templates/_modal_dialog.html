@@ -1,0 +1,14 @@
+{% extends "_base.html" %}
+{% block content %}
+	<div class="col-md-6 col-md-offset-3">
+		<div class="panel panel-default">
+			<div class="panel-heading clearfix">
+				<h3 class="panel-title">{% block modal_title %}{% endblock %}</h3>
+				{% block modal_title_post %}{% endblock %}
+			</div>
+			<div class="panel-body">
+				{% block modal_content %}<em>This shouldn't be empty...</em>{% endblock %}
+			</div>
+		</div>
+	</div>
+{% endblock %}

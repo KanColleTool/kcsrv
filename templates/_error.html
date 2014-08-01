@@ -1,0 +1,16 @@
+{% extends "_base.html" %}
+{% block content %}
+	<div class="panel panel-danger">
+		<div class="panel-heading">
+			<h3 class="panel-title">{% block error_title %}???{% endblock %}</h3>
+		</div>
+		<div class="panel-body">
+			{% block error_body %}
+				<p>
+					Ajdå, det ser ut som att du har hittat en felkonstruerad sida.<br />
+					Var snäll och skicka ett mail till <a href="mailto:webmaster@musikidomkyrkan.se">webmaster@musikidomkyrkan.se</a> och förklara vad du gjorde för att se det här.
+				</p>
+			{% endblock %}
+		</div>
+	</div>
+{% endblock %}
