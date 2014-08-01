@@ -12,6 +12,9 @@ down_revision = None
 
 from alembic import op
 import sqlalchemy as sa
+import sqlalchemy.sql as ss
+
+import datetime
 
 
 def upgrade():
@@ -27,12 +30,10 @@ def upgrade():
         sa.Column('id', sa.Integer(), nullable=False),
         sa.Column('active', sa.Boolean(), nullable=True),
         sa.Column('email', sa.String(length=255), nullable=False),
-        sa.Column('username', sa.String(length=16), nullable=False),
         sa.Column('password', sa.String(length=255), nullable=False),
         sa.Column('confirmed_at', sa.DateTime(), nullable=True),
         sa.PrimaryKeyConstraint('id'),
-        sa.UniqueConstraint('email'),
-        sa.UniqueConstraint('username')
+        sa.UniqueConstraint('email')
     )
     op.create_table('role__user',
         sa.Column('user_id', sa.Integer(), nullable=True),
@@ -41,6 +42,58 @@ def upgrade():
         sa.ForeignKeyConstraint(['user_id'], ['user.id'])
     )
     ### end Alembic commands ###
+    
+    # --> Fixtures!
+    role_table = ss.table('role',
+        sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('name', sa.String(length=80), nullable=False),
+        sa.Column('description', sa.Text(), nullable=True)
+    )
+    op.bulk_insert(role_table, [
+        {
+            'id': 1,
+            'name': 'admin',
+            'description': "Allowed to perform administrative tasks"
+        },
+        {
+            'id': 2,
+            'name': 'staff',
+            'description': "Allowed to access staff-only information"
+        },
+        {
+            'id': 3,
+            'name': 'mod',
+            'description': "Allowed to edit other users' information"
+        }
+    ])
+    
+    user_table = ss.table('user',
+        sa.Column('id', sa.Integer(), nullable=False),
+        sa.Column('active', sa.Boolean(), nullable=True),
+        sa.Column('email', sa.String(length=255), nullable=False),
+        sa.Column('password', sa.String(length=255), nullable=False),
+        sa.Column('confirmed_at', sa.DateTime(), nullable=True)
+    )
+    
+    op.bulk_insert(user_table, [
+        {
+            'id': 1,
+            'active': True,
+            'email': 'admin@localhost',
+            'password': 'password',
+            'confirmed_at': datetime.datetime.now()
+        }
+    ])
+    
+    role__user_table = ss.table('role__user',
+        sa.Column('user_id', sa.Integer(), nullable=True),
+        sa.Column('role_id', sa.Integer(), nullable=True)
+    )
+    op.bulk_insert(role__user_table, [
+        { 'user_id': 1, 'role_id': 1 },
+        { 'user_id': 1, 'role_id': 2 },
+        { 'user_id': 1, 'role_id': 3 }
+    ])
 
 
 def downgrade():
