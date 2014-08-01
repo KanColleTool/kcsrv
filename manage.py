@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from flask.ext.script import Manager
-from kancollesrv import app
+from kcsrv import app
 
 manager = Manager(app)
 
