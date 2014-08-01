@@ -12,6 +12,9 @@ class Role(db.Model, RoleMixin):
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(80), unique=True, nullable=False)
 	description = db.Column(db.Text)
+	
+	def __unicode__(self):
+		return self.name
 
 class User(db.Model, UserMixin):
 	id = db.Column(db.Integer, primary_key=True)
@@ -21,3 +24,6 @@ class User(db.Model, UserMixin):
 	confirmed_at = db.Column(db.DateTime())
 	
 	roles = db.relationship('Role', secondary=role__user, backref=db.backref('users', lazy='dynamic'))
+	
+	def __unicode__(self):
+		return self.email
