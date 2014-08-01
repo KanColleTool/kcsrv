@@ -2,11 +2,12 @@ from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import UserMixin, RoleMixin
 from sqlalchemy.orm import configure_mappers
 from sqlalchemy_continuum import make_versioned
+from sqlalchemy_continuum.plugins import FlaskPlugin
 
 
 
 # Initialize SQLAlchemy-Continuum
-make_versioned()
+make_versioned(plugins=[FlaskPlugin()])
 
 
 
