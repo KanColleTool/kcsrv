@@ -17,3 +17,10 @@ SECURITY_CONFIRMABLE = True
 SECURITY_REGISTERABLE = True
 # Allow users to recover lost passwords
 SECURITY_RECOVERABLE = True
+
+# Security URL configuration
+SECURITY_URL_PREFIX = '/account'
+SECURITY_LOGIN_URL = '/login'
+SECURITY_LOGOUT_URL = '/logout'
+SECURITY_REGISTER_URL = '/create'
+SECURITY_RESET_URL = '/forgot'
