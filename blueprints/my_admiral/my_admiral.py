@@ -17,7 +17,9 @@ def create():
 	admiral = Admiral()
 	form = AdmiralForm(obj=admiral)
 	if form.validate_on_submit():
-		form.populate_obj(admiral)
+		#form.populate_obj(admiral)
+		admiral.nickname = form.nickname.data
+		admiral.generate_api_token()
 		current_user.admiral = admiral
 		db.session.add(admiral)
 		db.session.add(current_user)

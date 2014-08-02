@@ -1,3 +1,4 @@
+import string, random
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import UserMixin, RoleMixin
 from sqlalchemy.orm import configure_mappers
@@ -67,6 +68,11 @@ class Admiral(db.Model):
 	expedition_total = db.Column(db.Integer, default=0)
 	pvp_successes = db.Column(db.Integer, default=0)
 	pvp_total = db.Column(db.Integer, default=0)
+	
+	api_token = db.Column(db.String(40))
+	
+	def generate_api_token(self):
+		self.api_token = ''.join(random.choice(string.hexdigits) for _ in range(40)).lower()
 	
 	def __unicode__(self):
 		return "Admiral " + self.nickname
