@@ -2,5 +2,5 @@
 {% set tab = "account" %}
 {% set page_title = "Admiral " + admiral.nickname %}
 {% block content %}
-
+	<a class="btn btn-default" href="#" onclick="alert('{{ admiral.api_token }}'); return false">Reveal API Token</a>
 {% endblock %}
