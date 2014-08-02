@@ -27,7 +27,7 @@ class UserModelView(MyModelView):
 	form_excluded_columns = ['password']
 
 class AdmiralModelView(MyModelView):
-	form_excluded_columns = ['versions']
+	pass
 
 
 

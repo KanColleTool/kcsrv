@@ -68,8 +68,6 @@ class Admiral(db.Model):
 	pvp_successes = db.Column(db.Integer, default=0)
 	pvp_total = db.Column(db.Integer, default=0)
 	
-	__versioned__ = {}
-	
 	def __unicode__(self):
 		return "Admiral " + self.nickname
 
