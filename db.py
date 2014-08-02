@@ -67,6 +67,8 @@ class Admiral(db.Model):
 	expedition_total = db.Column(db.Integer, default=0)
 	pvp_successes = db.Column(db.Integer, default=0)
 	pvp_total = db.Column(db.Integer, default=0)
+	
+	__versioned__ = {}
 
 
 
