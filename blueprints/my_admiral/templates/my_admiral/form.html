@@ -1,0 +1,15 @@
+{% extends "_base.html" %}
+{% set tab = "account" %}
+{% set page_title = "Create Admiral" if creating else "Edit Admiral" %}
+{% import "_macros.html" as m %}
+{% block content %}
+	<form class="form-horizontal" action="." method="POST">
+		{{ form.hidden_tag() }}
+		
+		{{ m.hform_group("Nickname", form.nickname) }}
+		
+		<hr />
+		
+		<input type="submit" class="btn btn-primary" value="Spara" />
+	</form>
+{% endblock %}

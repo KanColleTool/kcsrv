@@ -47,6 +47,11 @@
 </nav>
 
 <div class="container">
+	{% if page_title %}
+	<div class="page-header">
+		<h1>{{ page_title|safe }}</h1>
+	</div>
+	{% endif %}
 	{% block content %}
 	<h1>Oops!</h1>
 	<p>Looks like someone forgot to override the <code>content</code> block on this page.</p>
