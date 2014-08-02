@@ -26,8 +26,12 @@ class UserModelView(MyModelView):
 	column_exclude_list = ['password']
 	form_excluded_columns = ['password']
 
+class AdmiralModelView(MyModelView):
+	form_excluded_columns = ['versions']
+
 
 
 admin = Admin(index_view=MyAdminIndexView())
 admin.add_view(RoleModelView(Role, db.session, endpoint='role'))
 admin.add_view(UserModelView(User, db.session, endpoint='user'))
+admin.add_view(AdmiralModelView(Admiral, db.session, endpoint='admiral'))
