@@ -8,7 +8,7 @@
 				"*.pyc", "*.sublime-workspace"
 			],
 			"folder_exclude_patterns": [
-				"bin", "lib", "include", "local"
+				"bin", "lib", "include", "local", ".vagrant"
 			]
 		}
 	]
