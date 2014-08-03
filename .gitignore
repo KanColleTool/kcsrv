@@ -2,6 +2,7 @@
 /lib
 /include
 /local
+/.vagrant
 
 *.sublime-workspace
 *.pyc
