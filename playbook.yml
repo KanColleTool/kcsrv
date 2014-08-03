@@ -23,6 +23,9 @@
         - nodejs
         - postgresql
         - libpq-dev
+        - python-all-dev
+        - python-pip
+        - python-virtualenv
         - python-psycopg2
 
     - name: install npm packages
