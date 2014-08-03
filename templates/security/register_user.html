@@ -4,6 +4,16 @@
 {% block modal_content %}
 	<form class="login-form" action="{{ url_for_security('register') }}" method="POST">
 		{{ register_user_form.hidden_tag() }}
+		
+		<div class="form-group{% if register_user_form.nickname.errors %} has-error{% endif %}">
+			<div class="input-group">
+				<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+				{{ register_user_form.nickname(class='form-control', placeholder='Nickname', autofocus=True) }}
+			</div>
+		</div>
+		
+		<hr />
+		
 		<div class="form-group{% if register_user_form.email.errors %} has-error{% endif %}">
 			<div class="input-group">
 				<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
@@ -16,6 +26,7 @@
 				{{ register_user_form.password(class='form-control', placeholder='Password') }}
 			</div>
 		</div>
+		
 		{{ register_user_form.next }}
 		{{ register_user_form.submit(value='Create account', class='btn btn-default pull-right') }}
 		

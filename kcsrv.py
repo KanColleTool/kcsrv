@@ -3,6 +3,7 @@ from flask import Flask, render_template
 from flask.ext.migrate import Migrate
 from flask.ext.security import Security, SQLAlchemyUserDatastore
 from db import *
+from forms import *
 from admin import admin
 
 
@@ -22,13 +23,11 @@ admin.init_app(app)
 migrate = Migrate(app, db)
 
 user_datastore = SQLAlchemyUserDatastore(db, User, Role)
-security = Security(app, user_datastore)
+security = Security(app, user_datastore, register_form=MyRegisterForm)
 
 
 
 # --> Register blueprints
-from blueprints.my_admiral.my_admiral import my_admiral
-app.register_blueprint(my_admiral, url_prefix='/admiral')
 
 
 

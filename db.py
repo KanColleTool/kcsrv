@@ -1,16 +1,7 @@
-import string, random
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import UserMixin, RoleMixin
 from sqlalchemy.orm import configure_mappers
-from sqlalchemy_continuum import make_versioned
-from sqlalchemy_continuum.plugins import FlaskPlugin
-
-
-
-# Initialize SQLAlchemy-Continuum
-make_versioned(plugins=[FlaskPlugin()])
-
-
+from util import *
 
 db = SQLAlchemy()
 
@@ -30,9 +21,13 @@ class Role(db.Model, RoleMixin):
 class User(db.Model, UserMixin):
 	id = db.Column(db.Integer, primary_key=True)
 	active = db.Column(db.Boolean)
+	
 	email = db.Column(db.String(255), unique=True, nullable=False)
 	password = db.Column(db.String(255), nullable=False)
 	confirmed_at = db.Column(db.DateTime())
+	
+	nickname = db.Column(db.String(255), unique=True, nullable=False)
+	api_token = db.Column(db.String(40), default=lambda: generate_api_token())
 	
 	roles = db.relationship('Role', secondary=role__user, backref=db.backref('users', lazy='dynamic'))
 	admiral = db.relationship('Admiral', backref='user', uselist=False)
@@ -45,7 +40,6 @@ class User(db.Model, UserMixin):
 class Admiral(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-	nickname = db.Column(db.String(255))
 	last_login = db.Column(db.DateTime)
 	level = db.Column(db.Integer, default=1)
 	rank = db.Column(db.Integer, default=8)
@@ -69,15 +63,5 @@ class Admiral(db.Model):
 	pvp_successes = db.Column(db.Integer, default=0)
 	pvp_total = db.Column(db.Integer, default=0)
 	
-	api_token = db.Column(db.String(40))
-	
-	def generate_api_token(self):
-		self.api_token = ''.join(random.choice(string.hexdigits) for _ in range(40)).lower()
-	
 	def __unicode__(self):
-		return "Admiral " + self.nickname
-
-
-
-# Needed by SQLAlchemy-Continuum
-configure_mappers()
+		return "Admiral " + self.user.nickname
