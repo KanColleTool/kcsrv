@@ -4,6 +4,8 @@ kcsrv
 **kcsrv** is a project to try to implement an open source KanColle server.  
 It's currently under very heavy development, and no part of the game server even works. Check back later.
 
+
+
 FAQ
 ---
 
@@ -26,3 +28,47 @@ There aren't actually that many things you can build a web application on, and m
   One day I might even port over at least parts of the server to it (the game API comes to mind), but not right now.
 
 Python isn't the fastest thing around, but both it and its ecosystem are very stable and mature. SQLAlchemy + Alembic alone makes an incredibly robust database abstraction layer, that nothing I've seen in NodeJS can match. (Do feel free to prove me wrong though.)
+
+### Q: I'm from DMM, can I just replace all our official servers with this?
+
+Sure, go right ahead, I'll even come over there and set it up for you.
+
+
+
+Development Setup
+---
+
+1.
+    Install Ansible and Vagrant. These are the only things that will ever need to be installed.  
+    (Aside from a Git client, obviously, how else will you get the source?)
+
+1.
+    Set up the VM:
+    
+        vagrant up
+        vagrant ssh
+
+1.
+    Set up the environment:
+    
+        cd /vagrant
+        virtualenv .
+        pip install -r requirements.txt
+
+1.
+    Create the database schema:  
+    (Repeat this to upgrade it later)
+    
+        ./manage.py db upgrade
+
+1.
+    Create an account for yourself; be sure to give yourself the `admin` and `staff` roles!
+    
+        ./manage.py user create
+
+1.
+    Run the development server:
+    
+        ./kcsrv.py
+
+Should even work on Windows, since basically everything is in a known good VM configuration.
