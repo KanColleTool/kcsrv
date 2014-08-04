@@ -28,3 +28,21 @@ def create(nickname, email):
 		)
 		db.session.add(user)
 		db.session.commit()
+
+@manager.command
+def grant(nickname, role):
+	'''Grant a role to a user'''
+	user = User.query.filter_by(nickname=nickname).first_or_404()
+	role = Role.query.filter_by(name=role).first_or_404()
+	user.roles.append(role)
+	db.session.add(user)
+	db.session.commit()
+
+@manager.command
+def ungrant(nickname, role):
+	'''Un-grant a role to a user'''
+	user = User.query.filter_by(nickname=nickname).first_or_404()
+	role = Role.query.filter_by(name=role).first_or_404()
+	user.roles.remove(role)
+	db.session.add(user)
+	db.session.commit()
