@@ -8,6 +8,9 @@ manager = Manager(app)
 manager.add_command('runserver', Server(host='0.0.0.0', use_reloader=True))
 manager.add_command('db', MigrateCommand)
 
+from commands.user import manager as user_manager
+manager.add_command('user', user_manager)
+
 @manager.command
 def setup():
 	print "Installing default roles..."
