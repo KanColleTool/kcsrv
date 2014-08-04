@@ -48,7 +48,7 @@ Development Setup
         vagrant up
         vagrant ssh
 
-1.  **Set up the environment.**
+1.  **Set up the environment.**  
     The directory with the Vagrantfile is always mounted at `/vagrant`.
     
         cd /vagrant
