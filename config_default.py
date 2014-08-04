@@ -7,9 +7,8 @@ import os
 
 
 
-# Default to connecting to a sqlite database called "kcsrv.db"
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + \
-	os.path.join(os.path.dirname(os.path.abspath(__file__)), "kcsrv.db")
+# Default to a peer connection to a postgres database called "kcsrv"
+SQLALCHEMY_DATABASE_URI = 'postgresql://@/kcsrv'
 
 # Require new users to confirm their email address
 SECURITY_CONFIRMABLE = True
