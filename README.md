@@ -38,36 +38,30 @@ Sure, go right ahead, I'll even come over there and set it up for you.
 Development Setup
 ---
 
-1.
-    Install Ansible and Vagrant. These are the only things that will ever need to be installed.  
+1.  Install Ansible and Vagrant. These are the only things that will ever need to be installed.  
     (Aside from a Git client, obviously, how else will you get the source?)
 
-1.
-    Set up the VM:
+1.  Set up the VM:
     
         vagrant up
         vagrant ssh
 
-1.
-    Set up the environment:
+1.  Set up the environment:
     
         cd /vagrant
         virtualenv .
         pip install -r requirements.txt
 
-1.
-    Create the database schema:  
+1.  Create the database schema:  
     (Repeat this to upgrade it later)
     
         ./manage.py db upgrade
 
-1.
-    Create an account for yourself; be sure to give yourself the `admin` and `staff` roles!
+1.  Create an account for yourself; be sure to give yourself the `admin` and `staff` roles!
     
         ./manage.py user create
 
-1.
-    Run the development server:
+1.  Run the development server:
     
         ./kcsrv.py
 
