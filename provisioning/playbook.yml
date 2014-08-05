@@ -1,0 +1,81 @@
+---
+- hosts: all
+  sudo: yes
+  gather_facts: no
+
+  tasks:
+    - name: add nodejs repository key
+      apt_key: url=https://deb.nodesource.com/gpgkey/nodesource.gpg.key
+
+    - name: add nodejs repository
+      apt_repository: repo='deb https://deb.nodesource.com/node trusty main'
+
+    - name: add nginx repository
+      apt_repository: repo='ppa:nginx/stable'
+
+    - name: setup basic software
+      apt: name={{item}} state=latest
+      with_items:
+        - tmux
+        - git
+
+    - name: install system packages
+      apt: name={{item}} state=latest
+      with_items:
+        - build-essential
+        - nodejs
+        - postgresql
+        - libpq-dev
+        - python-psycopg2
+        - python-all-dev
+        - python3
+        - python3-pip
+        - nginx
+
+    - name: install npm packages
+      npm: name={{item}} state=latest global=yes
+      with_items:
+        - grunt-cli
+        - bower
+
+    - name: install pip packages
+      pip: name={{item}} state=latest executable=pip3
+      with_items:
+        - uwsgi
+        - virtualenv
+
+    - name: create config directories
+      file: path={{item}} state=directory
+      with_items:
+        - /etc/uwsgi
+        - /etc/uwsgi/apps-available
+        - /etc/uwsgi/apps-enabled
+
+    - name: symlink config files
+      file: src={{item.src}} dest={{item.dest}} state=link
+      with_items:
+        - { src: '/vagrant/provisioning/init/emperor.conf', dest: '/etc/init/emperor.conf' }
+        - { src: '/vagrant/provisioning/uwsgi/vassals-default.ini', dest: '/etc/uwsgi/vassals-default.ini' }
+        - { src: '/vagrant/provisioning/nginx/kcsrv', dest: '/etc/nginx/sites-enabled/kcsrv' }
+        - { src: '/vagrant/deployment/uwsgi/kcsrv.ini', dest: '/etc/uwsgi/apps-enabled/kcsrv.ini' }
+
+    - name: disable nginx default config
+      file: path=/etc/nginx/sites-enabled/default state=absent
+
+- hosts: all
+  sudo: yes
+  sudo_user: postgres
+  gather_facts: no
+
+  tasks:
+    - name: create user database
+      postgresql_db: name=vagrant
+
+    - name: create database user
+      postgresql_user: db=vagrant name=vagrant password=password role_attr_flags=SUPERUSER priv=ALL
+
+    - name: create application database
+      postgresql_db: name=kcsrv owner=vagrant
+
+    - name: create www-data database user
+      postgresql_user: name=www-data

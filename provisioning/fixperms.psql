@@ -1,0 +1,4 @@
+-- All this is needed to let www-data access the kcsrv database
+GRANT ALL PRIVILEGES ON DATABASE kcsrv TO "www-data";
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO "www-data";
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO "www-data";

@@ -1,0 +1,12 @@
+server {
+	listen 80 default_server;
+	listen [::]:80 default_server ipv6only=on;
+	server_name localhost;
+
+	root /vagrant;
+
+	location / {
+		uwsgi_pass unix:/tmp/uwsgi_kcsrv.sock;
+		include uwsgi_params;
+	}
+}
