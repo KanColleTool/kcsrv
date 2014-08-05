@@ -28,6 +28,8 @@ security = Security(app, user_datastore, register_form=MyRegisterForm)
 
 
 # --> Register blueprints
+from modules.play.play import play
+app.register_blueprint(play, url_prefix='/play')
 
 
 
