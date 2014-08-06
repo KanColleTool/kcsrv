@@ -8,8 +8,8 @@ manager = Manager(usage="Manage users")
 @manager.command
 def create(nickname, email):
 	'''Create a user'''
-	print "Nickname: %s" % nickname
-	print "Email: %s" % email
+	print("Nickname: " + nickname)
+	print("Email: " + email)
 	
 	while True:
 		password = prompt_pass("Password")

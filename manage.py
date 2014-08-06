@@ -13,7 +13,7 @@ manager.add_command('user', user_manager)
 
 @manager.command
 def setup():
-	print "Installing default roles..."
+	print("Installing default roles...")
 	db.session.add(Role(name="admin", description="Allowed to access the admin panel"))
 	db.session.add(Role(name="staff", description="Allowed to see restricted information"))
 	db.session.commit()
