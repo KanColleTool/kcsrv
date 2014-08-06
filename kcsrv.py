@@ -33,6 +33,8 @@ app.register_blueprint(play, url_prefix='/play')
 
 from modules.api.core import api_core
 app.register_blueprint(api_core, url_prefix='/kcsapi')
+from modules.api.user import api_user
+app.register_blueprint(api_user, url_prefix='/kcsapi')
 
 
 
