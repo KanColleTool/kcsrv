@@ -1,7 +1,7 @@
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import UserMixin, RoleMixin
 from sqlalchemy.orm import configure_mappers
-from util import *
+import util
 
 db = SQLAlchemy()
 
@@ -27,7 +27,7 @@ class User(db.Model, UserMixin):
 	confirmed_at = db.Column(db.DateTime())
 	
 	nickname = db.Column(db.String(255), unique=True, nullable=False)
-	api_token = db.Column(db.String(40), default=lambda: generate_api_token())
+	api_token = db.Column(db.String(40), default=lambda: util.generate_api_token())
 	
 	roles = db.relationship('Role', secondary=role__user, backref=db.backref('users', lazy='dynamic'))
 	admiral = db.relationship('Admiral', backref='user', uselist=False)
@@ -41,6 +41,7 @@ class Admiral(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 	last_login = db.Column(db.DateTime)
+	
 	level = db.Column(db.Integer, default=1)
 	rank = db.Column(db.Integer, default=8)
 	experience = db.Column(db.Integer, default=0)
