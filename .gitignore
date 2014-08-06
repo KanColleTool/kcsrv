@@ -9,4 +9,5 @@
 *.db
 
 /config.py
+/data/_*.json
 
