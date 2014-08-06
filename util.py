@@ -14,12 +14,7 @@ def svdata(obj, code=1, message="成功"):
 		"api_result_msg": message,
 		"api_data": obj
 	}
-	return (
-		"svdata=" + json.dumps(res, separators=(',', ':')),
-		200,
-		{
-			"Content-Type": "text/plain"
-		})
+	return ("svdata=" + json.dumps(res, separators=(',', ':')), 200, { "Content-Type": "text/plain" })
 
 def load_datadump(filename):
 	with open(os.path.join(ROOT_DIR, 'data', filename)) as f:
