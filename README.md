@@ -23,7 +23,7 @@ There aren't actually that many things you can build a web application on, and m
 * Ruby and Java are both massive resource hogs, and this server needs to be able to scale well, preferably without me having me hire another server I can't pay for.  
   I run a JIRA (Java) and a Discourse (Ruby) instance, and they both chew up nearly everything their servers have to give.
 
-* NodeJS is an actually good candidate, mostly thanks to being blazing fast.  
+* NodeJS is actually a good candidate, mostly thanks to being blazing fast.  
   Unfortunately, nearly everything around it (including the runtime itself) is in beta, and many things (such as database abstraction layers) simply aren't mature enough for me to want to depend on it - I have yet to see a robust migration system, for instance.  
   One day I might even port over at least parts of the server to it (the game API comes to mind), but not right now.
 
@@ -37,6 +37,8 @@ Sure, go right ahead, I'll even come over there and set it up for you.
 
 Development Setup
 ---
+
+Should even work on Windows, since basically everything is in a known good VM configuration.
 
 1.  **Install Ansible and Vagrant.**  
     These are the only things that will ever need to be installed on your host system.  
@@ -70,5 +72,3 @@ Development Setup
     It will run on Port 5000, which `nginx` will proxy to Port 80. With the Vagrantfile's network adapter setup, this means it'll be accessible by opening <a href="http://192.168.33.10" target="_blank">192.168.33.10</a> in a browser. (This will only be accessible from your local machine.)
     
         ./kcsrv.py
-
-Should even work on Windows, since basically everything is in a known good VM configuration.
