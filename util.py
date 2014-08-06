@@ -23,4 +23,5 @@ def svdata(obj, code=1, message="成功"):
 
 def load_datadump(filename):
 	with open(os.path.join(ROOT_DIR, 'data', filename)) as f:
-		return json.load(f)
+		o = json.load(f)
+		return o if not 'api_data' in o else o['api_data']
