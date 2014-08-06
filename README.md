@@ -55,10 +55,11 @@ Development Setup
         virtualenv .
         pip install -r requirements.txt
 
-1.  **Create the database schema.**  
+1.  **Create the database.**  
     Repeat this to upgrade it later.
     
         ./manage.py db upgrade
+        ./manage.py setup
 
 1.  **Create an account for yourself.**  
     Be sure to give yourself the `admin` and `staff` roles!
@@ -66,8 +67,7 @@ Development Setup
         ./manage.py user create
 
 1.  **Run the development server.**  
-    It will run on Port 5000, which the Vagrantfile forwards to Port 5555 on your host.  
-    (in other words, [go here](http://127.0.0.1:5555).)
+    It will run on Port 5000, which `nginx` will proxy to Port 80. With the Vagrantfile's network adapter setup, this means it'll be accessible by opening <a href="http://192.168.33.10" target="_blank">192.168.33.10</a> in a browser. (This will only be accessible from your local machine.)
     
         ./kcsrv.py
 
