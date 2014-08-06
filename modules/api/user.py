@@ -77,6 +77,7 @@ def slot_item():
 @api_user.route('/api_get_member/useitem', methods=['GET', 'POST'])
 def useitem():
 	# TODO: Implement this properly
+	admiral = get_token_admiral_or_error()
 	return svdata([{
 		'api_member_id': admiral.id,
 		'api_id': item.id,
@@ -89,3 +90,27 @@ def useitem():
 		'api_price': 0,
 		'api_count': item.count
 	} for item in []])
+
+@api_user.route('/api_get_member/kdock', methods=['GET', 'POST'])
+def kdock():
+	# TODO: Implement this properly
+	admiral = get_token_admiral_or_error()
+	return svdata([{
+		'api_member_id': admiral.id,
+		'api_id': dock.id,
+		'api_state': dock.state,
+		'api_created_ship_id': dock.ship,
+		'api_complete_time': dock.complete,
+		# TODO: Convert this to JST
+		'api_complete_time_str': dock.complete.strftime('%Y-%M-%d %H:%M:%S'),
+		'api_item1': dock.fuel,
+		'api_item2': dock.ammo,
+		'api_item3': dock.steel,
+		'api_item4': dock.baux,
+		'api_item5': dock.cmats
+	} for dock in []])
+
+@api_user.route('/api_get_member/unsetslot', methods=['GET', 'POST'])
+def unsetslot():
+	# TODO: Figure out what the hell this even is!
+	return svdata({})
