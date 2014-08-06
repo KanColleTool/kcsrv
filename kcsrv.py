@@ -31,6 +31,9 @@ security = Security(app, user_datastore, register_form=MyRegisterForm)
 from modules.play.play import play
 app.register_blueprint(play, url_prefix='/play')
 
+from modules.api.core import api_core
+app.register_blueprint(api_core, url_prefix='/kcsapi')
+
 
 
 # --> Base application routes
