@@ -139,7 +139,6 @@ def ship2():
 
 @api_user.route('/api_req_init/<path:path>', methods=['GET', 'POST'])
 def misc(path):
-    for val in request.values:
     return svdata({'api_result_msg': '申し訳ありませんがブラウザを再起動し再ログインしてください。', 'api_result': 201})
 
 
