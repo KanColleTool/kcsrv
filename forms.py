@@ -11,7 +11,7 @@ BaseModelForm = model_form_factory(Form)
 
 
 class MyRegisterForm(RegisterForm):
-    nickname = fields.TextField(u'Nickname', [validators.required()])
+    nickname = fields.StringField('Nickname', [validators.required()])
 
 
 class ModelForm(BaseModelForm):
