@@ -19,6 +19,7 @@ def svdata(obj, code=1, message="成功"):
         "api_result_msg": message,
         "api_data": obj
     }
+    # Yay arbitary formats.
     return "svdata=" + json.dumps(res, separators=(',', ':')), 200, {"Content-Type": "text/plain"}
 
 
@@ -40,7 +41,6 @@ def get_token_admiral_or_error(api_token=None):
     if api_token is None:
         abort(403)
 
-    # TODO: Optimize out some querying here
     user = db.User.query.filter_by(api_token=api_token).first()
     if not user:
         abort(403)
