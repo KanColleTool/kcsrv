@@ -29,11 +29,14 @@ security = Security(app, user_datastore, register_form=MyRegisterForm)
 
 # --> Register blueprints
 from modules.play.play import play
+
 app.register_blueprint(play, url_prefix='/play')
 
 from modules.api.core import api_core
+
 app.register_blueprint(api_core, url_prefix='/kcsapi')
 from modules.api.user import api_user
+
 app.register_blueprint(api_user, url_prefix='/kcsapi')
 
 
@@ -41,11 +44,13 @@ app.register_blueprint(api_user, url_prefix='/kcsapi')
 # --> Base application routes
 @app.route('/')
 def index():
-	return render_template('index.html')
+    return render_template('index.html')
+
 
 @app.route('/kcs/<path:path>')
 def kcs(path):
-	return send_from_directory('kcs', path)
+    return send_from_directory('kcs', path)
+
 
 if __name__ == '__main__':
-	app.run(host='0.0.0.0', debug=True)
+    app.run(host='0.0.0.0', debug=True)
