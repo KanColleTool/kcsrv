@@ -11,13 +11,12 @@ prepare_api_blueprint(api_user)
 def get_incentive():
     return svdata({
         'api_count': 0
-    })
+    })  # What?
 
 
 @api_user.route('/api_get_member/basic', methods=['GET', 'POST'])
 def basic():
     admiral = get_token_admiral_or_error()
-    print("Tutorial progress is", admiral.tutorial_progress)
     return svdata({
         'api_member_id': admiral.id,
         'api_nickname': admiral.user.nickname,
@@ -34,7 +33,7 @@ def basic():
         'api_max_slotitem': admiral.max_equips,
         'api_max_kagu': admiral.max_furniture,
         'api_playtime': 0,
-        'api_tutorial': 0,  # Regardless, this just gets fucking ignored.
+        'api_tutorial': "0",  # Regardless, this just gets fucking ignored.
         'api_furniture': admiral.furniture.split(','),
         'api_count_deck': admiral.available_fleets,
         'api_count_kdock': admiral.available_cdocks,
@@ -49,7 +48,7 @@ def basic():
         'api_pt_challenged': 0,
         'api_pt_challenged_win': 0,
         'api_firstflag': 0,
-        'api_tutorial_progress': 100,  # Why is this here? It's always [0, 0]!
+        'api_tutorial_progress': 100,  # Again, ignored.
         'api_pvp': [0, 0]
     })
 
@@ -71,11 +70,7 @@ def furniture():
 def slot_item():
     # TODO: Implement this properly
     admiral = get_token_admiral_or_error()
-    return svdata([{
-                       'api_id': item.id,
-                       'api_slotitem_id': item.itemid,  # ...why?
-                       'api_locked': 0
-                   } for item in []])
+    return svdata([{'api_id': item.id, 'api_slotitem_id': item.itemid, 'api_locked': 0 } for item in []])
 
 
 @api_user.route('/api_get_member/useitem', methods=['GET', 'POST'])
@@ -119,6 +114,13 @@ def unsetslot():
     # TODO: Figure out what the hell this even is!
     return svdata({})
 
+@api_user.route('/api_port/port', methods=['GET', 'POST'])
+def port():
+    # This does fuck-all.
+    for val in request.values:
+        print(val, request.values.get(val))
+    return svdata({})
+
 
 @api_user.route('/api_req_init/firstship', methods=['GET', 'POST'])
 # Kancolle literally doesn't care, as long as it gets something back
@@ -133,11 +135,11 @@ def firstship():
 def ship2():
     return json.dumps(placeholderdata.ship2)  # FUCK YOU KANCOLLE AND YOUR SHITTY REQUIREMENTS
 
+# Generic routes for anything not implemented.
 
 @api_user.route('/api_req_init/<path:path>', methods=['GET', 'POST'])
 def misc(path):
     for val in request.values:
-        print(val, request.values.get(val))
     return svdata({'api_result_msg': '申し訳ありませんがブラウザを再起動し再ログインしてください。', 'api_result': 201})
 
 
@@ -146,13 +148,4 @@ def misc2(path):
     d = {}
     for val in request.values:
         d[val] = request.values[val]
-    print(d)
     return svdata({'api_result_msg': '申し訳ありませんがブラウザを再起動し再ログインしてください。', 'api_result': 201})
-
-
-@api_user.route('/api_port/port', methods=['GET', 'POST'])
-def port():
-    # This does fuck-all.
-    for val in request.values:
-        print(val, request.values.get(val))
-    return svdata({})

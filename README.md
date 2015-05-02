@@ -2,16 +2,18 @@ kcsrv
 =====
 
 **kcsrv** is a project to try to implement an open source KanColle server.  
-It's currently under very heavy development, and no part of the game server even works. Check back later.
+It's currently under very heavy development. Check back later.
 
-
-
+What Currently Works
+--------------------
+    - Actually logging in (this is an achievement because of how temperamental KanColle is when it doesn't get the exact response it works back
+    - 
 FAQ
 ---
 
 ### Q: Will I be able to import my data from an official server?
 
-Yup, you will be able to zip up [KanColleTool](https://github.com/KanColleTool/KanColleTool)'s cache folder and thus import your old information. We will not ask for your API link to do this, nor touch your old server in any way.
+Theoretically, yes. The only downside is it will require your API key to import your ships2 data and your admiral information. This may get your account banned.
 
 ### Q: Why is it built on Python?
 
@@ -29,33 +31,17 @@ There aren't actually that many things you can build a web application on, and m
 
 Python isn't the fastest thing around, but both it and its ecosystem are very stable and mature. SQLAlchemy + Alembic alone makes an incredibly robust database abstraction layer, that nothing I've seen in NodeJS can match. (Do feel free to prove me wrong though.)
 
-### Q: I'm from DMM, can I just replace all our official servers with this?
-
-Sure, go right ahead, I'll even come over there and set it up for you.
-
-
 
 Development Setup
 ---
 
-Should even work on Windows, since basically everything is in a known good VM configuration.
-
-1.  **Install Ansible and Vagrant.**  
-    These are the only things that will ever need to be installed on your host system.  
-    (Aside from a Git client, obviously, how else will you get the source?)
-
-1.  **Set up the VM.**  
-    It will automatically be provisioned by the Ansible playbook, assuming you have both Vagrant and Ansible installed properly.
-    
-        vagrant up
-        vagrant ssh
+Probably only works on Linux. Screw Ansible/Vagrant, too hard for me.
 
 1.  **Set up the environment.**  
-    The directory with the Vagrantfile is always mounted at `/vagrant`.
-    
-        cd /vagrant
-        virtualenv .
+
         pip install -r requirements.txt
+        sudo -u postgre createuser -s $USER
+        sudo -u postgre createdb kcsrv
 
 1.  **Create the database.**  
     Repeat this to upgrade it later.
@@ -68,7 +54,6 @@ Should even work on Windows, since basically everything is in a known good VM co
     
         ./manage.py user create
 
-1.  **Run the development server.**  
-    It will run on Port 5000, which `nginx` will proxy to Port 80. With the Vagrantfile's network adapter setup, this means it'll be accessible by opening <a href="http://192.168.33.10" target="_blank">192.168.33.10</a> in a browser. (This will only be accessible from your local machine.)
-    
+1.  **Run the development server.**
+    It will run on port 5000 by default.
         ./kcsrv.py
