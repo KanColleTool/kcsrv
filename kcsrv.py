@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 import os
 import hashlib
+
 from flask import Flask, render_template, send_from_directory, redirect
 from flask.ext.migrate import Migrate
 from flask.ext.security import Security, SQLAlchemyUserDatastore, current_user
+
 from forms import *
 from admin import admin
+
 
 # --> App setup
 app = Flask(__name__)
@@ -30,7 +33,7 @@ app.register_blueprint(play, url_prefix='/play')
 from modules.api.core import api_core
 
 app.register_blueprint(api_core, url_prefix='/kcsapi')
-from modules.api.user import api_user
+from modules.user.user import api_user
 
 app.register_blueprint(api_user, url_prefix='/kcsapi')
 

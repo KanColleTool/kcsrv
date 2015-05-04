@@ -9,4 +9,4 @@ def get_ship(ship):
 
 @resources.route('/swf/<path:path>')
 def kcs(path):
-    return send_from_directory('kcs', path)
+    return send_from_directory('kcs/resources/swf', path)

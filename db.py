@@ -145,7 +145,9 @@ class Admiral(db.Model):
 
     admiral_ships = db.relationship(AdmiralShip, backref='admiral', lazy='dynamic')
 
-    resources = db.Column(ARRAY(db.Integer), nullable=False)
+    resources = db.Column(ARRAY(db.Integer, dimensions=8), nullable=False)
+
+
 
     #repair_docks = db.relationship("")
 
