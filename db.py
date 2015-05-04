@@ -64,6 +64,8 @@ class AdmiralShip(db.Model):
     ship = db.relationship(Ship)
     ship_id = db.Column(db.Integer, db.ForeignKey('ship.id'))
 
+    fleet_id = db.Column(db.Integer)
+
     # Unique ship-specific attributes
     ammo = db.Column(db.Integer)
     fuel = db.Column(db.Integer)
@@ -94,7 +96,6 @@ class AdmiralShip(db.Model):
     antisub_max = db.Column(db.Integer)
 
 
-
 class Admiral(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -123,6 +124,7 @@ class Admiral(db.Model):
     pvp_total = db.Column(db.Integer, default=0)
 
     admiral_ships = db.relationship(AdmiralShip, backref='admiral', lazy='dynamic')
+
 
     #repair_docks = db.relationship("")
 
