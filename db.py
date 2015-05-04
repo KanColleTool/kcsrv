@@ -143,5 +143,7 @@ class User(db.Model, UserMixin):
 
     admiral = db.relationship(Admiral, backref='user', uselist=False)
 
+    roles = db.relationship('Role', secondary=role__user, backref=db.backref('users', lazy='dynamic')) # Fix roles
+
     def __unicode__(self):
         return self.email
