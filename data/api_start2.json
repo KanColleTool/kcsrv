@@ -39,7 +39,7 @@
 				"api_name": "発令！第十一号作戦"
 			}
 		],
-		"api_mst_slotitemgraph": [ // What the fuck are these?
+		"api_mst_slotitemgraph": [
 			{
 				"api_filename": "1",
 				"api_id": 1,
