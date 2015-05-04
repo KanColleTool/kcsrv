@@ -55,6 +55,7 @@ class Ship(db.Model):
     # Minimums
     luck_base = db.Column(db.Integer)
     firepower_base = db.Column(db.Integer)
+    torpedo_base = db.Column(db.Integer)
     armour_base = db.Column(db.Integer)
     antiair_base = db.Column(db.Integer)
     antisub_base = db.Column(db.Integer)
@@ -64,6 +65,7 @@ class Ship(db.Model):
     # Maximums
     luck_max = db.Column(db.Integer)
     firepower_max = db.Column(db.Integer)
+    torpedo_max = db.Column(db.Integer)
     armour_max = db.Column(db.Integer)
     antiair_max = db.Column(db.Integer)
     antisub_max = db.Column(db.Integer)
@@ -80,9 +82,6 @@ class Ship(db.Model):
 
     maxplanes = db.Column(ARRAY(db.Integer))
 
-
-
-    def __init__(*args, **kwargs): super().__init__(*args, **kwargs)
 
 
 class AdmiralShip(db.Model):
