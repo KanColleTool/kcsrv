@@ -2,6 +2,9 @@
 import os
 import json
 
+"""
+This makes the json files human-readable, by 1) formatting them 2) allowing JP characters
+"""
 if __name__ == '__main__':
     basedir = os.path.abspath(os.path.dirname(__file__))
     files = [f for f in os.listdir(basedir) if f.endswith('.json') and not f.startswith('_')]
