@@ -10,6 +10,8 @@ role__user = db.Table('role__user',
                       db.Column('role_id', db.Integer, db.ForeignKey('role.id'))
                       )
 
+
+
 class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
@@ -17,7 +19,6 @@ class Role(db.Model, RoleMixin):
 
     def __unicode__(self):
         return self.name
-
 
 class Dock(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -38,7 +39,7 @@ class Ship(db.Model):
     aftershipid = db.Column(db.Integer, nullable=True)
 
     rarity = db.Column(db.Integer)
-    broken = db.Column(db.Integer, ARRAY(db.Integer))
+    broken = db.Column(ARRAY(db.Integer))
 
     ammo_max = db.Column(db.Integer)
     fuel_max = db.Column(db.Integer)
@@ -52,14 +53,15 @@ class Ship(db.Model):
 
     voicef = db.Column(db.Integer)
 
-    modern_use = db.Column(db.Integer, ARRAY(db.Integer))
+    modern_use = db.Column(ARRAY(db.Integer))
 
     maxslots = db.Column(db.Integer)
+
 
 class AdmiralShip(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     admiralid = db.Column(db.Integer, db.ForeignKey('admiral.id'))
-    ship = db.relationship("ship")
+    ship = db.relationship(Ship)
     ship_id = db.Column(db.Integer, db.ForeignKey('ship.id'))
 
     # Unique ship-specific attributes
@@ -70,7 +72,7 @@ class AdmiralShip(db.Model):
     exp = db.Column(db.Integer)
     level = db.Column(db.Integer)
 
-    repair_base = db.Column(db.Integer, ARRAY(db.Integer))
+    repair_base = db.Column(ARRAY(db.Integer))
 
     # Ship stats
     luck = db.Column(db.Integer)
@@ -91,24 +93,6 @@ class AdmiralShip(db.Model):
     antiair_max = db.Column(db.Integer)
     antisub_max = db.Column(db.Integer)
 
-
-
-class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    active = db.Column(db.Boolean)
-
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    password = db.Column(db.String(255), nullable=False)
-    confirmed_at = db.Column(db.DateTime())
-
-    nickname = db.Column(db.String(255), unique=True, nullable=False)
-    api_token = db.Column(db.String(40), default=lambda: util.generate_api_token())
-
-    roles = db.relationship('Role', secondary=role__user, backref=db.backref('users', lazy='dynamic'))
-    admiral = db.relationship('Admiral', backref='user', uselist=False)
-
-    def __unicode__(self):
-        return self.email
 
 
 class Admiral(db.Model):
@@ -138,7 +122,26 @@ class Admiral(db.Model):
     pvp_successes = db.Column(db.Integer, default=0)
     pvp_total = db.Column(db.Integer, default=0)
 
-    admiral_ships = db.relationship("AdmiralShip")
+    admiral_ships = db.relationship(AdmiralShip, backref='admiral', lazy='dynamic')
+
+    #repair_docks = db.relationship("")
 
     def __unicode__(self):
         return "Admiral " + self.user.nickname
+
+
+class User(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    active = db.Column(db.Boolean)
+
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
+    confirmed_at = db.Column(db.DateTime())
+
+    nickname = db.Column(db.String(255), unique=True, nullable=False)
+    api_token = db.Column(db.String(40), default=lambda: util.generate_api_token())
+
+    admiral = db.relationship(Admiral, backref='user', uselist=False)
+
+    def __unicode__(self):
+        return self.email
