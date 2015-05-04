@@ -3,6 +3,7 @@ from flask.ext.security.utils import encrypt_password
 import datetime
 from db import *
 
+
 manager = Manager(usage="Manage users")
 
 

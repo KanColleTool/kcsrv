@@ -6,8 +6,11 @@ It's currently under very heavy development. Check back later.
 
 What Currently Works
 --------------------
-    - Actually logging in (this is an achievement because of how temperamental KanColle is when it doesn't get the exact response it works back
-    - 
+- Actually logging in (this is an achievement because of how temperamental KanColle is when it doesn't get the exact response it works back
+- Main port screen
+- Resources things (furniture, sound, etc)
+
+
 FAQ
 ---
 
@@ -43,17 +46,21 @@ Probably only works on Linux. Screw Ansible/Vagrant, too hard for me.
         sudo -u postgre createuser -s $USER
         sudo -u postgre createdb kcsrv
 
+
 1.  **Create the database.**  
     Repeat this to upgrade it later.
     
         ./manage.py db upgrade
         ./manage.py setup
 
+
 1.  **Create an account for yourself.**  
     Be sure to give yourself the `admin` and `staff` roles!
     
         ./manage.py user create
 
-1.  **Run the development server.**
+
+1.  **Run the development server.**  
     It will run on port 5000 by default.
+    
         ./kcsrv.py
