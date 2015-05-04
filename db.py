@@ -37,25 +37,52 @@ class Ship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     afterlv = db.Column(db.Integer, nullable=True)
     aftershipid = db.Column(db.Integer, nullable=True)
+    remodel_cost = db.Column(ARRAY(db.Integer))
 
     rarity = db.Column(db.Integer)
     broken = db.Column(ARRAY(db.Integer))
 
     ammo_max = db.Column(db.Integer)
     fuel_max = db.Column(db.Integer)
-    ammo_use_base = db.Column(db.Integer)
-    fuel_use_base = db.Column(db.Integer)
 
     name = db.Column(db.String)
-    maxhp = db.Column(db.Integer)
     number = db.Column(db.Integer)
     stype = db.Column(db.Integer)
 
     voicef = db.Column(db.Integer)
 
     modern_use = db.Column(ARRAY(db.Integer))
+    # Minimums
+    luck_base = db.Column(db.Integer)
+    firepower_base = db.Column(db.Integer)
+    armour_base = db.Column(db.Integer)
+    antiair_base = db.Column(db.Integer)
+    antisub_base = db.Column(db.Integer)
+    los_base = db.Column(db.Integer)
+    evasion_base = db.Column(db.Integer)
 
+    # Maximums
+    luck_max = db.Column(db.Integer)
+    firepower_max = db.Column(db.Integer)
+    armour_max = db.Column(db.Integer)
+    antiair_max = db.Column(db.Integer)
+    antisub_max = db.Column(db.Integer)
     maxslots = db.Column(db.Integer)
+    maxlos = db.Column(db.Integer)
+    evasion_max = db.Column(db.Integer)
+
+    maxhp = db.Column(db.Integer)
+    srange = db.Column(db.Integer)
+
+    # Messages
+    getmsg = db.Column(db.String(255))
+    buildtime = db.Column(db.Integer)
+
+    maxplanes = db.Column(ARRAY(db.Integer))
+
+
+
+    def __init__(*args, **kwargs): super().__init__(*args, **kwargs)
 
 
 class AdmiralShip(db.Model):
@@ -88,12 +115,6 @@ class AdmiralShip(db.Model):
     antiair_eq = db.Column(db.Integer)
     antisub = db.Column(db.Integer)
 
-    # Maximums
-    luck_max = db.Column(db.Integer)
-    firepower_max = db.Column(db.Integer)
-    armour_max = db.Column(db.Integer)
-    antiair_max = db.Column(db.Integer)
-    antisub_max = db.Column(db.Integer)
 
 
 class Admiral(db.Model):
@@ -141,7 +162,7 @@ class User(db.Model, UserMixin):
     confirmed_at = db.Column(db.DateTime())
 
     nickname = db.Column(db.String(255), unique=True, nullable=False)
-    api_token = db.Column(db.String(40), default=lambda: util.generate_api_token())
+    api_token = db.Column(db.String(40), default=lambda: util.generate_api_token(), unique=True)
 
     admiral = db.relationship(Admiral, backref='user', uselist=False)
 
