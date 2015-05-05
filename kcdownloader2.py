@@ -17,67 +17,87 @@ def load_datadump(filename) -> dict:
         o = json.loads(f.read(), 'utf-8')
         return o if not 'api_data' in o else o['api_data']
 
+def get_file(file):
+    r = requests.get("http://203.104.209.39/kcs/" + file, stream=True)
+    if r.status_code == 200:
+        return r
+    else:
+        return None
 
-def get_standardSWF():
+def get_standard_swf():
     print("NOTE: This may take a while, so grab a tea, coffee or a drink.")
     # These arrays will need to be updated with extra SWF filenames.
-    coreSwfFiles = ["Core.swf", "mainD2.swf", "PortMain.swf"]  # Core game files. Wrappers?
-    resourceSwfFiles = ["commonAssets.swf", "font.swf", "icons.swf", "sound_bgm.swf",
-                        "sound_se.swf"]  # Core game resources
-    sceneSwfFiles = ["AlbumMain.swf", "ArsenalMain.swf", "DutyMain.swf", "InteriorMain.swf", "ItemlistMain.swf",
-                     "OrganizeMain.swf", "RecordMain.swf", "RemodelMain.swf", "RepairMain.swf", "SallyMain.swf",
-                     "SupplyMain.swf", "TitleMain.swf", "tutorial.swf"]  # All the scenes I can remember.
+    core_swf_files = ["Core.swf", "mainD2.swf", "PortMain.swf"]  # Core game files. Wrappers?
+    resource_swf_files = ["commonAssets.swf", "font.swf", "icons.swf", "sound_bgm.swf",
+                          "sound_se.swf"]  # Core game resources
+    scene_swf_files = ["AlbumMain.swf", "ArsenalMain.swf", "DutyMain.swf", "InteriorMain.swf", "ItemlistMain.swf",
+                       "OrganizeMain.swf", "RecordMain.swf", "RemodelMain.swf", "RepairMain.swf", "SallyMain.swf",
+                       "SupplyMain.swf", "TitleMain.swf", "tutorial.swf"]  # All the scenes I can remember.
 
     print("Getting core files...")
-    for file in coreSwfFiles:
-        with open("kcs/" + file, 'wb') as outFile:
-            c = pycurl.Curl()
-            c.setopt(c.URL, "http://203.104.209.39/kcs/" + file)
-            c.setopt(c.WRITEDATA, outFile)
-            c.perform()
-            c.close()
-        print("... Downloaded " + file)
+    for file in core_swf_files:
+        with open("kcs/" + file, 'wb') as out:
+            f = get_file(file)
+            if f:
+                for chunk in f.iter_content(2048):
+                    out.write(chunk)
+                print("... Downloaded " + file)
+            else:
+                print("... No such file " + file)
 
     print("Getting resource files...")
-    for file in resourceSwfFiles:
-        with open("kcs/resources/swf/" + file, 'wb') as outFile:
-            c = pycurl.Curl()
-            c.setopt(c.URL, "http://203.104.209.39/kcs/resources/swf/" + file)
-            c.setopt(c.WRITEDATA, outFile)
-            c.perform()
-            c.close()
-        print("... Downloaded " + file)
+    for file in resource_swf_files:
+        with open("kcs/resources/swf/" + file, 'wb') as out:
+            f = get_file("resources/swf/" + file)
+            if f:
+                for chunk in f.iter_content(2048):
+                    out.write(chunk)
+                print("... Downloaded " + file)
+            else:
+                print("... No such file " + file)
 
     print("Getting scene files...")
-    for file in sceneSwfFiles:
-        with open("kcs/scenes/" + file, 'wb') as outFile:
-            c = pycurl.Curl()
-            c.setopt(c.URL, "http://203.104.209.39/kcs/scenes/" + file)
-            c.setopt(c.WRITEDATA, outFile)
-            c.perform()
-            c.close()
-        print(".. Downloaded " + file)
+    for file in scene_swf_files:
+        with open("kcs/scenes/" + file, 'wb') as out:
+            f = get_file("/scenes/" + file)
+            if f:
+                for chunk in f.iter_content(2048):
+                    out.write(chunk)
+                print("... Downloaded " + file)
+            else:
+                print("... No such file " + file)
 
-    return
 
-
-def get_shipGirlGFX(filename):
+def get_ship_girl_data(filename):
     dump = load_datadump(filename)
-    shipGFX = dump['api_mst_shipgraph']
+    ships = dump['api_mst_shipgraph']
     count = 1
-    for ship in shipGFX:
-        with open("kcs/resources/swf/ships/" + ship['api_filename'] + ".swf", 'wb') as outFile:
+    for ship in ships:
+        with open("kcs/resources/swf/ships/" + ship['api_filename'] + ".swf", 'wb') as out:
             print("Getting ship graphics. API ID: " + str(count) + ", file name: " + ship[
                 'api_filename'] + ", shipgirl ID " + str(ship['api_sortno']) + ".")
-            c = pycurl.Curl()
-            c.setopt(c.URL, "http://203.104.209.39/kcs/resources/swf/ships/" + ship['api_filename'] + ".swf")
-            c.setopt(c.WRITEDATA, outFile)
-            c.perform()
-            c.close()
-        print(".. Downloaded GFX for shipgirl ID " + str(ship['api_sortno']) + "(" + str(count) + ")")
+            f = get_file("resources/swf/ships/" + ship['api_filename'] + '.swf')
+            if f:
+                for chunk in f.iter_content(2048):
+                    out.write(chunk)
+                print(".. Downloaded GFX for shipgirl ID " + str(ship['api_sortno']) + "(" + str(count) + ")")
+            else:
+                print("... No such file " + ship['api_filename'])
         count += 1
-    return
-
+    print("Getting voiceover files...")
+    for ship in ships:
+         # Gonna guess on 70 files here. Feel free to reduce if you find the true maximums for the ships.
+        for x in range(0, 70):
+            print("Getting ship sounds. API ID: " + str(count) + ", file name: " + ship[
+                'api_filename'] + ", shipgirl ID " + str(ship['api_sortno']) + ".")
+            with open("kcs/sound/" + ship['api_filename'] + "/" + str(x) + '.mp3', 'wb') as out:
+                f = get_file("resources/sound/{}/{}.mp3".format(ship['api_filename'], x))
+                if f:
+                    for chunk in f.iter_content(2048):
+                        out.write(chunk)
+                    print("... Downloaded {}:{}".format(ship['api_filename'], str(x)))
+                else:
+                    print("... No such file {}:{}".format(ship['api_filename'], str(x)))
 
 def setup_directories():
     print("Prep work: Setting up directories, if they don't exist already...")
@@ -92,14 +112,14 @@ def setup_directories():
 
     # if not os.path.exists("kcs/resources/sound"): os.makedirs("kcs/resources/sound")
     print("Done prep work.")
-    return
+
 
 # End defines. Start main code.
 if __name__ == "__main__":
     print("Starting download of Kantai Collection assets. Please wait...")
-    print("If you have an error, please ensure you have cURL for python installed.")
-    print("Usually on Debian and friends you can do 'apt-get install python3-pycurl' to install the correct version.")
-    import pycurl
+    print("If you have an error, please ensure you have Python-Requests installed.")
+    print("Usually on Debian and friends you can do 'apt-get install python3-requests' to install the correct version.")
+    import requests
     # Load the datafile into memory.
     if os.path.isfile("data/api_start2.json"):
         print("Ok, found a JSON data dump.")
@@ -107,8 +127,8 @@ if __name__ == "__main__":
         print("Begin...")
 
         setup_directories()
-        get_standardSWF()
-        get_shipGirlGFX("data/api_start2.json")
+        #get_standard_swf()
+        get_ship_girl_data("data/api_start2.json")
 
         print("...Finish")
         exit()
