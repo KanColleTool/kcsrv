@@ -4,10 +4,14 @@
 
 # Kantai Collection Downloader Script for assets.
 # Written by Coburn (SoftwareGuy on GitHub)
-# Please make sure you have json and pyCURL installed!
+# Please make sure you have json and requests installed!
 
 import json
 import os.path
+import requests
+
+from kcsrv import app
+from flask.ext.script import Manager
 
 # Define some stuff for later use.
 # Thank you for KCT's uppfinnarn for this code snippet that I've adapted
@@ -104,8 +108,7 @@ def setup_directories():
     print("Done prep work.")
 
 
-# End defines. Start main code.
-if __name__ == "__main__":
+def run():
     print("Starting download of Kantai Collection assets. Please wait...")
     print("If you have an error, please ensure you have Python-Requests installed.")
     print("Usually on Debian and friends you can do 'apt-get install python3-requests' to install the correct version.")
@@ -117,7 +120,7 @@ if __name__ == "__main__":
         print("Begin...")
 
         setup_directories()
-        #get_standard_swf()
+        get_standard_swf()
         get_ship_girl_data("data/api_start2.json")
 
         print("...Finish")
@@ -129,3 +132,5 @@ if __name__ == "__main__":
         print(
             "You can modify this script to change the path the script's looking for, but please - if it ain't broke, don't fix it.")
         exit()
+
+

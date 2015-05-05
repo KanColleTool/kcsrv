@@ -12,6 +12,7 @@ from commands.user import manager as user_manager
 
 manager.add_command('user', user_manager)
 
+import commands.kcdownloader2
 
 @manager.command
 def setup():
@@ -20,6 +21,9 @@ def setup():
     db.session.add(Role(name="staff", description="Allowed to see restricted information"))
     db.session.commit()
 
+@manager.command
+def dlassets():
+    commands.kcdownloader2.run()
 
 if __name__ == '__main__':
     manager.run()
