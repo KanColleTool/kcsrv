@@ -25,6 +25,13 @@ class Fleet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, default="Unnamed")
 
+    ship1 = db.relationship("AdmiralShip", lazy="dynamic")
+    ship2 = db.relationship("AdmiralShip", lazy="dynamic")
+    ship3 = db.relationship("AdmiralShip", lazy="dynamic")
+    ship4 = db.relationship("AdmiralShip", lazy="dynamic")
+    ship5 = db.relationship("AdmiralShip", lazy="dynamic")
+    ship6 = db.relationship("AdmiralShip", lazy="dynamic")
+
 class Dock(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     state = db.Column(db.Integer)
@@ -36,7 +43,6 @@ class Dock(db.Model):
     baux = db.Column(db.Integer, nullable=True)
     cmats = db.Column(db.Integer, nullable=True)
 
-# I give no fucks
 
 class Ship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -88,14 +94,13 @@ class Ship(db.Model):
     maxplanes = db.Column(db.String())
 
 
-
 class AdmiralShip(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     admiralid = db.Column(db.Integer, db.ForeignKey('admiral.id'))
     ship = db.relationship(Ship)
     ship_id = db.Column(db.Integer, db.ForeignKey('ship.id'))
 
-    fleet_id = db.Column(db.Integer)
+    fleet_id = db.Column(db.Integer, db.ForeignKey('fleet.id'))
 
     # Unique ship-specific attributes
     ammo = db.Column(db.Integer)
