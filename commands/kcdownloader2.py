@@ -5,13 +5,10 @@
 # Kantai Collection Downloader Script for assets.
 # Written by Coburn (SoftwareGuy on GitHub)
 # Please make sure you have json and requests installed!
-
 import json
 import os.path
-import requests
 
-from kcsrv import app
-from flask.ext.script import Manager
+import requests
 
 # Define some stuff for later use.
 # Thank you for KCT's uppfinnarn for this code snippet that I've adapted
@@ -112,7 +109,6 @@ def run():
     print("Starting download of Kantai Collection assets. Please wait...")
     print("If you have an error, please ensure you have Python-Requests installed.")
     print("Usually on Debian and friends you can do 'apt-get install python3-requests' to install the correct version.")
-    import requests
     # Load the datafile into memory.
     if os.path.isfile("data/api_start2.json"):
         print("Ok, found a JSON data dump.")
