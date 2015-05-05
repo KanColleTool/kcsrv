@@ -12,7 +12,6 @@ role__user = db.Table('role__user',
                       )
 
 
-
 class Role(db.Model, RoleMixin):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
@@ -21,12 +20,14 @@ class Role(db.Model, RoleMixin):
     def __unicode__(self):
         return self.name
 
+
 class Fleet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, default="Unnamed")
     admiral_id = db.Column(db.Integer, db.ForeignKey('admiral.id'))
 
     ships = db.relationship("AdmiralShip", lazy='dynamic')
+
 
 class Dock(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -121,6 +122,7 @@ class AdmiralShip(db.Model):
     antiair = db.Column(db.Integer)
     antiair_eq = db.Column(db.Integer)
     antisub = db.Column(db.Integer)
+    evasion = db.Column(db.Integer)
 
     heartlocked = db.Column(db.Boolean)
 
