@@ -24,13 +24,9 @@ class Role(db.Model, RoleMixin):
 class Fleet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, default="Unnamed")
+    admiral_id = db.Column(db.Integer, db.ForeignKey('admiral.id'))
 
-    ship1 = db.relationship("AdmiralShip", lazy="dynamic")
-    ship2 = db.relationship("AdmiralShip", lazy="dynamic")
-    ship3 = db.relationship("AdmiralShip", lazy="dynamic")
-    ship4 = db.relationship("AdmiralShip", lazy="dynamic")
-    ship5 = db.relationship("AdmiralShip", lazy="dynamic")
-    ship6 = db.relationship("AdmiralShip", lazy="dynamic")
+    ships = db.relationship("AdmiralShip", lazy='dynamic')
 
 class Dock(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -156,6 +152,16 @@ class Admiral(db.Model):
     admiral_ships = db.relationship(AdmiralShip, backref='admiral', lazy='dynamic')
 
     resources = db.Column(db.String())
+
+    fleets = db.relationship(Fleet, backref='admiral', lazy='dynamic')
+
+    # If this is false...
+    #   1) api_req_init is enabled
+    #   2) setup() is enabled, which means a new fleet will be automatically added, and two docks of each kind
+    # If this is true...
+    #   1) api_req_init will be disabled
+    #   2) setup() is disabled.
+    setup = db.Column(db.Boolean())
     #repair_docks = db.relationship("")
 
     def __unicode__(self):
