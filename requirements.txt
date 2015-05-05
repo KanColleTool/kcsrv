@@ -28,3 +28,4 @@ psycopg2>=2.5.3
 six>=1.7.3
 validators>=0.6.0
 py-bcrypt>=0.4
+pycurl>=7.19.5.1
