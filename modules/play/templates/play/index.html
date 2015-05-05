@@ -3,7 +3,7 @@
 {% block content %}
 <div id="game-container" class="text-center">
 	<object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" width="800" height="480" id="game">
-		<param name="movie" value="{{ url_for('kcs', path='mainD2.swf', _external=True) }}?api_token={{ api_token }}" />
+		<param name="movie" value="{{ url_for('kcs', path='kcs/mainD2.swf', _external=True) }}?api_token={{ api_token }}" />
 		<param name="quality" value="high" />
 		<param name="background" value="#000000" />
 		<param name="base" value="{{ url_for('kcs', path='', _external=True) }}" />
@@ -19,6 +19,6 @@
 	</object>
 </div>
 <p class="small text-center">
-	<a href="#" class="text-muted" onclick="alert('{{ url_for('kcs', path='mainD2.swf', _external=True) }}?api_token={{ api_token }}'); return false">Reveal API Link</a>
+    <a href="{{ url_for('kcs', path='mainD2.swf', _external=True) }}?api_token={{ api_token }}">API Link</a>
 </p>
 {% endblock %}
