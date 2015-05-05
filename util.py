@@ -4,7 +4,9 @@ import random
 import datetime, time
 import json
 from flask import request, abort
+from sqlalchemy import INT
 import db
+from sqlalchemy.dialects.postgresql import array
 
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -48,7 +50,9 @@ def get_token_admiral_or_error(api_token=None):
         abort(403)
 
     if not user.admiral:
-        user.admiral = db.Admiral()
+        adm = db.Admiral()
+        adm.resources = "500,500,500,500,1,1,3,0"
+        user.admiral = adm
         db.db.session.add(user)
         db.db.session.commit()
     return user.admiral

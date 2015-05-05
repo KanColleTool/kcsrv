@@ -51,7 +51,7 @@ class Ship(db.Model):
 
     voicef = db.Column(db.Integer)
 
-    modern_use = db.Column(ARRAY(db.Integer))
+    modern_use = db.Column(db.String)
     # Minimums
     luck_base = db.Column(db.Integer)
     firepower_base = db.Column(db.Integer)
@@ -80,7 +80,7 @@ class Ship(db.Model):
     getmsg = db.Column(db.String(255))
     buildtime = db.Column(db.Integer)
 
-    maxplanes = db.Column(ARRAY(db.Integer))
+    maxplanes = db.Column(db.String)
 
 
 
@@ -100,7 +100,7 @@ class AdmiralShip(db.Model):
     exp = db.Column(db.Integer)
     level = db.Column(db.Integer)
 
-    repair_base = db.Column(ARRAY(db.Integer))
+    repair_base = db.Column(db.String)
 
     # Ship stats
     luck = db.Column(db.Integer)
@@ -145,10 +145,7 @@ class Admiral(db.Model):
 
     admiral_ships = db.relationship(AdmiralShip, backref='admiral', lazy='dynamic')
 
-    resources = db.Column(ARRAY(db.Integer, dimensions=8), nullable=False)
-
-
-
+    resources = db.Column(db.String, nullable=False)
     #repair_docks = db.relationship("")
 
     def __unicode__(self):
