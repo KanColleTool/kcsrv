@@ -17,12 +17,14 @@ def load_datadump(filename) -> dict:
         o = json.loads(f.read(), 'utf-8')
         return o if not 'api_data' in o else o['api_data']
 
+
 def get_file(file):
     r = requests.get("http://203.104.209.39/kcs/" + file, stream=True)
     if r.status_code == 200:
         return r
     else:
         return None
+
 
 def get_standard_swf():
     print("NOTE: This may take a while, so grab a tea, coffee or a drink.")
@@ -86,7 +88,9 @@ def get_ship_girl_data(filename):
         count += 1
     print("Getting voiceover files...")
     for ship in ships:
-         # Gonna guess on 70 files here. Feel free to reduce if you find the true maximums for the ships.
+        if not os.path.exists("kcs/sound/" + ship['api_filename'] + "/"): os.makedirs(
+            "kcs/sound/" + ship['api_filename'] + "/")
+        # Gonna guess on 70 files here. Feel free to reduce if you find the true maximums for the ships.
         for x in range(0, 70):
             print("Getting ship sounds. API ID: " + str(count) + ", file name: " + ship[
                 'api_filename'] + ", shipgirl ID " + str(ship['api_sortno']) + ".")
@@ -98,6 +102,7 @@ def get_ship_girl_data(filename):
                     print("... Downloaded {}:{}".format(ship['api_filename'], str(x)))
                 else:
                     print("... No such file {}:{}".format(ship['api_filename'], str(x)))
+
 
 def setup_directories():
     print("Prep work: Setting up directories, if they don't exist already...")
