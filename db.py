@@ -93,7 +93,7 @@ class Ship(db.Model):
 class AdmiralShip(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     admiralid = db.Column(db.Integer, db.ForeignKey('admiral.id'))
-    ship = db.relationship(Ship)
+    ship = db.relationship(Ship, uselist=False)
     ship_id = db.Column(db.Integer, db.ForeignKey('ship.id'))
 
     fleet_id = db.Column(db.Integer, db.ForeignKey('fleet.id'))
