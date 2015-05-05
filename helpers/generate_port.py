@@ -30,5 +30,7 @@ def generate_port(api_token):
     port2["api_data"]["api_combined_flag"] = 0
     # API basic - a replica of api_get_member/basic
     port2['api_data']['api_basic'] = AdmiralHelper.get_admiral_basic_info()
-
+    port2['api_data']['api_deck_port'] = []
+    for fleet in admiral.fleets.all():
+        pass
     return port2

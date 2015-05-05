@@ -1,5 +1,6 @@
 import util
-
+import db
+from helpers import generate_ship
 
 def get_admiral_basic_info():
     admiral = util.get_token_admiral_or_error()
@@ -34,9 +35,26 @@ def get_admiral_basic_info():
         'api_pt_challenged': 0,
         'api_pt_challenged_win': 0,
         # Disables the opening stuff, and skips straight to the game.
-        'api_firstflag': 1 if len(admiral.admiral_ships.all()) > 0 else 0,
+        'api_firstflag': 1 if admiral.setup else 0,
         'api_tutorial_progress': 100,
         'api_pvp': [0, 0]
     }
 
 
+def setup(first_ship_id: int, admiral: db.Admiral):
+    if admiral.setup: return
+    # Create a new ship.
+    ship = generate_ship.generate_new_ship(first_ship_id)
+    # Create a new fleet.
+    fleet = db.Fleet()
+    # Add the ship to the first fleet.
+    fleet.ships.append(ship)
+    # Add the ship to the admiral
+    admiral.admiral_ships.append(ship)
+    # Add the fleet to the admiral
+    admiral.fleets.append(fleet)
+    # Give the admiral starting resources
+    admiral.resources = "500,500,500,500,1,1,3,0"
+    # Return the admiral
+    admiral.setup = True
+    return admiral
