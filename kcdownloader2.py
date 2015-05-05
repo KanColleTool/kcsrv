@@ -86,22 +86,7 @@ def get_ship_girl_data(filename):
             else:
                 print("... No such file " + ship['api_filename'])
         count += 1
-    print("Getting voiceover files...")
-    for ship in ships:
-        if not os.path.exists("kcs/sound/" + ship['api_filename'] + "/"): os.makedirs(
-            "kcs/sound/" + ship['api_filename'] + "/")
-        # Gonna guess on 70 files here. Feel free to reduce if you find the true maximums for the ships.
-        for x in range(0, 70):
-            print("Getting ship sounds. API ID: " + str(count) + ", file name: " + ship[
-                'api_filename'] + ", shipgirl ID " + str(ship['api_sortno']) + ".")
-            with open("kcs/sound/" + ship['api_filename'] + "/" + str(x) + '.mp3', 'wb') as out:
-                f = get_file("resources/sound/{}/{}.mp3".format(ship['api_filename'], x))
-                if f:
-                    for chunk in f.iter_content(2048):
-                        out.write(chunk)
-                    print("... Downloaded {}:{}".format(ship['api_filename'], str(x)))
-                else:
-                    print("... No such file {}:{}".format(ship['api_filename'], str(x)))
+
 
 
 def setup_directories():
@@ -132,7 +117,7 @@ if __name__ == "__main__":
         print("Begin...")
 
         setup_directories()
-        get_standard_swf()
+        #get_standard_swf()
         get_ship_girl_data("data/api_start2.json")
 
         print("...Finish")
