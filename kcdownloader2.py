@@ -127,7 +127,7 @@ if __name__ == "__main__":
         print("Begin...")
 
         setup_directories()
-        #get_standard_swf()
+        get_standard_swf()
         get_ship_girl_data("data/api_start2.json")
 
         print("...Finish")
