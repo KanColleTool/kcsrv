@@ -108,6 +108,8 @@ class AdmiralShip(db.Model):
 
     repair_base = db.Column(db.String())
 
+    current_hp = db.Column(db.Integer)  # Oh dear.
+
     # Ship stats
     luck = db.Column(db.Integer)
     luck_eq = db.Column(db.Integer)
