@@ -1,12 +1,13 @@
 import os
 import string
 import random
-import datetime, time
+import datetime
+import time
 import json
+
 from flask import request, abort
-from sqlalchemy import INT
+
 import db
-from sqlalchemy.dialects.postgresql import array
 
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -51,7 +52,6 @@ def get_token_admiral_or_error(api_token=None):
 
     if not user.admiral:
         adm = db.Admiral()
-        adm.resources = "500,500,500,500,1,1,3,0"
         user.admiral = adm
         db.db.session.add(user)
         db.db.session.commit()
@@ -87,7 +87,7 @@ def update_db():
             # Remodel
             afterlv = ship['api_afterlv'],
             aftershipid = ship['api_aftershipid'],
-            remodel_cost = [ship['api_afterfuel'], ship['api_afterbull']],
+            remodel_cost = ','.join([str(ship['api_afterfuel']), str(ship['api_afterbull'])]),
             # Minimums
             luck_base = ship['api_luck'][0],
             firepower_base = ship['api_houg'][0],
@@ -110,7 +110,7 @@ def update_db():
             fuel_max = ship['api_fuel_max'],
             #los_max = ship['api_saku'][1],
             #evasion_max = ship['api_evasion'],
-            maxplanes = ship['api_maxeq']
+            maxplanes = ','.join(str(ship['api_maxeq']))
         )
         # ugh
         db.db.session.add(s)

@@ -2,8 +2,8 @@ from flask import Blueprint
 # from flask.ext.security import current_user
 from util import *
 from modules import placeholderdata
-import generate_port
-from . import AdmiralHelper
+from helpers import generate_port, generate_ship, AdmiralHelper
+
 
 api_user = Blueprint('api_user', __name__)
 prepare_api_blueprint(api_user)
@@ -98,6 +98,14 @@ def port():
 # Kancolle literally doesn't care, as long as it gets something back
 def firstship():
     admiral = get_token_admiral_or_error()
+    if len(admiral.admiral_ships.all()) != 0:
+        return svdata({'api_result_msg': "Nice try.", 'api_result': 1})
+    shipid = request.values.get("api_ship_id")
+    # Create a new starting ship.
+    starting_ship = generate_ship.generate_new_ship(shipid)
+    admiral.admiral_ships.append(starting_ship)
+    db.db.session.add(admiral)
+    db.db.session.commit()
     return svdata({'api_result_msg': 'shitty api is shitty', 'api_result': 1})
 
 

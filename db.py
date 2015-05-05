@@ -1,7 +1,8 @@
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import UserMixin, RoleMixin
-from sqlalchemy.dialects.postgresql import ARRAY
+
 import util
+
 
 db = SQLAlchemy()
 
@@ -20,6 +21,10 @@ class Role(db.Model, RoleMixin):
     def __unicode__(self):
         return self.name
 
+class Fleet(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, default="Unnamed")
+
 class Dock(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     state = db.Column(db.Integer)
@@ -37,10 +42,10 @@ class Ship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     afterlv = db.Column(db.Integer, nullable=True)
     aftershipid = db.Column(db.Integer, nullable=True)
-    remodel_cost = db.Column(ARRAY(db.Integer))
+    remodel_cost = db.Column(db.String())
 
     rarity = db.Column(db.Integer)
-    broken = db.Column(ARRAY(db.Integer))
+    broken = db.Column(db.String())
 
     ammo_max = db.Column(db.Integer)
     fuel_max = db.Column(db.Integer)
@@ -80,7 +85,7 @@ class Ship(db.Model):
     getmsg = db.Column(db.String(255))
     buildtime = db.Column(db.Integer)
 
-    maxplanes = db.Column(db.String)
+    maxplanes = db.Column(db.String())
 
 
 
@@ -100,7 +105,7 @@ class AdmiralShip(db.Model):
     exp = db.Column(db.Integer)
     level = db.Column(db.Integer)
 
-    repair_base = db.Column(db.String)
+    repair_base = db.Column(db.String())
 
     # Ship stats
     luck = db.Column(db.Integer)
@@ -126,7 +131,7 @@ class Admiral(db.Model):
     experience = db.Column(db.Integer, default=0)
     tutorial_progress = db.Column(db.Integer, default=0)
 
-    furniture = db.Column(db.String(100), default="1,38,77,110,151,168")
+    furniture = db.Column(db.String())
     furniture_coins = db.Column(db.Integer, default=0)
 
     max_ships = db.Column(db.Integer, default=500)
@@ -145,7 +150,7 @@ class Admiral(db.Model):
 
     admiral_ships = db.relationship(AdmiralShip, backref='admiral', lazy='dynamic')
 
-    resources = db.Column(db.String, nullable=False)
+    resources = db.Column(db.String())
     #repair_docks = db.relationship("")
 
     def __unicode__(self):
