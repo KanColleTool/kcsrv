@@ -120,6 +120,7 @@ class AdmiralShip(db.Model):
     antiair_eq = db.Column(db.Integer)
     antisub = db.Column(db.Integer)
 
+    heartlocked = db.Column(db.Boolean)
 
 
 class Admiral(db.Model):
