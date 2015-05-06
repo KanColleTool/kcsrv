@@ -54,7 +54,7 @@ def generate_port(api_token):
     port2['api_data']['api_materials'] = [
         {"api_id": n+1,
          "api_member_id": admiral.id,
-         "api_value": val} for n, val in admiral.resources.split(',')
+         "api_value": val} for n, val in enumerate(admiral.resources.split(','))
     ]
     # Ships! Yay! (said nobody)
     # Generate the absolute clusterfuck.
