@@ -57,6 +57,7 @@ def generate_port(api_token):
          "api_value": val} for n, val in enumerate(admiral.resources.split(','))
     ]
     # Ships! Yay! (said nobody)
+    port2['api_data']['api_ship'] = []
     # Generate the absolute clusterfuck.
     for ship in admiral.admiral_ships.all():
         assert isinstance(ship, db.AdmiralShip)
@@ -92,4 +93,5 @@ def generate_port(api_token):
             'api_ndock_time': 0,
             'api_kyouka': [0, 0, 0, 0, 0]
         }
+        port2['api_data']['api_ship'].append(temp_dict)
     return port2
