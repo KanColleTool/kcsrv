@@ -1,3 +1,5 @@
+from util import *
+
 deck = {
     'api_flagship': '0',
     'api_id': 1,
@@ -51,3 +53,16 @@ ship2 = {
         inazuma_ship
     ]
 }
+unsetslot = { 'api_data': {'api_slottype21': [294, 231, 293, 239, 287, 238], 'api_slottype41': -1, 'api_slottype18': -1,
+                          'api_slottype10': [53], 'api_slottype5': [261, 244, 262], 'api_slottype20': -1,
+                          'api_slottype27': -1, 'api_slottype40': -1, 'api_slottype26': -1, 'api_slottype14': -1,
+                          'api_slottype1': [44, 278], 'api_slottype6': [303], 'api_slottype4': -1, 'api_slottype34': -1,
+                          'api_slottype29': -1, 'api_slottype38': -1, 'api_slottype11': -1, 'api_slottype33': -1,
+                          'api_slottype19': -1, 'api_slottype36': -1, 'api_slottype39': -1, 'api_slottype3': -1,
+                          'api_slottype12': -1, 'api_slottype25': -1, 'api_slottype8': -1, 'api_slottype31': -1,
+                          'api_slottype2': -1, 'api_slottype28': -1, 'api_slottype30': [265, 263, 264],
+                          'api_slottype7': -1, 'api_slottype9': -1, 'api_slottype35': -1, 'api_slottype16': -1,
+                          'api_slottype24': -1, 'api_slottype37': -1, 'api_slottype23': -1, 'api_slottype32': -1,
+                          'api_slottype17': -1, 'api_slottype22': -1, 'api_slottype15': -1, 'api_slottype13': -1}}
+
+api_ports = load_datadump('port.json')
