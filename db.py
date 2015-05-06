@@ -40,6 +40,8 @@ class Dock(db.Model):
     baux = db.Column(db.Integer, nullable=True)
     cmats = db.Column(db.Integer, nullable=True)
 
+    ship_id = db.Column(db.Integer, nullable=True)
+
     admiral_idea = db.Column(db.Integer, db.ForeignKey("admiral.id"))
 
 

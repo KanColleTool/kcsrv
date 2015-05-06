@@ -1,11 +1,16 @@
 #!/usr/bin/env python
 from flask.ext.script import Manager, Server
-from flask.ext.migrate import MigrateCommand
+from flask.ext.migrate import Migrate, MigrateCommand
+
 from kcsrv import app
 from db import *
 
+
 manager = Manager(app)
 manager.add_command('runserver', Server(host='0.0.0.0', use_reloader=True))
+
+migrate = Migrate(app, db)
+
 manager.add_command('db', MigrateCommand)
 
 from commands.user import manager as user_manager
