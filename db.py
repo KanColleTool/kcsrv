@@ -40,6 +40,8 @@ class Dock(db.Model):
     baux = db.Column(db.Integer, nullable=True)
     cmats = db.Column(db.Integer, nullable=True)
 
+    admiral_idea = db.Column(db.Integer, db.ForeignKey("admiral.id"))
+
 
 class Ship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -167,7 +169,7 @@ class Admiral(db.Model):
     #   1) api_req_init will be disabled
     #   2) setup() is disabled.
     setup = db.Column(db.Boolean())
-    #repair_docks = db.relationship("")
+    repair_docks = db.relationship("Dock", backref='admiral', lazy='dynamic')
 
     def __unicode__(self):
         return "Admiral " + self.user.nickname
