@@ -32,12 +32,18 @@ def generate_port(api_token):
     # Combined flag? Event data probably.
     port2["api_data"]["api_combined_flag"] = 0
     # API basic - a replica of api_get_member/basic
-    port2['api_data']['api_basic'] = AdmiralHelper.get_admiral_basic_info()
+    basic = AdmiralHelper.get_admiral_basic_info()
+    port2['api_data']['api_basic'] = util.merge_two_dicts(basic,
+        {
+            'api_medals': 0,
+            'api_large_dock': 0
+        })
     port2['api_data']['api_deck_port'] = []
     count = 0
     # Fleets.
     for fleet in admiral.fleets.all():
         count += 1
+        ships = [ship.id for ship in fleet.ships]
         temp_dict = {
             # Unknown value, always zero for some reason.
             'api_flagship': 0,
@@ -50,7 +56,7 @@ def generate_port(api_token):
             # The local fleet ID.
             'api_id': count,
             # List of ships.
-            "api_ship": [ship.id for ship in fleet.ships]
+            "api_ship": ships + [-1] * (6 - len(ships))
         }
 
         port2['api_data']['api_deck_port'].append(temp_dict)
@@ -58,7 +64,7 @@ def generate_port(api_token):
     port2['api_data']['api_materials'] = [
         {"api_id": n + 1,
          "api_member_id": admiral.id,
-         "api_value": val} for n, val in enumerate(admiral.resources.split(','))
+         "api_value": int(val)} for n, val in enumerate(admiral.resources.split(','))
     ]
     # Ships! Yay! (said nobody)
     port2['api_data']['api_ship'] = []
@@ -90,7 +96,7 @@ def generate_port(api_token):
             'api_slot': [-1, -1, -1, -1, -1],  # TODO: implement items
             'api_backs': ship.ship.rarity,
             'api_sally_area': 0,  # dunno
-            'api_ndock_item': [ship.repair_base.split(',')[2], ship.repair_base.split(',')[0]],
+            'api_ndock_item': list(map(int, util.take_items(ship.repair_base.split(','), [1, 3]))),
             'api_id': count,  # temporary
             'api_karyoku': [ship.firepower_eq, ship.ship.firepower_max],
             'api_maxhp': ship.ship.maxhp,
@@ -118,7 +124,7 @@ def generate_port(api_token):
             }
         else:
             temp_dict = {
-                'api_state': -1,
+                'api_state': 0,
                 'api_created_ship_id': 0,
                 'api_complete_time': 0,
                 'api_complete_time_str': "0",
@@ -127,7 +133,7 @@ def generate_port(api_token):
                 'api_item3': 0,
                 'api_item4': 0,
             }
-        temp_dict['api_id'] = x
+        temp_dict['api_id'] = x+1
         temp_dict['api_member_id'] = admiral.id
         port2['api_data']['api_ndock'].append(temp_dict)
     return port2

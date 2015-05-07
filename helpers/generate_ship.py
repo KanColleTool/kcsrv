@@ -28,6 +28,7 @@ def generate_new_ship(shipid):
         antiair_eq = original_ship.antiair_base,
         antisub = original_ship.antisub_base,
         evasion = original_ship.evasion_base,
-        fatigue = 49
+        fatigue = 49,
+        current_hp = original_ship.maxhp
     )
     return admiral_ship

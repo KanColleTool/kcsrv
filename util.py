@@ -119,3 +119,27 @@ def update_db():
     db.db.session.commit()
     print("Updated database.")
     return count
+
+def take_items(l, indices):
+    return (l[idx] for idx in indices)
+
+# http://stackoverflow.com/questions/3438756/some-built-in-to-pad-a-list-in-python
+
+def pad(iterable, padding='.', length=7):
+    """
+    >>> iterable = [1,2,3]
+    >>> list(pad(iterable))
+    [1, 2, 3, '.', '.', '.', '.']
+    """
+    for count, i in enumerate(iterable):
+        yield i
+    while count < length - 1:
+        count += 1
+        yield padding
+
+# http://stackoverflow.com/questions/38987/how-can-i-merge-two-python-dictionaries-in-a-single-expression
+def merge_two_dicts(x, y):
+    """Given two dicts, merge them into a new dict as a shallow copy."""
+    z = x.copy()
+    z.update(y)
+    return z

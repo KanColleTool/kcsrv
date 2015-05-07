@@ -4,6 +4,7 @@ from util import *
 from modules.api import placeholderdata
 from helpers import generate_port, AdmiralHelper
 
+import pprint
 
 api_user = Blueprint('api_user', __name__)
 prepare_api_blueprint(api_user)
@@ -90,7 +91,8 @@ def port():
     api_token = request.values.get('api_token', None)
     if api_token is None:
         abort(403)
-    print(generate_port.generate_port(api_token))
+    port = generate_port.generate_port(api_token)
+    pprint.pprint(port)
     return svdata(generate_port.generate_port(api_token))
 
 
