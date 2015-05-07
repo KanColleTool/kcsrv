@@ -89,8 +89,8 @@ def port():
     api_token = request.values.get('api_token', None)
     if api_token is None:
         abort(403)
-    port = generate_port.generate_port(api_token)
-    return svdata(generate_port.generate_port(api_token)['api_data'])
+    port = generate_port.generate_port(api_token)['api_data']
+    return svdata(port)
 
 
 @api_user.route('/api_req_init/firstship', methods=['GET', 'POST'])

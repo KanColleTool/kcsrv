@@ -43,7 +43,7 @@ def generate_port(api_token):
     # Fleets.
     for fleet in admiral.fleets.all():
         count += 1
-        ships = [n for n, _ in enumerate(fleet.ships.all())]
+        ships = [n+1 for n, _ in enumerate(fleet.ships.all())]
         temp_dict = {
             # Unknown value, always zero for some reason.
             'api_flagship': 0,
@@ -56,7 +56,9 @@ def generate_port(api_token):
             # The local fleet ID.
             'api_id': count,
             # List of ships.
-            "api_ship": ships + [-1] * (6 - len(ships))
+            "api_ship": ships + [-1] * (6 - len(ships)),
+            # Mission data?
+            "api_mission": [0, 0, 0, 0]
         }
 
         port2['api_data']['api_deck_port'].append(temp_dict)
