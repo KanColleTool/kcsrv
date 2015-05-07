@@ -114,7 +114,7 @@ def update_db():
             fuel_max = ship['api_fuel_max'],
             maxlos = 0,
             evasion_max = 0,
-            maxplanes = ','.join(ship['api_maxeq'])
+            maxplanes = ','.join(str(x) for x in ship['api_maxeq'])
         )
         # ugh
         db.db.session.merge(s)

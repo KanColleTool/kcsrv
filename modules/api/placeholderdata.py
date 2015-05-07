@@ -43,16 +43,6 @@ inazuma_ship = {
     'api_taisen': [33, 59]
 }
 
-ship2 = {
-    'api_result_msg': "成功",
-    'api_result': 1,
-    'api_data_deck': [
-        deck
-    ],
-    'api_data': [
-        inazuma_ship
-    ]
-}
 unsetslot = { 'api_data': {'api_slottype21': [294, 231, 293, 239, 287, 238], 'api_slottype41': -1, 'api_slottype18': -1,
                           'api_slottype10': [53], 'api_slottype5': [261, 244, 262], 'api_slottype20': -1,
                           'api_slottype27': -1, 'api_slottype40': -1, 'api_slottype26': -1, 'api_slottype14': -1,

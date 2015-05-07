@@ -108,7 +108,7 @@ def firstship():
 
 @api_user.route('/api_get_member/ship2', methods=['GET', 'POST'])
 def ship2():
-    return json.dumps(placeholderdata.ship2)  # FUCK YOU KANCOLLE AND YOUR SHITTY REQUIREMENTS
+    return json.dumps({})
 
 # Generic routes for anything not implemented.
 

@@ -7,7 +7,6 @@ def get_repair_base(original_ship):
 
 def generate_new_ship(shipid):
     original_ship = db.Ship.query.filter_by(id=shipid).first()
-    print(original_ship)
     assert isinstance(original_ship, db.Ship)
     if not original_ship: return
     admiral_ship = db.AdmiralShip(
@@ -29,6 +28,6 @@ def generate_new_ship(shipid):
         antisub = original_ship.antisub_base,
         evasion = original_ship.evasion_base,
         fatigue = 49,
-        current_hp = original_ship.maxhp
+        current_hp = original_ship.hp_base
     )
     return admiral_ship
