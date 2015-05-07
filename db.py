@@ -73,6 +73,7 @@ class Ship(db.Model):
     antisub_base = db.Column(db.Integer, default=0)
     los_base = db.Column(db.Integer, default=0)
     evasion_base = db.Column(db.Integer, default=0)
+    hp_base = db.Column(db.Integer, default=0)
 
     # Maximums
     luck_max = db.Column(db.Integer, default=0)
@@ -87,6 +88,8 @@ class Ship(db.Model):
 
     maxhp = db.Column(db.Integer)
     srange = db.Column(db.Integer, default=0)
+
+    kai = db.Column(db.Boolean, default=False)
 
     # Messages
     getmsg = db.Column(db.String(255))

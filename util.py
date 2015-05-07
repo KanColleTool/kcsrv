@@ -86,6 +86,7 @@ def update_db():
             getmsg = ship['api_getmes'],
             srange = ship['api_leng'],
             buildtime = ship['api_buildtime'],
+            kai = '改' in ship['api_name'],
             # Remodel
             afterlv = ship['api_afterlv'],
             aftershipid = ship['api_aftershipid'],
@@ -99,6 +100,7 @@ def update_db():
             antisub_base = 0,
             los_base = 0,
             evasion_base = 0,
+            hp_base = ship['api_taik'][0],
             # Maximums
             luck_max = ship['api_luck'][1],
             firepower_max = ship['api_houg'][1],
@@ -112,7 +114,7 @@ def update_db():
             fuel_max = ship['api_fuel_max'],
             maxlos = 0,
             evasion_max = 0,
-            maxplanes = ','.join(str(ship['api_maxeq']))
+            maxplanes = ','.join(ship['api_maxeq'])
         )
         # ugh
         db.db.session.merge(s)
