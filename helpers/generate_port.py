@@ -63,7 +63,7 @@ def generate_port(api_token):
 
         port2['api_data']['api_deck_port'].append(temp_dict)
     # Materials.
-    port2['api_data']['api_materials'] = [
+    port2['api_data']['api_material'] = [
         {"api_id": n + 1,
          "api_member_id": admiral.id,
          "api_value": int(val)} for n, val in enumerate(admiral.resources.split(','))
