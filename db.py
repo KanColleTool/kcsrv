@@ -65,28 +65,28 @@ class Ship(db.Model):
 
     modern_use = db.Column(db.String)
     # Minimums
-    luck_base = db.Column(db.Integer)
-    firepower_base = db.Column(db.Integer)
-    torpedo_base = db.Column(db.Integer)
-    armour_base = db.Column(db.Integer)
-    antiair_base = db.Column(db.Integer)
-    antisub_base = db.Column(db.Integer)
-    los_base = db.Column(db.Integer)
-    evasion_base = db.Column(db.Integer)
+    luck_base = db.Column(db.Integer, default=0)
+    firepower_base = db.Column(db.Integer, default=0)
+    torpedo_base = db.Column(db.Integer, default=0)
+    armour_base = db.Column(db.Integer, default=0)
+    antiair_base = db.Column(db.Integer, default=0)
+    antisub_base = db.Column(db.Integer, default=0)
+    los_base = db.Column(db.Integer, default=0)
+    evasion_base = db.Column(db.Integer, default=0)
 
     # Maximums
-    luck_max = db.Column(db.Integer)
-    firepower_max = db.Column(db.Integer)
-    torpedo_max = db.Column(db.Integer)
-    armour_max = db.Column(db.Integer)
-    antiair_max = db.Column(db.Integer)
-    antisub_max = db.Column(db.Integer)
-    maxslots = db.Column(db.Integer)
-    maxlos = db.Column(db.Integer)
-    evasion_max = db.Column(db.Integer)
+    luck_max = db.Column(db.Integer, default=0)
+    firepower_max = db.Column(db.Integer, default=0)
+    torpedo_max = db.Column(db.Integer, default=0)
+    armour_max = db.Column(db.Integer, default=0)
+    antiair_max = db.Column(db.Integer, default=0)
+    antisub_max = db.Column(db.Integer, default=0)
+    maxslots = db.Column(db.Integer, default=0)
+    maxlos = db.Column(db.Integer, default=0)
+    evasion_max = db.Column(db.Integer, default=0)
 
     maxhp = db.Column(db.Integer)
-    srange = db.Column(db.Integer)
+    srange = db.Column(db.Integer, default=0)
 
     # Messages
     getmsg = db.Column(db.String(255))
@@ -116,19 +116,19 @@ class AdmiralShip(db.Model):
     current_hp = db.Column(db.Integer)  # Oh dear.
 
     # Ship stats
-    luck = db.Column(db.Integer)
-    luck_eq = db.Column(db.Integer)
-    firepower = db.Column(db.Integer)
-    firepower_eq = db.Column(db.Integer)
-    armour = db.Column(db.Integer)
-    torpedo = db.Column(db.Integer)
-    torpedo_eq = db.Column(db.Integer)
-    antiair = db.Column(db.Integer)
-    antiair_eq = db.Column(db.Integer)
-    antisub = db.Column(db.Integer)
-    evasion = db.Column(db.Integer)
+    luck = db.Column(db.Integer, default=0)
+    luck_eq = db.Column(db.Integer, default=0)
+    firepower = db.Column(db.Integer, default=0)
+    firepower_eq = db.Column(db.Integer, default=0)
+    armour = db.Column(db.Integer, default=0)
+    torpedo = db.Column(db.Integer, default=0)
+    torpedo_eq = db.Column(db.Integer, default=0)
+    antiair = db.Column(db.Integer, default=0)
+    antiair_eq = db.Column(db.Integer, default=0)
+    antisub = db.Column(db.Integer, default=0)
+    evasion = db.Column(db.Integer, default=0)
 
-    heartlocked = db.Column(db.Boolean)
+    heartlocked = db.Column(db.Boolean, default=False)
 
 
 class Admiral(db.Model):
@@ -141,7 +141,7 @@ class Admiral(db.Model):
     experience = db.Column(db.Integer, default=0)
     tutorial_progress = db.Column(db.Integer, default=0)
 
-    furniture = db.Column(db.String())
+    furniture = db.Column(db.String(), default="1,1,1,1,1,1")
     furniture_coins = db.Column(db.Integer, default=0)
 
     max_ships = db.Column(db.Integer, default=500)

@@ -60,13 +60,13 @@ def get_token_admiral_or_error(api_token=None):
 
 def millisecond_timestamp(ts=datetime.datetime.now()):
     # http://stackoverflow.com/a/8160307
-    time.mktime(ts.timetuple()) * 1e3 + ts.microsecond / 1e3
+    return time.mktime(ts.timetuple()) * 1e3 + ts.microsecond / 1e3
 
 
 def update_db():
     dump = load_datadump('api_start2.json')
     # Truncate ships table.
-    db.db.session.query(db.Ship).delete()
+    # db.db.session.query(db.Ship).delete()
     # Load ships from dump
     ships = dump['api_mst_ship']
     count = 0
@@ -94,26 +94,26 @@ def update_db():
             armour_base = ship['api_souk'][0],
             torpedo_base = ship['api_raig'][0],
             antiair_base = ship['api_tyku'][0],
-            #antisub_base = ship['api_tais'][0],
-            #los_base = ship['api_saku'][0],
-            #evasion_base = ship['api_kaih'][0],
+            antisub_base = 0,
+            los_base = 0,
+            evasion_base = 0,
             # Maximums
             luck_max = ship['api_luck'][1],
             firepower_max = ship['api_houg'][1],
             armour_max = ship['api_souk'][1],
             torpedo_max = ship['api_raig'][1],
             antiair_max = ship['api_tyku'][1],
-            #antisub_max = ship['api_tais'][1],
+            antisub_max = 0,
             maxhp = ship['api_taik'][1],
             maxslots = ship['api_slot_num'],
             ammo_max = ship['api_bull_max'],
             fuel_max = ship['api_fuel_max'],
-            #los_max = ship['api_saku'][1],
-            #evasion_max = ship['api_evasion'],
+            maxlos = 0,
+            evasion_max = 0,
             maxplanes = ','.join(str(ship['api_maxeq']))
         )
         # ugh
-        db.db.session.add(s)
+        db.db.session.merge(s)
         print("Added ship {} - {}".format(ship['api_id'], ship['api_name']))
         count += 1
     db.db.session.commit()
