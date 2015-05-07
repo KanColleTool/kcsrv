@@ -4,8 +4,6 @@ from util import *
 from modules.api import placeholderdata
 from helpers import generate_port, AdmiralHelper
 
-import pprint
-
 api_user = Blueprint('api_user', __name__)
 prepare_api_blueprint(api_user)
 
@@ -92,8 +90,7 @@ def port():
     if api_token is None:
         abort(403)
     port = generate_port.generate_port(api_token)
-    pprint.pprint(port)
-    return svdata(generate_port.generate_port(api_token))
+    return svdata(generate_port.generate_port(api_token)['api_data'])
 
 
 @api_user.route('/api_req_init/firstship', methods=['GET', 'POST'])

@@ -62,6 +62,8 @@ def millisecond_timestamp(ts=datetime.datetime.now()):
     # http://stackoverflow.com/a/8160307
     return time.mktime(ts.timetuple()) * 1e3 + ts.microsecond / 1e3
 
+def second_timestamp():
+    return int(time.time())
 
 def update_db():
     dump = load_datadump('api_start2.json')
