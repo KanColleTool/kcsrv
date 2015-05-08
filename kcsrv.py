@@ -2,12 +2,13 @@
 import os
 import hashlib
 
-from flask import Flask, render_template, send_from_directory, redirect
+from flask import Flask, render_template, send_from_directory
 from flask.ext.migrate import Migrate
-from flask.ext.security import Security, SQLAlchemyUserDatastore, current_user
+from flask.ext.security import Security, SQLAlchemyUserDatastore
 
 from forms import *
 from admin import admin
+
 
 
 # --> App setup
@@ -58,17 +59,6 @@ def sound(path):
 def shipsound(path):
     return send_from_directory('kcs/sound', path)
 
-@app.route('/update_db')
-def update_db():
-    curr = current_user
-    if hasattr(curr, "roles"):
-        if 'admin' in curr.roles:
-            x = util.update_db()
-            return "Updated {} entries".format(str(x)), 200
-        else:
-            return "Unauthorized", 403
-    else:
-        return redirect('/account/login')
 
 if __name__ == '__main__':
     print("Checking for updated api_start2.json...")
