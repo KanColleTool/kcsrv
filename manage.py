@@ -52,7 +52,7 @@ def update_db():
     ships = dump['api_mst_ship']
     count = 0
     for ship in ships:
-        s = db.Ship(
+        s = Ship(
             # Misc ship stats
             id = ship['api_id'],
             rarity = ship['api_backs'],
@@ -96,10 +96,10 @@ def update_db():
             maxplanes = ','.join(str(x) for x in ship['api_maxeq'])
         )
         # ugh
-        db.db.session.merge(s)
+        db.session.merge(s)
         print("Added ship {} - {}".format(ship['api_id'], ship['api_name']))
         count += 1
-    db.db.session.commit()
+    db.session.commit()
     print("Updated database, {} entries merged..".format(count))
 
 if __name__ == '__main__':

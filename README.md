@@ -52,7 +52,7 @@ Probably only works on Linux. Screw Ansible/Vagrant, too hard for me.
     
         ./manage.py db upgrade
         ./manage.py setup
-
+        ./manage.py update_db
 
 1.  **Create an account for yourself.**  
     Be sure to give yourself the `admin` and `staff` roles!
