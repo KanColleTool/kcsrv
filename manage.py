@@ -4,7 +4,7 @@ from flask.ext.migrate import Migrate, MigrateCommand
 
 from helpers import generate_ship
 from kcsrv import app
-import db
+from db import *
 
 
 manager = Manager(app)
@@ -23,9 +23,9 @@ import commands.kcdownloader2
 @manager.command
 def setup():
     print("Installing default roles...")
-    db.db.session.add(db.Role(name="admin", description="Allowed to access the admin panel"))
-    db.db.session.add(db.Role(name="staff", description="Allowed to see restricted information"))
-    db.db.session.commit()
+    db.session.add(db.Role(name="admin", description="Allowed to access the admin panel"))
+    db.session.add(db.Role(name="staff", description="Allowed to see restricted information"))
+    db.session.commit()
 
 @manager.command
 def dlassets():
@@ -34,11 +34,11 @@ def dlassets():
 @manager.command
 def cheat_addship(id, admiral_id):
     ship = generate_ship.generate_new_ship(id)
-    admiral = db.Admiral.query.filter_by(id=admiral_id)[0]
+    admiral = Admiral.query.filter_by(id=admiral_id)[0]
     if admiral:
         admiral.admiral_ships.append(ship)
-    db.db.session.merge(admiral)
-    db.db.session.commit()
+    db.session.merge(admiral)
+    db.session.commit()
     print("Added ship {}".format(ship.ship.name))
 
 if __name__ == '__main__':
