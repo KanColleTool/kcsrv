@@ -42,6 +42,7 @@ def generate_port(api_token):
     count = 0
     # Fleets.
     for fleet in admiral.fleets.all():
+        print(fleet.ships.all())
         count += 1
         ships = [n+1 for n, _ in enumerate(fleet.ships.all())]
         temp_dict = {

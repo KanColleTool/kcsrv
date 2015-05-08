@@ -15,9 +15,67 @@ def get_incentive():
     })  # What?
 
 
+@api_user.route('/api_req_hensei/change', methods=['GET', 'POST'])
+def change_position():
+    # TODO UNFUCK THIS CODE UP
+    admiral = get_token_admiral_or_error()
+    ships = admiral.admiral_ships.all()
+
+    # Get request parameters
+    fleet_id = int(request.values.get("api_id")) - 1
+    ship_id = int(request.values.get("api_ship_id")) - 1
+    ship_pos = int(request.values.get("api_ship_idx"))
+    fleet = admiral.fleets.all()[fleet_id]
+    fships = fleet.ships.all()
+
+    nlist = [ship for ship in fships]
+    nlist = sorted(nlist, key=lambda x: x.local_fleet_id)
+
+    if ship_id == -2:
+        # Delete ship.
+        oldship = fships[ship_pos]
+        shipid = oldship.local_fleet_id
+        fships.remove(oldship)
+        # Get the rest of the ships, and bump it down.
+        for n, ship in enumerate(fships):
+            ship.local_fleet_id -= 1
+            fships[n] = ship
+        fleet.ships = fships
+
+    elif len(fships)-1 < ship_pos:
+        ships[ship_id].local_fleet_id = ship_pos
+        fships.append(ships[ship_id])
+        fleet.ships = fships
+    else:
+        oldship = fships[ship_pos]
+        # Get original ship ID
+        original_id = 0
+        for n, ship in enumerate(fships):
+            if ship == oldship:
+                original_id = n
+                break
+
+        # Generate a brand new fleet.
+        nfleet = db.Fleet()
+        for n, ship in enumerate(fships):
+            if ship.id not in [original_id, ship_id]:
+                ship.local_fleet_id = n
+                nfleet.ships.append(ship)
+            elif ship.id == original_id:
+                ship.local_fleet_id = ship_id
+                nfleet.ships.append(ship)
+            elif ship.id == ship_id:
+                ship.local_fleet_id = original_id
+                nfleet.ships.append(ship)
+        nfleet.id = fleet.id
+        fleet = nfleet
+
+    db.db.session.merge(fleet)
+    db.db.session.commit()
+    return svdata({})
+
 @api_user.route('/api_get_member/basic', methods=['GET', 'POST'])
 def basic():
-    admiral = get_token_admiral_or_error()
     return svdata(AdmiralHelper.get_admiral_basic_info())
 
 

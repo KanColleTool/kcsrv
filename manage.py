@@ -34,8 +34,8 @@ def dlassets():
 @manager.command
 def cheat_addship(id, admiral_id):
     """Give the specified admiral a ship."""
-    ship = generate_ship.generate_new_ship(id)
-    admiral = Admiral.query.filter_by(id=admiral_id)[0]
+    ship = generate_ship.generate_new_ship(id, None)
+    admiral = Admiral.query.filter_by(id=admiral_id).first()
     if admiral:
         admiral.admiral_ships.append(ship)
     db.session.merge(admiral)

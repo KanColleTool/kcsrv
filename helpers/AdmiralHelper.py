@@ -44,7 +44,7 @@ def get_admiral_basic_info():
 def setup(first_ship_id: int, admiral: db.Admiral):
     if admiral.setup: return
     # Create a new ship.
-    ship = generate_ship.generate_new_ship(first_ship_id)
+    ship = generate_ship.generate_new_ship(first_ship_id, 0)
     # Create a new fleet.
     fleet = db.Fleet()
     # Add the ship to the first fleet.

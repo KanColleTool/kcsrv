@@ -5,7 +5,7 @@ def get_repair_base(original_ship):
     return "0,0,0,0"
 
 
-def generate_new_ship(shipid):
+def generate_new_ship(shipid, fleetid):
     original_ship = db.Ship.query.filter_by(id=shipid).first()
     assert isinstance(original_ship, db.Ship)
     if not original_ship: return
@@ -28,6 +28,7 @@ def generate_new_ship(shipid):
         antisub = original_ship.antisub_base,
         evasion = original_ship.evasion_base,
         fatigue = 49,
-        current_hp = original_ship.hp_base
+        current_hp = original_ship.hp_base,
+        local_fleet_id=fleetid
     )
     return admiral_ship
