@@ -23,8 +23,8 @@ import commands.kcdownloader2
 @manager.command
 def setup():
     print("Installing default roles...")
-    db.session.add(db.Role(name="admin", description="Allowed to access the admin panel"))
-    db.session.add(db.Role(name="staff", description="Allowed to see restricted information"))
+    db.session.add(Role(name="admin", description="Allowed to access the admin panel"))
+    db.session.add(Role(name="staff", description="Allowed to see restricted information"))
     db.session.commit()
 
 @manager.command
