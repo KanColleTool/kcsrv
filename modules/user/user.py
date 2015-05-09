@@ -28,8 +28,6 @@ def change_position():
     fleet = admiral.fleets.all()[fleet_id]
     fships = fleet.ships.all()
 
-    nlist = [ship for ship in fships]
-    nlist = sorted(nlist, key=lambda x: x.local_fleet_id)
 
     if ship_id == -2:
         # Delete ship.
@@ -38,14 +36,18 @@ def change_position():
         fships.remove(oldship)
         # Get the rest of the ships, and bump it down.
         for n, ship in enumerate(fships):
-            ship.local_fleet_id -= 1
-            fships[n] = ship
+            if n > ship_id:
+                ship.local_fleet_id -= 1
+                fships[n] = ship
         fleet.ships = fships
 
     elif len(fships)-1 < ship_pos:
-        ships[ship_id].local_fleet_id = ship_pos
-        fships.append(ships[ship_id])
-        fleet.ships = fships
+        if ships[ship_id] in fships:
+            pass
+        else:
+            ships[ship_id].local_fleet_id = ship_pos
+            fships.append(ships[ship_id])
+            fleet.ships = fships
     else:
         oldship = fships[ship_pos]
         # Get original ship ID
@@ -58,13 +60,13 @@ def change_position():
         # Generate a brand new fleet.
         nfleet = db.Fleet()
         for n, ship in enumerate(fships):
-            if ship.id not in [original_id, ship_id]:
+            if ship.local_fleet_id not in [original_id, ship_id]:
                 ship.local_fleet_id = n
                 nfleet.ships.append(ship)
-            elif ship.id == original_id:
+            elif ship.local_fleet_id == original_id:
                 ship.local_fleet_id = ship_id
                 nfleet.ships.append(ship)
-            elif ship.id == ship_id:
+            elif ship.local_fleet_id == ship_id:
                 ship.local_fleet_id = original_id
                 nfleet.ships.append(ship)
         nfleet.id = fleet.id
