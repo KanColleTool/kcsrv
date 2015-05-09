@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, redirect
 # from flask.ext.security import current_user
 from util import *
 from modules.api import placeholderdata
@@ -168,7 +168,7 @@ def firstship():
 
 @api_user.route('/api_get_member/ship2', methods=['GET', 'POST'])
 def ship2():
-    return json.dumps({})
+    return redirect("/play/", code=301)
 
 # Generic routes for anything not implemented.
 

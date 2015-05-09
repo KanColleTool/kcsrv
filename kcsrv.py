@@ -2,20 +2,14 @@
 import os
 import hashlib
 
-from flask import Flask, render_template, send_from_directory
+from flask import render_template, send_from_directory
 from flask.ext.migrate import Migrate
 from flask.ext.security import Security, SQLAlchemyUserDatastore
 
 from forms import *
 from admin import admin
+from app import app
 
-
-
-# --> App setup
-app = Flask(__name__)
-app.config['DEBUG'] = None
-app.config.from_object('config_default')
-app.config.from_object('config')
 
 # --> Extension setup
 db.init_app(app)
@@ -40,7 +34,7 @@ app.register_blueprint(api_user, url_prefix='/kcsapi')
 
 from modules.resources import resources
 
-app.register_blueprint(resources, url_prefix='/kcs/resources')
+app.register_blueprint(resources, url_prefix='/kcs')
 
 # --> Base application routes
 @app.route('/')
@@ -50,15 +44,6 @@ def index():
 @app.route('/kcs/<path:path>')
 def kcs(path):
     return send_from_directory('kcs', path)
-
-@app.route('/kcs/sound/titlecall/a/<path:path>')
-def sound(path):
-    return send_from_directory('kcs/titlecall/a', path)
-
-@app.route('/kcs/sound/<path:path>')
-def shipsound(path):
-    return send_from_directory('kcs/sound', path)
-
 
 if __name__ == '__main__':
     print("Checking for updated api_start2.json...")

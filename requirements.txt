@@ -1,3 +1,4 @@
+requests
 Flask>=0.10.1
 Flask-Admin>=1.0.8
 Flask-Login>=0.2.11

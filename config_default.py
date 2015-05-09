@@ -3,8 +3,6 @@
 # Everything in here is overridden by config.py
 #
 
-import os
-
 
 
 # Default to a peer connection to a postgres database called "kcsrv"
@@ -25,3 +23,6 @@ SECURITY_REGISTER_URL = '/create'
 SECURITY_RESET_URL = '/forgot'
 
 SECURITY_PASSWORD_HASH = "bcrypt"
+
+# Autodownloading of sound files when requested.
+AUTODL_SOUND = False

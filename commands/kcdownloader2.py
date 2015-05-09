@@ -10,9 +10,9 @@ import os.path
 
 import requests
 
+
 # Define some stuff for later use.
 # Thank you for KCT's uppfinnarn for this code snippet that I've adapted
-# For some reason my python3.4 on Ubuntu 14.04 doesn't like utf-8. Da fuq?
 def load_datadump(filename) -> dict:
     with open(os.path.join(filename)) as f:
         o = json.loads(f.read(), 'utf-8')
@@ -20,7 +20,7 @@ def load_datadump(filename) -> dict:
 
 
 def get_file(file):
-    r = requests.get("http://203.104.209.39/kcs/" + file, stream=True)
+    r = requests.get("http://203.104.209.39/" + file, stream=True)
     if r.status_code == 200:
         return r
     else:
@@ -40,7 +40,7 @@ def get_standard_swf():
     print("Getting core files...")
     for file in core_swf_files:
         with open("kcs/" + file, 'wb') as out:
-            f = get_file(file)
+            f = get_file('kcs/' + file)
             if f:
                 for chunk in f.iter_content(2048):
                     out.write(chunk)
@@ -51,7 +51,7 @@ def get_standard_swf():
     print("Getting resource files...")
     for file in resource_swf_files:
         with open("kcs/resources/swf/" + file, 'wb') as out:
-            f = get_file("resources/swf/" + file)
+            f = get_file("kcs/resources/swf/" + file)
             if f:
                 for chunk in f.iter_content(2048):
                     out.write(chunk)
@@ -62,7 +62,7 @@ def get_standard_swf():
     print("Getting scene files...")
     for file in scene_swf_files:
         with open("kcs/scenes/" + file, 'wb') as out:
-            f = get_file("/scenes/" + file)
+            f = get_file("kcs/scenes/" + file)
             if f:
                 for chunk in f.iter_content(2048):
                     out.write(chunk)
@@ -79,7 +79,7 @@ def get_ship_girl_data(filename):
         with open("kcs/resources/swf/ships/" + ship['api_filename'] + ".swf", 'wb') as out:
             print("Getting ship graphics. API ID: " + str(count) + ", file name: " + ship[
                 'api_filename'] + ", shipgirl ID " + str(ship['api_sortno']) + ".")
-            f = get_file("resources/swf/ships/" + ship['api_filename'] + '.swf')
+            f = get_file("kcs/resources/swf/ships/" + ship['api_filename'] + '.swf')
             if f:
                 for chunk in f.iter_content(2048):
                     out.write(chunk)
@@ -87,7 +87,6 @@ def get_ship_girl_data(filename):
             else:
                 print("... No such file " + ship['api_filename'])
         count += 1
-
 
 
 def setup_directories():
