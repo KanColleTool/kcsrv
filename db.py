@@ -42,13 +42,13 @@ class Dock(db.Model):
 
     ship_id = db.Column(db.Integer, nullable=True)
 
-    admiral_idea = db.Column(db.Integer, db.ForeignKey("admiral.id"))
+    admiral_id = db.Column(db.Integer, db.ForeignKey("admiral.id"))
 
 
 class Ship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     afterlv = db.Column(db.Integer, nullable=True)
-    aftershipid = db.Column(db.Integer, nullable=True)
+    aftership_num = db.Column(db.Integer, nullable=True)
     remodel_cost = db.Column(db.String())
 
     rarity = db.Column(db.Integer)
@@ -100,7 +100,7 @@ class Ship(db.Model):
 
 class AdmiralShip(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    admiralid = db.Column(db.Integer, db.ForeignKey('admiral.id'))
+    admiral_id = db.Column(db.Integer, db.ForeignKey('admiral.id'))
     ship = db.relationship(Ship, uselist=False)
     ship_id = db.Column(db.Integer, db.ForeignKey('ship.id'))
 
