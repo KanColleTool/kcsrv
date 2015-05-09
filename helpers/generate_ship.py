@@ -29,6 +29,6 @@ def generate_new_ship(shipid, fleetid):
         evasion = original_ship.evasion_base,
         fatigue = 49,
         current_hp = original_ship.hp_base,
-        local_fleet_id=fleetid
+        local_fleet_num=fleetid
     )
     return admiral_ship

@@ -45,6 +45,8 @@ def setup(first_ship_id: int, admiral: db.Admiral):
     if admiral.setup: return
     # Create a new ship.
     ship = generate_ship.generate_new_ship(first_ship_id, 0)
+    # Assign ship the correct local ship number.
+    ship.local_ship_num = len(admiral.admiral_ships.all())
     # Create a new fleet.
     fleet = db.Fleet()
     # Add the ship to the first fleet.

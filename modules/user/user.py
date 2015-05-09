@@ -60,14 +60,14 @@ def change_position():
         # Generate a brand new fleet.
         nfleet = db.Fleet()
         for n, ship in enumerate(fships):
-            if ship.local_fleet_id not in [original_id, ship_id]:
-                ship.local_fleet_id = n
+            if ship.local_fleet_num not in [original_id, ship_id]:
+                ship.local_fleet_num = n
                 nfleet.ships.append(ship)
-            elif ship.local_fleet_id == original_id:
-                ship.local_fleet_id = ship_id
+            elif ship.local_fleet_num == original_id:
+                ship.local_fleet_num = ship_id
                 nfleet.ships.append(ship)
-            elif ship.local_fleet_id == ship_id:
-                ship.local_fleet_id = original_id
+            elif ship.local_fleet_num == ship_id:
+                ship.local_fleet_num = original_id
                 nfleet.ships.append(ship)
         nfleet.id = fleet.id
         fleet = nfleet

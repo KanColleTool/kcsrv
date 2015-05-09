@@ -106,7 +106,8 @@ class AdmiralShip(db.Model):
 
     fleet_id = db.Column(db.Integer, db.ForeignKey('fleet.id'))
 
-    local_fleet_id = db.Column(db.Integer)
+    local_fleet_num = db.Column(db.Integer)
+    local_ship_num = db.Column(db.Integer, nullable=False)
 
     # Unique ship-specific attributes
     ammo = db.Column(db.Integer)
