@@ -75,7 +75,7 @@ Only run virtualenv once. You'll break the environment if you do it every time! 
 		
     Running just "db upgrade" by itself when you've already got a working database throws errors with SQLAlchemy about braches, heads and oh my.
 
-1. ** Download the DMM assets.**  
+1. **Download the DMM assets.**  
     This will take a while. 
 	
         ./manage.py dlassets
