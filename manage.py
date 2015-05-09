@@ -69,7 +69,7 @@ def update_db():
             kai = '改' in ship['api_name'],
             # Remodel
             afterlv = ship['api_afterlv'],
-            aftershipid = ship['api_aftershipid'],
+            aftership_num = ship['api_aftershipid'],
             remodel_cost = ','.join([str(ship['api_afterfuel']), str(ship['api_afterbull'])]),
             # Minimums
             luck_base = ship['api_luck'][0],
@@ -101,7 +101,7 @@ def update_db():
         print("Added ship {} - {}".format(ship['api_id'], ship['api_name']))
         count += 1
     db.session.commit()
-    print("Updated database, {} entries merged..".format(count))
+    print("Updated database, {} entries merged.".format(count))
 
 if __name__ == '__main__':
     manager.run()
