@@ -25,9 +25,8 @@ It is recommended you start fresh on your copy of this server.
 - Debian or Ubuntu based distro. Fedora and friends may work, but please, YMMV.
 - Python 3.x and knowledge about virtualenv (setup and activate).
 - Internet connection to download the DMM assets.
--
 
-Protip: If you really want to make a dedicated server for this project, you could even bootstrap a Raspberry Pi or ODROID with the Ubuntu/Debian it supports and there you go - portable KanColle Server that doesn't cost you more than what the hardware is worth.
+Protip: Use a VM (VMWare, VirtualBox). If you mess up, simply hose it and start squeaky clean. Or you can use an ARM based linux box (R-Pi, ODROID, etc).
 
 ### Q: Why is it built on Python?
 There aren't actually that many things you can build a web application on, and most of them were out from the start.  
