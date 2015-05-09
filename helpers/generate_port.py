@@ -47,7 +47,7 @@ def generate_port(api_token):
     for fleet in admiral.fleets.all():
         count += 1
         tships = [ship for ship in fleet.ships.all() if ship is not None]
-        tships.sort(key=lambda x: x.local_fleet_num, reverse=True)
+        tships.sort(key=lambda x: x.local_fleet_num)
         ships = [ship.local_ship_num+1 for ship in tships]
         temp_dict = {
             # Unknown value, always zero for some reason.
