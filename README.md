@@ -45,42 +45,50 @@ Development Setup
 Make sure you have postgresql, postgresql development libs, python3, python3-pip python3-requests, libcurl-openssl-dev and virtualenv packages installed. Consult your package manager for those packages to be installed (yum, apt-get...)
 
 1.  **Set up the environment.**  
+Only run virtualenv once. You'll break the environment if you do it every time! (If you're booting the server after first time, just skip this line)
 
         git clone http://github.com/kancolletool/kcsrv.git kcsrv
         cd kcsrv
-    Only run virtualenv once. You'll break the environment if you do it every time! (If you're booting the server after first time, just skip this line)
         virtualenv -p /usr/bin/python3 .
-        (wait for output to cease)
         source ./bin/activate
-    Ensure the terminal changes to something like (kcsrv)user@box:~/kcsrv/$ . You're now inside python's virtual environment.
-        pip install -r requirements.txt
-    If you get errors here, stop and install the packages it needs, then rerun the pip command. Consult your package manager.
+        
+  Ensure the terminal changes to something like (kcsrv)user@box:~/kcsrv/$ . You're now inside python's virtual environment.
+  
+        pip install -r requirements.txt  
+        
+  If you get errors here, stop and install the packages it needs, then rerun the pip command. Consult your package manager.
+  
         sudo -u postgres createuser -s $USER
         sudo -u postgres createdb kcsrv  
+
     Change postgres to what user the server installs as. On Debian/Ubuntu it's postgres.
 
 1.  **Create the database.**  
+
         ./manage.py db upgrade
         ./manage.py setup
         ./manage.py update_db
 
-    To update the server's SQL database at a, you will need to stop the server and run the following:
+    To update the server's SQL database at a later time, you will need to stop the server and run the following:
+	
         ./manage.py db upgrade heads
+		
     Running just "db upgrade" by itself when you've already got a working database throws errors with SQLAlchemy about braches, heads and oh my.
 
 1. ** Download the DMM assets.**  
     This will take a while. 
+	
         ./manage.py dlassets
 
 1.  **Create an account for yourself.**  
     Be sure to give yourself the `admin` and `staff` roles!
+	
         ./manage.py user create <username> <email>
+		
     Where username is your admin username and email is your email. You may need to put a backslash in front of your @ sign or put the email in quotes.    
 
 1.  **Run the development server.**  
     It will run on port 5000 by default.
         ./kcsrv.py
 
-    You'll need to do a SSH Tunnel from remote port 5000 to local port 80, because the Kantai Collection Core SWF files communicate hardcodedly on port 80.  
-    
-    A nginx configuration for proxy server will come later.
+    You'll need to do a SSH Tunnel from remote port 5000 to local port 80, because the Kantai Collection Core SWF files communicate hardcodedly on port 80.  A nginx configuration for proxy server will come later.
