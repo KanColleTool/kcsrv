@@ -20,7 +20,6 @@ def change_position():
     # TODO UNFUCK THIS CODE UP
     admiral = get_token_admiral_or_error()
     ships = admiral.admiral_ships.all()
-
     # Get request parameters
     fleet_id = int(request.values.get("api_id")) - 1
     ship_id = int(request.values.get("api_ship_id")) - 1
@@ -28,11 +27,10 @@ def change_position():
     fleet = admiral.fleets.all()[fleet_id]
     fships = fleet.ships.all()
 
-
+    print(ship_id, ship_pos)
     if ship_id == -2:
         # Delete ship.
         oldship = fships[ship_pos]
-        shipid = oldship.local_fleet_id
         fships.remove(oldship)
         # Get the rest of the ships, and bump it down.
         for n, ship in enumerate(fships):
@@ -40,41 +38,43 @@ def change_position():
                 ship.local_fleet_id -= 1
                 fships[n] = ship
         fleet.ships = fships
-
-    elif len(fships)-1 < ship_pos:
-        if ships[ship_id] in fships:
+    elif len(fships) == ship_pos:
+        # Append to the ships list
+        if admiral.admiral_ships.filter_by(local_ship_num=ship_id).first() in fships:
             pass
         else:
-            ships[ship_id].local_fleet_id = ship_pos
-            fships.append(ships[ship_id])
+            # Get the first ship, update the local fleet num, and append it to the fleet.
+            nship = admiral.admiral_ships.filter_by(local_ship_num=ship_id).first()
+            nship.local_fleet_num = ship_pos
+            fships.append(nship)
             fleet.ships = fships
     else:
-        oldship = fships[ship_pos]
-        # Get original ship ID
-        original_id = 0
-        for n, ship in enumerate(fships):
-            if ship == oldship:
-                original_id = n
-                break
+        # Get the original ship.
+        original_ship = fships[ship_pos]
+        # Get the new ship.
+        new_ship = fleet.ships.filter_by(local_ship_num=ship_id).first()
+        if new_ship is None:
+            # BLEH
+            original_ship.local_fleet_num = None
+            original_ship.fleet_id = None
+            db.db.session.merge(original_ship)
+            new_ship = admiral.admiral_ships.filter_by(local_ship_num=ship_id).first()
+            new_ship.local_fleet_num = ship_pos
+            fleet.ships.append(new_ship)
+            db.db.session.merge(fleet)
+            db.db.session.commit()
+            return svdata({})
+        # Do the bullshit swap.
+        original_ship.local_fleet_num, new_ship.local_fleet_num = new_ship.local_fleet_num, original_ship.local_fleet_num
+        # Eww, merge ships back into the admiral_ships table
+        db.db.session.merge(original_ship)
+        db.db.session.merge(new_ship)
 
-        # Generate a brand new fleet.
-        nfleet = db.Fleet()
-        for n, ship in enumerate(fships):
-            if ship.local_fleet_num not in [original_id, ship_id]:
-                ship.local_fleet_num = n
-                nfleet.ships.append(ship)
-            elif ship.local_fleet_num == original_id:
-                ship.local_fleet_num = ship_id
-                nfleet.ships.append(ship)
-            elif ship.local_fleet_num == ship_id:
-                ship.local_fleet_num = original_id
-                nfleet.ships.append(ship)
-        nfleet.id = fleet.id
-        fleet = nfleet
-
+    # Update the fleet.
     db.db.session.merge(fleet)
     db.db.session.commit()
     return svdata({})
+
 
 @api_user.route('/api_get_member/basic', methods=['GET', 'POST'])
 def basic():
@@ -86,12 +86,12 @@ def furniture():
     # TODO: Implement this properly
     admiral = get_token_admiral_or_error()
     return svdata([{
-        'api_member_id': admiral.id,
-        'api_id': item.id,
-        'api_furniture_type': item.type,
-        'api_furniture_no': item.no,
-        'api_furniture_id': item.id
-    } for item in []])
+                       'api_member_id': admiral.id,
+                       'api_id': item.id,
+                       'api_furniture_type': item.type,
+                       'api_furniture_no': item.no,
+                       'api_furniture_id': item.id
+                   } for item in []])
 
 
 @api_user.route('/api_get_member/slot_item', methods=['GET', 'POST'])
@@ -106,17 +106,16 @@ def useitem():
     # TODO: Implement this properly
     admiral = get_token_admiral_or_error()
     return svdata([{
-        'api_member_id': admiral.id,
-        'api_id': item.id,
-        'api_value': item.count,
-        'api_usetype': item.type,
-        'api_category': item.category,
-        'api_name': item.name,  # WHY
-        'api_description': ["", ""],
-        'api_price': 0,
-        'api_count': item.count
-    } for item in []])
-
+                       'api_member_id': admiral.id,
+                       'api_id': item.id,
+                       'api_value': item.count,
+                       'api_usetype': item.type,
+                       'api_category': item.category,
+                       'api_name': item.name,  # WHY
+                       'api_description': ["", ""],
+                       'api_price': 0,
+                       'api_count': item.count
+                   } for item in []])
 
 
 @api_user.route('/api_get_member/kdock', methods=['GET', 'POST'])
@@ -124,18 +123,18 @@ def kdock():
     # TODO: Implement this properly
     admiral = get_token_admiral_or_error()
     return svdata([{
-        'api_member_id': admiral.id,
-        'api_id': dock.id,
-        'api_state': dock.state,
-        'api_created_ship_id': dock.ship,
-        'api_complete_time': dock.complete,  # TODO: Convert this to JST
-        'api_complete_time_str': dock.complete.strftime('%Y-%M-%d %H:%M:%S'),
-        'api_item1': dock.fuel,
-        'api_item2': dock.ammo,
-        'api_item3': dock.steel,
-        'api_item4': dock.baux,
-        'api_item5': dock.cmats
-    } for dock in []])
+                       'api_member_id': admiral.id,
+                       'api_id': dock.id,
+                       'api_state': dock.state,
+                       'api_created_ship_id': dock.ship,
+                       'api_complete_time': dock.complete,  # TODO: Convert this to JST
+                       'api_complete_time_str': dock.complete.strftime('%Y-%M-%d %H:%M:%S'),
+                       'api_item1': dock.fuel,
+                       'api_item2': dock.ammo,
+                       'api_item3': dock.steel,
+                       'api_item4': dock.baux,
+                       'api_item5': dock.cmats
+                   } for dock in []])
 
 
 @api_user.route('/api_get_member/unsetslot', methods=['GET', 'POST'])
@@ -169,6 +168,7 @@ def firstship():
 @api_user.route('/api_get_member/ship2', methods=['GET', 'POST'])
 def ship2():
     return redirect("/play/", code=301)
+
 
 # Generic routes for anything not implemented.
 

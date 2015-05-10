@@ -104,7 +104,7 @@ def generate_port(api_token):
             'api_backs': ship.ship.rarity,
             'api_sally_area': 0,  # dunno
             'api_ndock_item': list(map(int, util.take_items(ship.repair_base.split(','), [1, 3]))),
-            'api_id': ship.local_ship_num+1,  # temporary
+            'api_id': ship.local_ship_num+1,
             'api_karyoku': [ship.firepower_eq, ship.ship.firepower_max],
             'api_maxhp': ship.ship.hp_base if not ship.ship.kai else ship.ship.maxhp,
             'api_lucky': [ship.luck_eq, ship.ship.luck_max],

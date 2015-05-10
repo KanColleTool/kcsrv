@@ -33,7 +33,7 @@ def sound(path):
 @resources.route('/sound/<path:path>')
 def shipsound(path):
     if cfg['AUTODL_SOUND']:
-        if os.path.exists('kcs/sound/ship/{}'.format(path)): return send_from_directory('kcs/sound', path)
+        if os.path.exists('kcs/sound/ship/{}'.format(path)): return send_from_directory('kcs/sound/ship', path)
         # Gotcha, you bastard API name obfuscation
         p = pathlib.PurePath(path).parts[0]
         if not os.path.exists('kcs/sound/ship'): os.makedirs('kcs/sound/ship')
