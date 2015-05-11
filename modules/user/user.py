@@ -22,56 +22,26 @@ def change_position():
     ships = admiral.admiral_ships.all()
     # Get request parameters
     fleet_id = int(request.values.get("api_id")) - 1
-    ship_id = int(request.values.get("api_ship_id")) - 1
-    ship_pos = int(request.values.get("api_ship_idx"))
+    sid = int(request.values.get("api_ship_id")) - 1
+    to = int(request.values.get("api_ship_idx"))
     fleet = admiral.fleets.all()[fleet_id]
     fships = fleet.ships.all()
 
-    print(ship_id, ship_pos)
-    if ship_id == -2:
-        # Delete ship.
-        oldship = fships[ship_pos]
-        fships.remove(oldship)
-        # Get the rest of the ships, and bump it down.
-        for n, ship in enumerate(fships):
-            if n > ship_id:
-                ship.local_fleet_id -= 1
-                fships[n] = ship
-        fleet.ships = fships
-    elif len(fships) == ship_pos:
-        # Append to the ships list
-        if admiral.admiral_ships.filter_by(local_ship_num=ship_id).first() in fships:
-            pass
-        else:
-            # Get the first ship, update the local fleet num, and append it to the fleet.
-            nship = admiral.admiral_ships.filter_by(local_ship_num=ship_id).first()
-            nship.local_fleet_num = ship_pos
-            fships.append(nship)
-            fleet.ships = fships
+    pos = [x.local_fleet_num for x in fships if x.local_ship_num == sid][0]
+
+    if pos == -2:
+        fships.remove(pos)
     else:
-        # Get the original ship.
-        original_ship = fships[ship_pos]
-        # Get the new ship.
-        new_ship = fleet.ships.filter_by(local_ship_num=ship_id).first()
-        if new_ship is None:
-            # BLEH
-            original_ship.local_fleet_num = None
-            original_ship.fleet_id = None
-            db.db.session.merge(original_ship)
-            new_ship = admiral.admiral_ships.filter_by(local_ship_num=ship_id).first()
-            new_ship.local_fleet_num = ship_pos
-            fleet.ships.append(new_ship)
-            db.db.session.merge(fleet)
-            db.db.session.commit()
-            return svdata({})
-        # Do the bullshit swap.
-        original_ship.local_fleet_num, new_ship.local_fleet_num = new_ship.local_fleet_num, original_ship.local_fleet_num
-        # Eww, merge ships back into the admiral_ships table
-        db.db.session.merge(original_ship)
-        db.db.session.merge(new_ship)
+        fships.insert(to, fships.pop(pos))
+
+    for i, ship in enumerate(fships):
+        ship.local_fleet_num = i
+        db.db.session.add(ship)
+
+    fleet.ships = fships
 
     # Update the fleet.
-    db.db.session.merge(fleet)
+    db.db.session.add(fleet)
     db.db.session.commit()
     return svdata({})
 

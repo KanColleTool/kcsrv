@@ -26,7 +26,7 @@ class Fleet(db.Model):
     name = db.Column(db.String, default="Unnamed")
     admiral_id = db.Column(db.Integer, db.ForeignKey('admiral.id'))
 
-    ships = db.relationship("AdmiralShip", lazy='dynamic')
+    ships = db.relationship("AdmiralShip", lazy='dynamic', order_by='AdmiralShip.local_fleet_num')
 
 
 class Dock(db.Model):
