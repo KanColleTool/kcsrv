@@ -2,7 +2,6 @@
 from flask.ext.script import Manager, Server
 from flask.ext.migrate import Migrate, MigrateCommand
 
-from helpers import generate_ship
 from kcsrv import app
 from db import *
 
@@ -35,7 +34,7 @@ def dlassets():
 def cheat_addship(id, admiral_id):
     """Give the specified admiral a ship."""
     admiral = Admiral.query.filter_by(id=admiral_id).first()
-    ship = generate_ship.generate_new_ship(id, None)
+    ship = Shiphelper.generate_new_ship(id, None)
     ship.local_ship_num = len(admiral.admiral_ships.all())
     if admiral:
         admiral.admiral_ships.append(ship)

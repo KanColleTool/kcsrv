@@ -1,6 +1,6 @@
 import util
 import db
-from helpers import generate_ship
+from helpers import ShipHelper
 
 def get_admiral_basic_info():
     admiral = util.get_token_admiral_or_error()
@@ -23,7 +23,7 @@ def get_admiral_basic_info():
         'api_tutorial': 0,
         'api_furniture': [int(x) for x in admiral.furniture.split(',')],
         'api_count_deck': admiral.available_fleets,
-        'api_count_kdock': 0, #admiral.available_cdocks,
+        'api_count_kdock': admiral.available_cdocks,
         'api_count_ndock': admiral.available_rdocks,
         'api_fcoin': admiral.furniture_coins,
         'api_st_win': admiral.sortie_successes,
@@ -44,7 +44,7 @@ def get_admiral_basic_info():
 def setup(first_ship_id: int, admiral: db.Admiral):
     if admiral.setup: return
     # Create a new ship.
-    ship = generate_ship.generate_new_ship(first_ship_id, 0)
+    ship = ShipHelper.generate_new_ship(first_ship_id, 0)
     # Assign ship the correct local ship number.
     ship.local_ship_num = len(admiral.admiral_ships.all())
     # Create a new fleet.
