@@ -31,7 +31,7 @@ def generate_new_ship(shipid, fleetid):
         antisub = original_ship.antisub_base,
         evasion = original_ship.evasion_base,
         fatigue = 49,
-        current_hp = original_ship.hp_base,
+        current_hp = original_ship.hp_base if not original_ship.kai else original_ship.maxhp,
         local_fleet_num=fleetid
     )
     return admiral_ship
