@@ -80,10 +80,10 @@ Cooking Instructions:
 1. **Set up the database***  
     First, make sure you have a database user for the account you plan on running the server as. Postgres can automatically authorize as the user a process is running as, which means there's no need to put passwords in configuration files.
 
-        sudo -u postgres createuser --superuser $USER
+        createuser --superuser $USER
         
     Then, create a database for kcsrv to use:
-        sudo -u postgres createdb kcsrv  
+        createdb kcsrv  
 
     Change postgres to what user the server installs as. On Debian/Ubuntu it's postgres.
     And fill it with data - repeat this after every upgrade:
@@ -108,7 +108,7 @@ Cooking Instructions:
 
         ./manage.py user create username user@localhost
     
-    NOTE: Your terminal may require you to escape the email address with quotes. Some terminals don't worry about it, some older ones may.
+    NOTE: Your terminal may require you to escape the email address with quotes. Some terminals don't worry about it, some older ones may throw a error. If in doubt, enclose it with quotes to be on the safe side
     
 1.  **Run the development server.**  
     It will run on port 5000 by default.
@@ -120,4 +120,4 @@ Cooking Instructions:
 
         sudo ssh $USER@localhost -L 80:localhost:5000
   
-  On Windows, you can also use [PuTTY](http://www.chiark.greenend.org.uk/~sgtatham/putty/). Look under SSH -> Tunnels in the connection dialog.
+  On Windows, you can also use [PuTTY](http://www.chiark.greenend.org.uk/~sgtatham/putty/) - look under SSH Options -> Tunnels in the connection dialog to set up the tunnel.
