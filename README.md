@@ -30,12 +30,9 @@ It is recommended you start fresh on your copy of this server.
 Protip: Use a VM (VMWare, VirtualBox). If you mess up, simply hose it and start squeaky clean. Or you can use an ARM based linux box (R-Pi, ODROID, etc).
 
 ### Q: Why is it built on Python?
-There aren't actually that many things you can build a web application on, and most of them were out from the start.    
-There was a large rant by one the kcsrv owner, I (SoftwareGuy) who improved this FAQ have condensed it down to make it less ranty.
-
 * PHP is [an ungodly clusterfuck](http://eev.ee/blog/2012/04/09/php-a-fractal-of-bad-design/).
 * Ruby / Java are both massive resource hogs, and this server needs to be able to scale well.  
-They seem to eat the server alive.
+  They seem to eat the server alive.
 * NodeJS is actually a good candidate, mostly thanks to being blazing fast.  
   Unfortunately, nearly everything around it (including the runtime itself) is in beta.
 
@@ -109,12 +106,18 @@ Cooking Instructions:
     Be sure to give yourself the `admin` and `staff` roles!
     Depending on your terminal, you may need to put the email address in quotation marks.
 
-        ./manage.py user create <username> <email>
-        # Example: ./manage.py user create MyAdmiralName "you@localhost"
-
+        ./manage.py user create username user@localhost
+    
+    NOTE: Your terminal may require you to escape the email address with quotes. Some terminals don't worry about it, some older ones may.
+    
 1.  **Run the development server.**  
     It will run on port 5000 by default.
 
         ./kcsrv.py
 
-    Since the game is hardcoded to use port 80 instead of port 5000, you'll likely get stuck at a floating ship screen. This is not a bug - it's poor DMM design. You'll need to run a SSH tunnel or use a good webserver like nginx to be a reverse proxy. More details on that later.
+1.  **Connect to the game**  
+  Since the game will always connect on Port 80 (blame Flash), you need to proxy the dev server to your local Port 80:
+
+        sudo ssh $USER@localhost -L 80:localhost:5000
+  
+  On Windows, you can also use [PuTTY](http://www.chiark.greenend.org.uk/~sgtatham/putty/). Look under SSH -> Tunnels in the connection dialog.
