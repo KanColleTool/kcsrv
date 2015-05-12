@@ -41,7 +41,7 @@ Python isn't the fastest thing around, but both it and its ecosystem are very st
 ### Q: Why PostgreSQL?
 * ***MySQL*** is [notoriously awful](http://grimoire.ca/mysql/choose-something-else), with the most important piece of incompetent nonsense being the lack of Transactional DDL… which means a failed migration (for whatever reason) may leave the database in an inconsistent state.
 * ***SQLite*** is a good second choice, but it sometimes behaves oddly, and lacks some more advanced features. It'll also slow down with a lot of data, not that a development server is really in any danger of hitting that point.
-* ***lol MS SQL and Oracle***, I hope you like enterprise nonsense.
+* ***MS SQL and Oracle*** lol I hope you like enterprise nonsense.
 
 Development Setup
 ---
