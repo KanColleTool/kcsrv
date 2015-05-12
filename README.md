@@ -35,7 +35,7 @@ Protip: Use a VM (VMWare, VirtualBox). If you mess up, simply hose it and start 
 * NodeJS is actually a good candidate, mostly thanks to being blazing fast.  
   Unfortunately, nearly everything around it (including the runtime itself) is in beta.
 
-Python isn't the fastest thing around, but both it and its ecosystem are very stable and mature. SQLAlchemy + Alembic alone makes an incredibly robust database abstraction layer, that nothing I've seen in NodeJS can match. 
+Python isn't the fastest thing around, but both it and its ecosystem are very stable and mature.
 
 ### Q: Why PostgreSQL?
 * ***MySQL*** is [notoriously awful](http://grimoire.ca/mysql/choose-something-else), with the most important piece of incompetent nonsense being the lack of Transactional DDL... which means a failed migration (for whatever reason) may leave the database in an inconsistent state.
