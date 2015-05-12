@@ -30,16 +30,15 @@ It is recommended you start fresh on your copy of this server.
 Protip: Use a VM (VMWare, VirtualBox). If you mess up, simply hose it and start squeaky clean. Or you can use an ARM based linux box (R-Pi, ODROID, etc).
 
 ### Q: Why is it built on Python?
-* PHP is [an ungodly clusterfuck](http://eev.ee/blog/2012/04/09/php-a-fractal-of-bad-design/).
-* Ruby / Java are both massive resource hogs, and this server needs to be able to scale well.  
-  They seem to eat the server alive.
+* PHP is [an ungodly clusterfuck](http://eev.ee/blog/2012/04/09/php-a-fractal-of-bad-design).
+* Ruby is a massive resource hog, and this server needs to be able to scale well.  
 * NodeJS is actually a good candidate, mostly thanks to being blazing fast.  
   Unfortunately, nearly everything around it (including the runtime itself) is in beta.
 
 Python isn't the fastest thing around, but both it and its ecosystem are very stable and mature. SQLAlchemy + Alembic alone makes an incredibly robust database abstraction layer, that nothing I've seen in NodeJS can match. 
 
 ### Q: Why PostgreSQL?
-* ***MySQL*** is [notoriously awful](http://grimoire.ca/mysql/choose-something-else), with the most important piece of incompetent nonsense being the lack of Transactional DDL… which means a failed migration (for whatever reason) may leave the database in an inconsistent state.
+* ***MySQL*** is [notoriously awful](http://grimoire.ca/mysql/choose-something-else), with the most important piece of incompetent nonsense being the lack of Transactional DDL... which means a failed migration (for whatever reason) may leave the database in an inconsistent state.
 * ***SQLite*** is a good second choice, but it sometimes behaves oddly, and lacks some more advanced features. It'll also slow down with a lot of data, not that a development server is really in any danger of hitting that point.
 * ***MS SQL and Oracle*** lol I hope you like enterprise nonsense.
 
@@ -107,8 +106,6 @@ Cooking Instructions:
     Depending on your terminal, you may need to put the email address in quotation marks.
 
         ./manage.py user create username user@localhost
-    
-    NOTE: Your terminal may require you to escape the email address with quotes. Some terminals don't worry about it, some older ones may throw a error. If in doubt, enclose it with quotes to be on the safe side
     
 1.  **Run the development server.**  
     It will run on port 5000 by default.
