@@ -80,7 +80,7 @@ Cooking Instructions:
 1. **Set up the database***  
     First, make sure you have a database user for the account you plan on running the server as. Postgres can automatically authorize as the user a process is running as, which means there's no need to put passwords in configuration files.
 
-        createuser --superuser $USER
+        sudo -u postgres createuser --superuser $USER
         
     Then, create a database for kcsrv to use:
         createdb kcsrv  
