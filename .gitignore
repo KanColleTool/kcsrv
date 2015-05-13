@@ -11,3 +11,5 @@
 /config.py
 /data/_*.json
 
+# Don't include the static files from kcs directory.
+/kcs
