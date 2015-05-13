@@ -8,7 +8,13 @@ def get_repair_base(original_ship):
     return "0,0,0,0"
 
 
-def generate_new_ship(shipid, fleetid):
+def generate_new_ship(shipid: int, fleetid: int=None) -> db.AdmiralShip:
+    """
+    Generates a new ship from the specified ship id.
+    :param shipid: The ship ID to generate from.
+    :param fleetid: The optional fleet ID to give to the ship.
+    :return: A new db.AdmiralShip object.
+    """
     original_ship = db.Ship.query.filter_by(id=shipid).first()
     assert isinstance(original_ship, db.Ship)
     if not original_ship: return
@@ -36,9 +42,21 @@ def generate_new_ship(shipid, fleetid):
     )
     return admiral_ship
 
-def generate_api_data(admiralid, local_ship_id):
+def generate_api_data(admiralid: int, local_ship_id: int=None, original_ship: db.AdmiralShip=None) -> dict:
+    """
+    Generates an APIv1 compatible dictionary to pass to the KanColle official client.
+    :param admiralid: The ID of the admiral getting the ship.
+    :param local_ship_id:
+    :param original_ship:
+    :return:
+    """
     admiral = db.Admiral.query.filter_by(id=admiralid).first()
-    ship = admiral.admiral_ships.filter_by(local_ship_num=local_ship_id).first()
+    if local_ship_id:
+        ship = admiral.admiral_ships.filter_by(local_ship_num=local_ship_id).first()
+    elif original_ship:
+        ship = original_ship
+    else:
+        return {}
     temp_dict = {
             'api_onslot': [0, 0, 0, 0, 0],
             'api_locked_equip': 0,
@@ -69,6 +87,7 @@ def generate_api_data(admiralid, local_ship_id):
             'api_lucky': [ship.luck_eq, ship.ship.luck_max],
             'api_ship_id': ship.ship.id,
             'api_ndock_time': 0,
-            'api_kyouka': [0, 0, 0, 0, 0]
+            'api_kyouka': [0, 0, 0, 0, 0],
+            'api_sakuteki': [ship.ship.los_base, ship.ship.maxlos]
         }
     return temp_dict
