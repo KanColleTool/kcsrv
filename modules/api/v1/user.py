@@ -74,6 +74,7 @@ def change_position():
     db.db.session.commit()
     return svdata({})
 
+
 @api_user.route('/api_get_member/basic', methods=['GET', 'POST'])
 def basic():
     return svdata(AdmiralHelper.get_admiral_basic_info())
@@ -118,21 +119,20 @@ def useitem():
 
 @api_user.route('/api_get_member/kdock', methods=['GET', 'POST'])
 def kdock():
-    # TODO: Implement this properly
     admiral = get_token_admiral_or_error()
     return svdata([{
                        'api_member_id': admiral.id,
                        'api_id': dock.id,
                        'api_state': dock.state,
                        'api_created_ship_id': dock.ship,
-                       'api_complete_time': dock.complete,  # TODO: Convert this to JST
+                       'api_complete_time': dock.complete,
                        'api_complete_time_str': dock.complete.strftime('%Y-%M-%d %H:%M:%S'),
                        'api_item1': dock.fuel,
                        'api_item2': dock.ammo,
                        'api_item3': dock.steel,
                        'api_item4': dock.baux,
                        'api_item5': dock.cmats
-                   } for dock in []])
+                   } for dock in admiral.crafting_docks])
 
 
 @api_user.route('/api_get_member/unsetslot', methods=['GET', 'POST'])

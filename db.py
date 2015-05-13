@@ -3,7 +3,6 @@ from flask.ext.security import UserMixin, RoleMixin
 
 import util
 
-
 db = SQLAlchemy()
 
 role__user = db.Table('role__user',
@@ -187,6 +186,7 @@ class Admiral(db.Model):
     #   2) setup() is disabled.
     setup = db.Column(db.Boolean())
     repair_docks = db.relationship("Dock", backref='admiral', lazy='dynamic')
+    crafting_docks = db.relationship("Dock", backref='admiral', lazy='dynamic')
 
     def __unicode__(self):
         return "Admiral " + self.user.nickname
