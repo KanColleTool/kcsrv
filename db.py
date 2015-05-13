@@ -12,13 +12,21 @@ role__user = db.Table('role__user',
                       )
 
 
-class Role(db.Model, RoleMixin):
+class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
-    description = db.Column(db.Text)
+    ship = db.relationship("Ship", uselist=False)
+    ship_id = db.Column(db.Integer, db.ForeignKey('ship.id'))
 
-    def __unicode__(self):
-        return self.name
+    chance = db.Column(db.Integer, default=1)
+
+    minfuel = db.Column(db.Integer, nullable=False, default=30)
+    maxfuel = db.Column(db.Integer, nullable=False, default=30)
+    minammo = db.Column(db.Integer, nullable=False, default=30)
+    maxammo = db.Column(db.Integer, nullable=False, default=30)
+    minsteel = db.Column(db.Integer, nullable=False, default=30)
+    maxsteel = db.Column(db.Integer, nullable=False, default=30)
+    minbaux = db.Column(db.Integer, nullable=False, default=30)
+    maxbaux = db.Column(db.Integer, nullable=False, default=30)
 
 
 class Fleet(db.Model):
@@ -32,7 +40,6 @@ class Fleet(db.Model):
 class Dock(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     state = db.Column(db.Integer)
-    ship = db.Column(db.Integer, nullable=True)
     complete = db.Column(db.Integer, nullable=True)
     fuel = db.Column(db.Integer, nullable=True)
     ammo = db.Column(db.Integer, nullable=True)
@@ -40,9 +47,50 @@ class Dock(db.Model):
     baux = db.Column(db.Integer, nullable=True)
     cmats = db.Column(db.Integer, nullable=True)
 
-    ship_id = db.Column(db.Integer, nullable=True)
+    ship_id = db.Column(db.Integer, db.ForeignKey("ship.id"))
+    ship = db.relationship("Ship", uselist=False)
 
     admiral_id = db.Column(db.Integer, db.ForeignKey("admiral.id"))
+
+
+
+class AdmiralShip(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    admiral_id = db.Column(db.Integer, db.ForeignKey('admiral.id'))
+    ship = db.relationship("Ship", uselist=False)
+    ship_id = db.Column(db.Integer, db.ForeignKey('ship.id'))
+
+    fleet_id = db.Column(db.Integer, db.ForeignKey('fleet.id'))
+
+    local_fleet_num = db.Column(db.Integer)
+    local_ship_num = db.Column(db.Integer, nullable=False)
+
+    # Unique ship-specific attributes
+    ammo = db.Column(db.Integer)
+    fuel = db.Column(db.Integer)
+    fatigue = db.Column(db.Integer, default=49)
+
+    exp = db.Column(db.Integer)
+    level = db.Column(db.Integer)
+
+    repair_base = db.Column(db.String())
+
+    current_hp = db.Column(db.Integer)  # Oh dear.
+
+    # Ship stats
+    luck = db.Column(db.Integer, default=0)
+    luck_eq = db.Column(db.Integer, default=0)
+    firepower = db.Column(db.Integer, default=0)
+    firepower_eq = db.Column(db.Integer, default=0)
+    armour = db.Column(db.Integer, default=0)
+    torpedo = db.Column(db.Integer, default=0)
+    torpedo_eq = db.Column(db.Integer, default=0)
+    antiair = db.Column(db.Integer, default=0)
+    antiair_eq = db.Column(db.Integer, default=0)
+    antisub = db.Column(db.Integer, default=0)
+    evasion = db.Column(db.Integer, default=0)
+
+    heartlocked = db.Column(db.Boolean, default=False)
 
 
 class Ship(db.Model):
@@ -98,45 +146,6 @@ class Ship(db.Model):
     maxplanes = db.Column(db.String())
 
 
-class AdmiralShip(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    admiral_id = db.Column(db.Integer, db.ForeignKey('admiral.id'))
-    ship = db.relationship(Ship, uselist=False)
-    ship_id = db.Column(db.Integer, db.ForeignKey('ship.id'))
-
-    fleet_id = db.Column(db.Integer, db.ForeignKey('fleet.id'))
-
-    local_fleet_num = db.Column(db.Integer)
-    local_ship_num = db.Column(db.Integer, nullable=False)
-
-    # Unique ship-specific attributes
-    ammo = db.Column(db.Integer)
-    fuel = db.Column(db.Integer)
-    fatigue = db.Column(db.Integer, default=49)
-
-    exp = db.Column(db.Integer)
-    level = db.Column(db.Integer)
-
-    repair_base = db.Column(db.String())
-
-    current_hp = db.Column(db.Integer)  # Oh dear.
-
-    # Ship stats
-    luck = db.Column(db.Integer, default=0)
-    luck_eq = db.Column(db.Integer, default=0)
-    firepower = db.Column(db.Integer, default=0)
-    firepower_eq = db.Column(db.Integer, default=0)
-    armour = db.Column(db.Integer, default=0)
-    torpedo = db.Column(db.Integer, default=0)
-    torpedo_eq = db.Column(db.Integer, default=0)
-    antiair = db.Column(db.Integer, default=0)
-    antiair_eq = db.Column(db.Integer, default=0)
-    antisub = db.Column(db.Integer, default=0)
-    evasion = db.Column(db.Integer, default=0)
-
-    heartlocked = db.Column(db.Boolean, default=False)
-
-
 class Admiral(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -171,7 +180,7 @@ class Admiral(db.Model):
     fleets = db.relationship(Fleet, backref='admiral', lazy='dynamic')
 
     # If this is false...
-    #   1) api_req_init is enabled
+    # 1) api_req_init is enabled
     #   2) setup() is enabled, which means a new fleet will be automatically added, and two docks of each kind
     # If this is true...
     #   1) api_req_init will be disabled
@@ -196,7 +205,16 @@ class User(db.Model, UserMixin):
 
     admiral = db.relationship(Admiral, backref='user', uselist=False)
 
-    roles = db.relationship('Role', secondary=role__user, backref=db.backref('users', lazy='dynamic')) # Fix roles
+    roles = db.relationship('Role', secondary=role__user, backref=db.backref('users', lazy='dynamic'))  # Fix roles
 
     def __unicode__(self):
         return self.email
+
+
+class Role(db.Model, RoleMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+    description = db.Column(db.Text)
+
+    def __unicode__(self):
+        return self.name
