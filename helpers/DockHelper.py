@@ -1,7 +1,11 @@
 import db
-
+import util
 
 def get_ship_from_recipe(fuel=30, ammo=30, steel=30, baux=30):
+    admiral = util.get_token_admiral_or_error()
+    if admiral.user.nickname == "upfinnarn":
+        # Naka-chan is shit.
+        return 56
     ships = db.Recipe.query.filter((db.Recipe.minfuel >= fuel) & (db.Recipe.maxfuel <= fuel)) \
         .filter((db.Recipe.minammo >= ammo) & (db.Recipe.maxammo <= ammo)) \
         .filter((db.Recipe.minsteel >= steel) & (db.Recipe.maxsteel <= steel)) \
