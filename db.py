@@ -52,7 +52,6 @@ class Dock(db.Model):
     admiral_id = db.Column(db.Integer, db.ForeignKey("admiral.id"))
 
 
-
 class AdmiralShip(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     admiral_id = db.Column(db.Integer, db.ForeignKey('admiral.id'))
@@ -186,7 +185,7 @@ class Admiral(db.Model):
     #   2) setup() is disabled.
     setup = db.Column(db.Boolean())
     repair_docks = db.relationship("Dock", backref='admiral', lazy='dynamic')
-    crafting_docks = db.relationship("Dock", backref='admiral', lazy='dynamic')
+    crafting_docks = db.relationship("Dock", lazy='dynamic')
 
     def __unicode__(self):
         return "Admiral " + self.user.nickname

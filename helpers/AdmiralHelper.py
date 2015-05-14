@@ -57,6 +57,9 @@ def setup(first_ship_id: int, admiral: db.Admiral):
     admiral.fleets.append(fleet)
     # Give the admiral starting resources
     admiral.resources = "500,500,500,500,1,1,3,0"
+    # Give the admiral some docks.
+    cdocks = [db.Dock(), db.Dock()]
+    rdocks = [db.Dock(), db.Dock()]
     # Return the admiral
     admiral.setup = True
     return admiral

@@ -2,7 +2,7 @@ from flask import Blueprint, redirect
 # from flask.ext.security import current_user
 from util import *
 from modules.api import placeholderdata
-from helpers import generate_port, AdmiralHelper
+from helpers import generate_port, AdmiralHelper, DockHelper
 
 api_user = Blueprint('api_user', __name__)
 prepare_api_blueprint(api_user)
@@ -117,22 +117,12 @@ def useitem():
                    } for item in []])
 
 
+
+
 @api_user.route('/api_get_member/kdock', methods=['GET', 'POST'])
 def kdock():
     admiral = get_token_admiral_or_error()
-    return svdata([{
-                       'api_member_id': admiral.id,
-                       'api_id': dock.id,
-                       'api_state': dock.state,
-                       'api_created_ship_id': dock.ship,
-                       'api_complete_time': dock.complete,
-                       'api_complete_time_str': dock.complete.strftime('%Y-%M-%d %H:%M:%S'),
-                       'api_item1': dock.fuel,
-                       'api_item2': dock.ammo,
-                       'api_item3': dock.steel,
-                       'api_item4': dock.baux,
-                       'api_item5': dock.cmats
-                   } for dock in admiral.crafting_docks])
+    return svdata(DockHelper.generate_dock_data(admiral)['cdock'])
 
 
 @api_user.route('/api_get_member/unsetslot', methods=['GET', 'POST'])
