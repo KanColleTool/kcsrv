@@ -116,14 +116,15 @@ def useitem():
                        'api_count': item.count
                    } for item in []])
 
-
-
-
 @api_user.route('/api_get_member/kdock', methods=['GET', 'POST'])
 def kdock():
     admiral = get_token_admiral_or_error()
     return svdata(DockHelper.generate_dock_data(admiral)['cdock'])
 
+@api_user.route('/api_get_member/ndock', methods=['POST'])
+def ndock():
+    admiral = get_token_admiral_or_error()
+    return svdata(DockHelper.generate_dock_data(admiral)['rdock'])
 
 @api_user.route('/api_get_member/unsetslot', methods=['GET', 'POST'])
 def unsetslot():
