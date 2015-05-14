@@ -45,8 +45,8 @@ Python isn't the fastest thing around, but both it and its ecosystem are very st
 Development Setup
 ---
 
-Ingredients:
----  
+### Ingredients:
+
 * Python 3
 * ```virtualenv```
 * PostgreSQL (+ development headers)
@@ -82,6 +82,7 @@ Cooking Instructions:
         sudo -u postgres createuser --superuser $USER
         
     Then, create a database for kcsrv to use:
+    
         createdb kcsrv  
 
     Change postgres to what user the server installs as. On Debian/Ubuntu it's postgres.
@@ -115,6 +116,6 @@ Cooking Instructions:
 1.  **Connect to the game**  
   Since the game will always connect on Port 80 (blame Flash), you need to proxy the dev server to your local Port 80:
 
-        sudo ssh $USER@localhost -L 80:localhost:5000
+      sudo ssh $USER@localhost -L 80:localhost:5000
   
   On Windows, you can also use [PuTTY](http://www.chiark.greenend.org.uk/~sgtatham/putty/) - look under SSH Options -> Tunnels in the connection dialog to set up the tunnel.
