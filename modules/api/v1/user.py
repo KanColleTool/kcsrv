@@ -8,6 +8,26 @@ api_user = Blueprint('api_user', __name__)
 prepare_api_blueprint(api_user)
 
 
+@api_user.route('/api_req_kousyou/createship', methods=['POST'])
+def build():
+    admiral = get_token_admiral_or_error()
+    fuel = int(request.values.get("api_item1"))
+    ammo = int(request.values.get("api_item2"))
+    steel = int(request.values.get("api_item3"))
+    baux = int(request.values.get("api_item4"))
+    dock = int(request.values.get("api_kdock_id")) - 1
+    DockHelper.craft_ship(fuel, ammo, steel, baux, admiral, dock)
+    return svdata({})
+
+@api_user.route('/api_get_member/material')
+def material():
+    admiral = get_token_admiral_or_error()
+    return svdata([
+        {"api_id": n + 1,
+         "api_member_id": admiral.id,
+         "api_value": int(val)} for n, val in enumerate(admiral.resources.split(','))
+    ])
+
 @api_user.route('/api_req_member/get_incentive', methods=['GET', 'POST'])
 def get_incentive():
     return svdata({
@@ -141,6 +161,18 @@ def port():
     port = generate_port.generate_port(api_token)['api_data']
     return svdata(port)
 
+@api_user.route('/bleh')
+def assetup():
+    admiral = get_token_admiral_or_error()
+    cdocks = [db.Dock(), db.Dock()]
+    admiral.crafting_docks = cdocks
+    admiral.available_cdocks = 2
+    rdocks = [db.Dock(), db.Dock()]
+    admiral.repair_docks = rdocks
+    admiral.available_rdocks = 2
+    db.db.session.add(admiral)
+    db.db.session.commit()
+    return ""
 
 @api_user.route('/api_req_init/firstship', methods=['GET', 'POST'])
 # Kancolle literally doesn't care, as long as it gets something back
@@ -159,6 +191,7 @@ def firstship():
 def ship2():
     return redirect("/play/", code=301)
 
+#@api_user.route('/api')
 
 # Generic routes for anything not implemented.
 

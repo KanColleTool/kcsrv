@@ -52,7 +52,7 @@ def generate_api_data(admiralid: int, local_ship_id: int=None, original_ship: db
     :return:
     """
     admiral = db.Admiral.query.filter_by(id=admiralid).first()
-    if local_ship_id:
+    if local_ship_id is not None:
         ship = admiral.admiral_ships.filter_by(local_ship_num=local_ship_id).first()
     elif original_ship:
         ship = original_ship

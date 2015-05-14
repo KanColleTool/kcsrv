@@ -111,7 +111,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('state', sa.Integer(), nullable=True),
     sa.Column('ship', sa.Integer(), nullable=True),
-    sa.Column('complete', sa.Integer(), nullable=True),
+    sa.Column('complete', sa.BigInteger(), nullable=True),
     sa.Column('fuel', sa.Integer(), nullable=True),
     sa.Column('ammo', sa.Integer(), nullable=True),
     sa.Column('steel', sa.Integer(), nullable=True),

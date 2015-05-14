@@ -39,15 +39,15 @@ class Fleet(db.Model):
 class Dock(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     state = db.Column(db.Integer)
-    complete = db.Column(db.Integer, nullable=True)
+    complete = db.Column(db.BigInteger, nullable=True)
     fuel = db.Column(db.Integer, nullable=True)
     ammo = db.Column(db.Integer, nullable=True)
     steel = db.Column(db.Integer, nullable=True)
     baux = db.Column(db.Integer, nullable=True)
     cmats = db.Column(db.Integer, nullable=True)
 
-    ship_id = db.Column(db.Integer, db.ForeignKey("ship.id"))
-    ship = db.relationship("Ship", uselist=False)
+    ship_id = db.Column(db.Integer, db.ForeignKey("admiral_ship.id"))
+    ship = db.relationship("AdmiralShip", uselist=False)
 
     admiral_id = db.Column(db.Integer, db.ForeignKey("admiral.id"))
 

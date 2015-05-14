@@ -1,8 +1,6 @@
-import time
-
 import db
 import util
-from helpers import AdmiralHelper, ShipHelper
+from helpers import AdmiralHelper, ShipHelper, DockHelper
 
 
 def generate_port(api_token):
@@ -82,32 +80,5 @@ def generate_port(api_token):
         port2['api_data']['api_ship'].append(ShipHelper.generate_api_data(admiral.id, ship.local_ship_num))
     # Generate ndock.
     docks = admiral.repair_docks.all()
-    port2['api_data']['api_ndock'] = []
-    for x in range(0, 4):
-        if len(docks) - 1 >= x:
-            dock = docks[x]
-            temp_dict = {
-                'api_state': dock.state,
-                'api_created_ship_id': dock.ship,
-                'api_complete_time': dock.complete,
-                'api_complete_time_str': time.strftime("%Y-%m-%d %X"),
-                'api_item1': dock.fuel,
-                'api_item2': dock.ammo,
-                'api_item3': dock.steel,
-                'api_item4': dock.baux
-            }
-        else:
-            temp_dict = {
-                'api_state': 0,
-                'api_created_ship_id': 0,
-                'api_complete_time': 0,
-                'api_complete_time_str': "0",
-                'api_item1': 0,
-                'api_item2': 0,
-                'api_item3': 0,
-                'api_item4': 0,
-            }
-        temp_dict['api_id'] = x+1
-        temp_dict['api_member_id'] = admiral.id
-        port2['api_data']['api_ndock'].append(temp_dict)
+    port2['api_data']['api_ndock'] = DockHelper.generate_dock_data(admiral)['rdock']
     return port2
