@@ -90,6 +90,8 @@ class AdmiralShip(db.Model):
 
     heartlocked = db.Column(db.Boolean, default=False)
 
+    active = db.Column(db.Boolean, default=False, nullable=False)
+
 
 class Ship(db.Model):
     id = db.Column(db.Integer, primary_key=True)

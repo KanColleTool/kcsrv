@@ -77,6 +77,7 @@ def generate_port(api_token):
     # count = 0
     for num, ship in enumerate(admiral_ships):
         # count += 1
+        if not ship.active: continue
         assert isinstance(ship, db.AdmiralShip)
         port2['api_data']['api_ship'].append(ShipHelper.generate_api_data(admiral.id, ship.local_ship_num))
     # Generate ndock.

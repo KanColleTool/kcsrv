@@ -8,7 +8,7 @@ def get_repair_base(original_ship):
     return "0,0,0,0"
 
 
-def generate_new_ship(shipid: int, fleetid: int=None) -> db.AdmiralShip:
+def generate_new_ship(shipid: int, fleetid: int=None, active: bool=True) -> db.AdmiralShip:
     """
     Generates a new ship from the specified ship id.
     :param shipid: The ship ID to generate from.
@@ -38,7 +38,8 @@ def generate_new_ship(shipid: int, fleetid: int=None) -> db.AdmiralShip:
         evasion = original_ship.evasion_base,
         fatigue = 49,
         current_hp = original_ship.hp_base if not original_ship.kai else original_ship.maxhp,
-        local_fleet_num=fleetid
+        local_fleet_num=fleetid,
+        active=active
     )
     return admiral_ship
 
