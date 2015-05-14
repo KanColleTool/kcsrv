@@ -30,6 +30,7 @@ def change_position():
     if ship_id == -2:
         # Delete ship.
         oldship = fships[ship_pos]
+        oldship.local_fleet_num = None
         fships.remove(oldship)
         # Get the rest of the ships, and bump it down.
         for n, ship in enumerate(fships):

@@ -1,5 +1,9 @@
+import random
+
 import db
+from helpers import ShipHelper
 import util
+
 
 def get_ship_from_recipe(fuel=30, ammo=30, steel=30, baux=30):
     admiral = util.get_token_admiral_or_error()
@@ -11,6 +15,24 @@ def get_ship_from_recipe(fuel=30, ammo=30, steel=30, baux=30):
         .filter((db.Recipe.minsteel >= steel) & (db.Recipe.maxsteel <= steel)) \
         .filter((db.Recipe.minbaux >= baux) & (db.Recipe.maxsteel <= baux))
 
+    ship_choices = [x.id * x.chance for x in ships]
+    return random.choice(ship_choices)
+
+
+def craft_ship(fuel: int, ammo: int, steel: int, baux: int, admiral: db.Admiral):
+    ship = get_ship_from_recipe(fuel, ammo, steel, baux)
+    nship = ShipHelper.generate_new_ship(ship, active=False)
+    admiral.admiral_ships.append(nship)
+    db.db.session.add(admiral)
+    api_data = {
+        "api_ship_id": ship,
+        "api_kdock": generate_dock_data(admiral),
+        "api_id": nship.local_ship_num,
+        "api_slotitem": [],
+        "api_ship": ShipHelper.generate_api_data(admiralid=admiral.id, original_ship=nship)
+    }
+    db.db.session.commit()
+    return api_data
 
 def generate_dock_data(admiral_obj: db.Admiral=None, admiralid: int=None) -> dict:
     """
