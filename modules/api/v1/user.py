@@ -34,7 +34,7 @@ def change_position():
         # Get the rest of the ships, and bump it down.
         for n, ship in enumerate(fships):
             if n > ship_id:
-                ship.local_fleet_id -= 1
+                ship.local_fleet_num -= 1
                 fships[n] = ship
         fleet.ships = fships
     elif len(fships) == ship_pos:
