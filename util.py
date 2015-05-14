@@ -4,11 +4,11 @@ import random
 import datetime
 import time
 import json
+import math
 
 from flask import request, abort
 
 import db
-
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -60,7 +60,7 @@ def get_token_admiral_or_error(api_token=None):
 
 def millisecond_timestamp(ts=datetime.datetime.now()):
     # http://stackoverflow.com/a/8160307
-    return time.mktime(ts.timetuple()) * 1e3 + ts.microsecond / 1e3
+    return math.floor(time.mktime(ts.timetuple()) * 1e3 + ts.microsecond / 1e3)
 
 def second_timestamp():
     return int(time.time())
