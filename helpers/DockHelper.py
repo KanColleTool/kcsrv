@@ -17,7 +17,8 @@ def get_ship_from_recipe(fuel=30, ammo=30, steel=30, baux=30):
         .filter((db.Recipe.minsteel >= steel) & (db.Recipe.maxsteel <= steel)) \
         .filter((db.Recipe.minbaux >= baux) & (db.Recipe.maxsteel <= baux))
 
-    ship_choices = [x.id * x.chance for x in ships]
+    ship_choices = [[x.id] * x.chance for x in ships]
+    ship_choices = [item for sublist in ship_choices for item in sublist]
     return random.choice(ship_choices)
 
 
@@ -34,6 +35,26 @@ def update_dock(dock: db.Dock, fuel: int, ammo: int, steel: int, baux: int, ship
     dock.complete = ntime
     return dock
 
+def get_ship(dockid: int):
+    admiral = util.get_token_admiral_or_error()
+    dock = admiral.docks.all()[dockid]
+
+    dock.fuel, dock.ammo, dock.steel, dock.baux, dock.cmats = 0, 0, 0, 0, 0
+
+    dock.ship.active = True
+    db.db.session.add(dock.ship)
+    api_data = {
+        "api_ship_id": dock.ship.ship.id,
+        "api_kdock": generate_dock_data(admiral_obj=admiral)['cdock'],
+        "api_id": dock.ship.local_ship_num,
+        "api_slotitem": [],
+        "api_ship": ShipHelper.generate_api_data(admiralid=admiral.id, original_ship=dock.ship)
+    }
+    dock.ship = None
+    dock.complete = None
+    db.db.session.add(dock)
+    db.db.session.commit()
+    return api_data
 
 def craft_ship(fuel: int, ammo: int, steel: int, baux: int, admiral: db.Admiral, dock: int):
     ship = get_ship_from_recipe(fuel, ammo, steel, baux)
@@ -49,7 +70,7 @@ def craft_ship(fuel: int, ammo: int, steel: int, baux: int, admiral: db.Admiral,
     db.db.session.add(admiral)
     api_data = {
         "api_ship_id": ship,
-        "api_kdock": generate_dock_data(admiral),
+        "api_kdock": generate_dock_data(admiral_obj=admiral)['cdock'],
         "api_id": nship.local_ship_num,
         "api_slotitem": [],
         "api_ship": ShipHelper.generate_api_data(admiralid=admiral.id, original_ship=nship)

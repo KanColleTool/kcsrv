@@ -15,10 +15,16 @@ def build():
     ammo = int(request.values.get("api_item2"))
     steel = int(request.values.get("api_item3"))
     baux = int(request.values.get("api_item4"))
-    dock = int(request.values.get("api_kdock_id")) - 1
+    dock = int(request.values.get("api_kdock_id")) # -1 # For some reason, it doesn't need minusing one. ¯\_(ツ)_/¯
     print(dock)
     DockHelper.craft_ship(fuel, ammo, steel, baux, admiral, dock)
     return svdata({})
+
+@api_user.route('/api_req_kousyou/getship', methods=['POST'])
+def getship():
+    dock = int(request.values.get("api_kdock_id"))
+    data = DockHelper.get_ship(dockid=dock)
+    return svdata(data)
 
 @api_user.route('/api_get_member/material')
 def material():
