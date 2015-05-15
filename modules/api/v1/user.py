@@ -165,12 +165,10 @@ def port():
 @api_user.route('/bleh')
 def assetup():
     admiral = get_token_admiral_or_error()
-    cdocks = [db.Dock(), db.Dock()]
-    admiral.crafting_docks = cdocks
-    admiral.available_cdocks = 2
-    rdocks = [db.Dock(), db.Dock()]
-    admiral.repair_docks = rdocks
-    admiral.available_rdocks = 2
+    docks = [db.Dock() for _ in range(8)]
+    admiral.available_cdocks = 4
+    admiral.available_rdocks = 4
+    admiral.docks = docks
     db.db.session.add(admiral)
     db.db.session.commit()
     return ""

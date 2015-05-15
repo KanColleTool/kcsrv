@@ -79,6 +79,5 @@ def generate_port(api_token):
         assert isinstance(ship, db.AdmiralShip)
         port2['api_data']['api_ship'].append(ShipHelper.generate_api_data(admiral.id, ship.local_ship_num))
     # Generate ndock.
-    docks = admiral.repair_docks.all()
     port2['api_data']['api_ndock'] = DockHelper.generate_dock_data(admiral)['rdock']
     return port2

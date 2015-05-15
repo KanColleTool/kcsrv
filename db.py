@@ -163,8 +163,8 @@ class Admiral(db.Model):
     max_equips = db.Column(db.Integer, default=1000)
     max_furniture = db.Column(db.Integer, default=0)
     available_fleets = db.Column(db.Integer, default=1)
-    available_cdocks = db.Column(db.Integer, default=2)
-    available_rdocks = db.Column(db.Integer, default=2)
+    available_cdocks = db.Column(db.Integer, default=4)
+    available_rdocks = db.Column(db.Integer, default=4)
 
     sortie_successes = db.Column(db.Integer, default=0)
     sortie_total = db.Column(db.Integer, default=0)
@@ -186,8 +186,7 @@ class Admiral(db.Model):
     #   1) api_req_init will be disabled
     #   2) setup() is disabled.
     setup = db.Column(db.Boolean())
-    repair_docks = db.relationship("Dock", backref='admiral', lazy='dynamic')
-    crafting_docks = db.relationship("Dock", lazy='dynamic')
+    docks = db.relationship("Dock", backref='admiral', lazy='dynamic', order_by='Dock.id')
 
     def __unicode__(self):
         return "Admiral " + self.user.nickname

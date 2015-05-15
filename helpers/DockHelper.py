@@ -41,7 +41,7 @@ def craft_ship(fuel: int, ammo: int, steel: int, baux: int, admiral: db.Admiral,
     nship.local_ship_num = len(admiral.admiral_ships.all())
 
     # Change dock data.
-    dock = admiral.crafting_docks.all()[dock]
+    dock = admiral.docks.all()[dock]
     dock = update_dock(dock, fuel, ammo, steel, baux, nship)
     db.db.session.add(dock)
     db.db.session.commit()
@@ -73,7 +73,7 @@ def generate_dock_data(admiral_obj: db.Admiral=None, admiralid: int=None) -> dic
     ob = {"rdock": [], "cdock": []}
     for x in range(0, 4):
         if admiral.available_cdocks - 1 >= x:
-            dock = admiral.crafting_docks.all()[x]
+            dock = admiral.docks.all()[x]
             ob['cdock'].append({'api_member_id': admiral.id,
                                 'api_id': x,
                                 'api_state': 0 if dock.complete is None
@@ -103,9 +103,9 @@ def generate_dock_data(admiral_obj: db.Admiral=None, admiralid: int=None) -> dic
                                 'api_item4': 0,
                                 'api_item5': 0
                                 })
-    for x in range(0, 4):
+    for x in range(4, 8):
         if admiral.available_rdocks - 1 >= x:
-            dock = admiral.repair_docks.all()[x]
+            dock = admiral.docks.all()[x]
             ob['rdock'].append({'api_member_id': admiral.id,
                                 'api_id': x,
                                 'api_state': 0 if dock.complete is None
