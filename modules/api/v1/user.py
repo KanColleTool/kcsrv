@@ -16,6 +16,7 @@ def build():
     steel = int(request.values.get("api_item3"))
     baux = int(request.values.get("api_item4"))
     dock = int(request.values.get("api_kdock_id")) - 1
+    print(dock)
     DockHelper.craft_ship(fuel, ammo, steel, baux, admiral, dock)
     return svdata({})
 

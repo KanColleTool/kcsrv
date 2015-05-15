@@ -1,5 +1,6 @@
 import random
 import datetime
+import time
 
 import db
 from helpers import ShipHelper
@@ -75,11 +76,13 @@ def generate_dock_data(admiral_obj: db.Admiral=None, admiralid: int=None) -> dic
             dock = admiral.crafting_docks.all()[x]
             ob['cdock'].append({'api_member_id': admiral.id,
                                 'api_id': x,
-                                'api_state': dock.state,
+                                'api_state': 0 if dock.complete is None
+                                else 2 if dock.complete > time.time()
+                                else 3 if dock.complete < time.time() else -1,
                                 'api_created_ship_id': dock.ship.ship.id if dock.ship is not None else 0,
                                 'api_complete_time': dock.complete,
                                 'api_complete_time_str': datetime.datetime.fromtimestamp(
-                                    dock.complete/1000
+                                    dock.complete / 1000
                                 ).strftime('%Y-%m-%d %H:%M:%S') if dock.complete is not None else "",
                                 'api_item1': dock.fuel,
                                 'api_item2': dock.ammo,
@@ -105,11 +108,13 @@ def generate_dock_data(admiral_obj: db.Admiral=None, admiralid: int=None) -> dic
             dock = admiral.repair_docks.all()[x]
             ob['rdock'].append({'api_member_id': admiral.id,
                                 'api_id': x,
-                                'api_state': dock.state,
-                                'api_created_ship_id':dock.ship.ship.id if dock.ship is not None else 0,
+                                'api_state': 0 if dock.complete is None
+                                else 2 if dock.complete > time.time()
+                                else 3 if dock.complete < time.time() else -1,
+                                'api_created_ship_id': dock.ship.ship.id if dock.ship is not None else 0,
                                 'api_complete_time': dock.complete,
                                 'api_complete_time_str': datetime.datetime.fromtimestamp(
-                                    dock.complete/1000
+                                    dock.complete / 1000
                                 ).strftime('%Y-%m-%d %H:%M:%S') if dock.complete is not None else "",
                                 'api_item1': dock.fuel,
                                 'api_item2': dock.ammo,
