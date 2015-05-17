@@ -2,6 +2,7 @@
 import os
 
 from flask.ext.script import Manager, Server
+
 from flask.ext.migrate import Migrate, MigrateCommand
 
 from helpers import ShipHelper
@@ -56,7 +57,7 @@ def update_db():
     # Truncate ships table.
     # db.db.session.query(db.Ship).delete()
     # Load ships from dump
-    ships = dump['api_mst_ship']
+    ships = dump['api_ship']
     count = 0
     for ship in ships:
         s = Ship(
