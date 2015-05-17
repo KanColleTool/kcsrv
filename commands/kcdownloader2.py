@@ -11,6 +11,7 @@ import os.path
 import requests
 
 
+
 # Define some stuff for later use.
 # Thank you for KCT's uppfinnarn for this code snippet that I've adapted
 def load_datadump(filename) -> dict:
@@ -77,8 +78,8 @@ def get_ship_girl_data(filename):
     count = 1
     for ship in ships:
         with open("kcs/resources/swf/ships/" + ship['api_filename'] + ".swf", 'wb') as out:
-            print("Getting ship graphics. API ID: " + str(count) + ", file name: " + ship[
-                'api_filename'] + ", shipgirl ID " + str(ship['api_sortno']) + ".")
+            print("Getting ship graphics. API ID: {}, file name: {}, shipgirl ID.".format(count, ship['api_filename'],
+                                                                                          ship['api_sortno']))
             f = get_file("kcs/resources/swf/ships/" + ship['api_filename'] + '.swf')
             if f:
                 for chunk in f.iter_content(2048):
@@ -86,6 +87,16 @@ def get_ship_girl_data(filename):
                 print(".. Downloaded GFX for shipgirl ID " + str(ship['api_sortno']) + "(" + str(count) + ")")
             else:
                 print("... No such file " + ship['api_filename'])
+            print("Downloading ship sounds...")
+        for x in range(0, 70): # 0-70 is a reasonable guess.
+            f = get_file("kcs/sound/kc{}/{}.mp3".format(ship['api_filename'], x))
+            if f:
+                with open("kcs/sound/ship/kc{}/{}.mp3".format(ship['api_filename'], x)) as out:
+                    for chunk in f.iter_content(2048):
+                        out.write(chunk)
+                    print("Downloaded sound ID {} for shipgirl ID {}".format(x, ship['api_sortno']))
+            else:
+                print("... No such file kc" + ship['api_filename'] + "/" + str(x) + ".mp3")
         count += 1
 
 
@@ -100,7 +111,7 @@ def setup_directories():
     if not os.path.exists("kcs/resources/swf"): os.makedirs("kcs/resources/swf")
     if not os.path.exists("kcs/resources/swf/ships"): os.makedirs("kcs/resources/swf/ships")
 
-    # if not os.path.exists("kcs/resources/sound"): os.makedirs("kcs/resources/sound")
+    if not os.path.exists("kcs/sound/ship"): os.makedirs("kcs/resources/sound/ship")
     print("Done prep work.")
 
 
@@ -108,6 +119,7 @@ def run():
     print("Starting download of Kantai Collection assets. Please wait...")
     print("If you have an error, please ensure you have Python-Requests installed.")
     print("Usually on Debian and friends you can do 'apt-get install python3-requests' to install the correct version.")
+    print("Otherwise, run \"pip install requests\".")
     # Load the datafile into memory.
     if os.path.isfile("data/api_start2.json"):
         print("Ok, found a JSON data dump.")
@@ -127,5 +139,3 @@ def run():
         print(
             "You can modify this script to change the path the script's looking for, but please - if it ain't broke, don't fix it.")
         exit()
-
-
