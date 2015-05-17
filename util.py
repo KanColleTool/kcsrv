@@ -53,7 +53,7 @@ def load_datadump(filename: str) -> dict:
     :param filename: The dump to load.
     :return: A dict containing the values loaded from either 'api_data' or the normal JSON data.
     """
-    if not os.path.exists(filename):
+    if not os.path.exists("data/" + filename):
         return {}
     with open(os.path.join(ROOT_DIR, 'data', filename)) as f:
         o = json.load(f)
