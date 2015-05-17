@@ -1,8 +1,9 @@
-from flask.ext.script import Manager, prompt, prompt_pass, prompt_bool
-from flask.ext.security.utils import encrypt_password
 import datetime
-from db import *
 
+from flask.ext.script import Manager, prompt_pass, prompt_bool
+from flask.ext.security.utils import encrypt_password
+
+from db import *
 
 manager = Manager(usage="Manage users")
 
@@ -18,7 +19,7 @@ def create(nickname, email):
         if password == prompt_pass("Again"):
             break
 
-    roles = prompt("Roles (separated by space)").split(' ')
+    roles = input("Roles (separated by space)").split(' ')
 
     if prompt_bool("Create this user?"):
         user = User(active=True,
