@@ -66,7 +66,7 @@ def prepare_api_blueprint(bp):
         return svdata(None, 100, errormsg="Not authorized")
 
 
-def get_token_admiral_or_error(api_token: str=None) -> db.Admiral:
+def get_token_admiral_or_error(api_token: str=None):
     """
     Grabs an admiral object from the specified API token, or creates a new one if possible.
     :param api_token: Optional: The API token to use. If this is not specified, it uses the token from the POST request.
