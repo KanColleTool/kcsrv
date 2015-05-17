@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import os
 import hashlib
 
@@ -10,7 +10,10 @@ from forms import *
 from admin import admin
 from app import app
 
-
+if not os.path.exists('./config.py'):
+    print("Your config file does not exist. "
+          "Create it by copying config.example.py to config.py and editing the required variables.")
+    exit(1)
 
 # --> Extension setup
 db.init_app(app)
@@ -42,9 +45,11 @@ app.register_blueprint(resources, url_prefix='/kcs')
 def index():
     return render_template('index.html')
 
+
 @app.route('/kcs/<path:path>')
 def kcs(path):
     return send_from_directory('kcs', path)
+
 
 if __name__ == '__main__':
     print("Checking for updated api_start2.json...")
@@ -62,8 +67,7 @@ if __name__ == '__main__':
             print("DB entries are up to date.")
             update = False
         else:
-            print("DB entries differ from api_start2.json. Go to admin/update to update.")
+            print("DB entries differ from api_start2.json. You need to update your database.")
             update = True
 
     app.run(host='0.0.0.0', debug=True)
-

@@ -1,12 +1,17 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+import os
+
 from flask.ext.script import Manager, Server
 from flask.ext.migrate import Migrate, MigrateCommand
 
 from helpers import ShipHelper
-
 from kcsrv import app
 from db import *
 
+if not os.path.exists('./config.py'):
+    print("Your config file does not exist. "
+          "Create it by copying config.example.py to config.py and editing the required variables.")
+    exit(1)
 
 manager = Manager(app)
 manager.add_command('runserver', Server(host='0.0.0.0', use_reloader=True))
