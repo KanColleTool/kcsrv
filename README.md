@@ -89,7 +89,7 @@ Cooking Instructions:
     And fill it with data - repeat this after every upgrade:
     
         ./manage.py db upgrade   # Run migrations
-        ./manage.py db update_db # Imports ship data into the database
+        ./manage.py update_db # Imports ship data into the database
         
     First Boot? You'll need to set up a few things.
     
