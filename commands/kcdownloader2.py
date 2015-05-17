@@ -14,6 +14,7 @@ import requests
 
 
 
+
 # Define some stuff for later use.
 # Thank you for KCT's uppfinnarn for this code snippet that I've adapted
 def load_datadump(filename) -> dict:
@@ -95,7 +96,7 @@ def get_ship_girl_data(filename):
         for x in range(1, 70): # 1-70 is a reasonable guess.
             f = get_file("kcs/sound/kc{}/{}.mp3".format(ship['api_filename'], x))
             if f:
-                with open("kcs/sound/ship/kc{}/{}.mp3".format(ship['api_filename'], x)) as out:
+                with open("kcs/sound/ship/kc{}/{}.mp3".format(ship['api_filename'], x), 'wb') as out:
                     for chunk in f.iter_content(2048):
                         out.write(chunk)
                     print("Downloaded sound ID {} for shipgirl ID {}".format(x, ship['api_sortno']))
