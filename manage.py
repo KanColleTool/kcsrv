@@ -57,7 +57,7 @@ def update_db():
     # Truncate ships table.
     # db.db.session.query(db.Ship).delete()
     # Load ships from dump
-    ships = dump['api_ship']
+    ships = dump['api_mst_ship']
     count = 0
     for ship in ships:
         s = Ship(
