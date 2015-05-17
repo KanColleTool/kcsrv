@@ -12,6 +12,8 @@ import requests
 
 
 
+
+
 # Define some stuff for later use.
 # Thank you for KCT's uppfinnarn for this code snippet that I've adapted
 def load_datadump(filename) -> dict:
@@ -77,6 +79,8 @@ def get_ship_girl_data(filename):
     ships = dump['api_mst_shipgraph']
     count = 1
     for ship in ships:
+        if not os.path.exists("kcs/sound/ship/kc{}".format(ship['api_filename'])):
+            os.makedirs("kcs/sound/ship/kc{}".format(ship['api_filename']))
         with open("kcs/resources/swf/ships/" + ship['api_filename'] + ".swf", 'wb') as out:
             print("Getting ship graphics. API ID: {}, file name: {}, shipgirl ID.".format(count, ship['api_filename'],
                                                                                           ship['api_sortno']))
@@ -88,7 +92,7 @@ def get_ship_girl_data(filename):
             else:
                 print("... No such file " + ship['api_filename'])
             print("Downloading ship sounds...")
-        for x in range(0, 70): # 0-70 is a reasonable guess.
+        for x in range(1, 70): # 1-70 is a reasonable guess.
             f = get_file("kcs/sound/kc{}/{}.mp3".format(ship['api_filename'], x))
             if f:
                 with open("kcs/sound/ship/kc{}/{}.mp3".format(ship['api_filename'], x)) as out:
@@ -111,7 +115,7 @@ def setup_directories():
     if not os.path.exists("kcs/resources/swf"): os.makedirs("kcs/resources/swf")
     if not os.path.exists("kcs/resources/swf/ships"): os.makedirs("kcs/resources/swf/ships")
 
-    if not os.path.exists("kcs/sound/ship"): os.makedirs("kcs/resources/sound/ship")
+    if not os.path.exists("kcs/sound/ship"): os.makedirs("kcs/sound/ship")
     print("Done prep work.")
 
 
