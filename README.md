@@ -9,6 +9,8 @@ What Currently Works
 - First ship enlistment (Fubuki and friends)
 - Main port screen
 - Resources things (furniture, sound, etc)
+- Ship building (sort of)
+- Heartlocking (sort of)
 
 What Doesn't Work
 --------------------
@@ -116,6 +118,6 @@ Cooking Instructions:
 1.  **Connect to the game**  
   Since the game will always connect on Port 80 (blame Flash), you need to proxy the dev server to your local Port 80:
 
-      sudo ssh $USER@localhost -L 80:localhost:5000
+      sudo ssh $USER@localhost -L 80:localhost:5000 -N
   
   On Windows, you can also use [PuTTY](http://www.chiark.greenend.org.uk/~sgtatham/putty/) - look under SSH Options -> Tunnels in the connection dialog to set up the tunnel.
