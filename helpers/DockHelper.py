@@ -7,11 +7,11 @@ from helpers import ShipHelper
 import util
 
 
-def get_ship_from_recipe(fuel=30, ammo=30, steel=30, baux=30):
-    admiral = util.get_token_admiral_or_error()
-    if admiral.user.nickname == "upfinnarn":
-        # Naka-chan is shit.
-        return 56
+def get_ship_from_recipe(fuel: int=30, ammo: int=30, steel: int=30, baux: int=30) -> int:
+    """
+    Gets a ship id from the specified recipe.
+    :return: The ship id that was chosen.
+    """
     ships = db.Recipe.query.filter((db.Recipe.minfuel >= fuel) & (db.Recipe.maxfuel <= fuel)) \
         .filter((db.Recipe.minammo >= ammo) & (db.Recipe.maxammo <= ammo)) \
         .filter((db.Recipe.minsteel >= steel) & (db.Recipe.maxsteel <= steel)) \
@@ -30,14 +30,20 @@ def update_dock(dock: db.Dock, fuel: int, ammo: int, steel: int, baux: int, ship
     dock.cmats = 1
 
     dock.ship = ship
-
-    ntime = util.millisecond_timestamp(datetime.datetime.now() + datetime.timedelta(minutes=ship.ship.buildtime))
+    try:
+        ntime = util.millisecond_timestamp(datetime.datetime.now() + datetime.timedelta(minutes=ship.ship.buildtime))
+    except TypeError:
+        ntime = util.millisecond_timestamp(datetime.datetime.now() + datetime.timedelta(minutes=22))
     dock.complete = ntime
     return dock
 
+
 def get_ship(dockid: int):
     admiral = util.get_token_admiral_or_error()
-    dock = admiral.docks.all()[dockid]
+    try:
+        dock = admiral.docks.all()[dockid]
+    except IndexError:
+        return None
 
     dock.fuel, dock.ammo, dock.steel, dock.baux, dock.cmats = 0, 0, 0, 0, 0
 
@@ -55,6 +61,7 @@ def get_ship(dockid: int):
     db.db.session.add(dock)
     db.db.session.commit()
     return api_data
+
 
 def craft_ship(fuel: int, ammo: int, steel: int, baux: int, admiral: db.Admiral, dock: int):
     ship = get_ship_from_recipe(fuel, ammo, steel, baux)

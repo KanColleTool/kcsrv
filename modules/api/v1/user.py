@@ -7,6 +7,15 @@ from helpers import generate_port, AdmiralHelper, DockHelper
 api_user = Blueprint('api_user', __name__)
 prepare_api_blueprint(api_user)
 
+@api_user.route('/api_req_hensei/lock', methods=['POST'])
+def lock():
+    admiral = get_token_admiral_or_error()
+    admiralship = admiral.admiral_ships.filter_by(local_ship_num=int(request.values.get("api_ship_id"))).first()
+    admiralship.heartlocked = True
+    db.db.session.add(admiralship)
+    db.db.session.commit()
+    return svdata({})
+
 
 @api_user.route('/api_req_kousyou/createship', methods=['POST'])
 def build():
