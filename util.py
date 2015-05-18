@@ -91,6 +91,42 @@ def get_token_admiral_or_error(api_token: str=None):
         db.db.session.commit()
     return user.admiral
 
+def get_admiral_v2(api_token: str):
+    """
+    Grabs an admiral object from the specified API token, or creates a new one if possible, for APIv2.
+    :param api_token: The API token to use. Not optional.
+    :return: A valid admiral object, or None if the token is not valid.
+    """
+    user = db.User.query.filter_by(api_token=api_token).first()
+    if not user:
+        return None
+    if not user.admiral:
+        adm = db.Admiral()
+        user.admiral = adm
+        db.db.session.add(user)
+        db.db.session.commit()
+    return user.admiral
+
+def get_admiral_v2_from_id(search: object):
+    """
+    Grabs an admiral object from the specified API token or ID, or creates a new one if possible, for APIv2.
+    :param search: The id or token to search.
+    :return: A valid admiral object, or None if the token/id is not valid.
+    """
+    if len(search) == 40:
+        user = db.User.query.filter_by(api_token=search).first()
+    elif search:
+        user = db.User.query.filter_by(id=search).first()
+    else:
+        return None
+    if not user:
+        return None
+    if not user.admiral:
+        adm = db.Admiral()
+        user.admiral = adm
+        db.db.session.add(user)
+        db.db.session.commit()
+    return user.admiral
 
 def millisecond_timestamp(ts: datetime.datetime=datetime.datetime.now()) -> int:
     """
