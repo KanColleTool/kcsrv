@@ -168,17 +168,6 @@ def port():
     port = generate_port.generate_port(api_token)['api_data']
     return svdata(port)
 
-@api_user.route('/bleh')
-def assetup():
-    admiral = get_token_admiral_or_error()
-    docks = [db.Dock() for _ in range(8)]
-    admiral.available_cdocks = 4
-    admiral.available_rdocks = 4
-    admiral.docks = docks
-    db.db.session.add(admiral)
-    db.db.session.commit()
-    return ""
-
 @api_user.route('/api_req_init/firstship', methods=['GET', 'POST'])
 # Kancolle literally doesn't care, as long as it gets something back
 def firstship():

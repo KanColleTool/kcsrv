@@ -24,5 +24,3 @@ SECURITY_RESET_URL = '/forgot'
 
 SECURITY_PASSWORD_HASH = "bcrypt"
 
-# Autodownloading of sound files when requested.
-AUTODL_SOUND = False

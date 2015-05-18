@@ -1,6 +1,5 @@
 from flask import Blueprint, send_from_directory
 
-from util import *
 from app import app
 
 try:
@@ -32,22 +31,6 @@ def sound(path):
 
 @resources.route('/sound/<path:path>')
 def shipsound(path):
-    if cfg['AUTODL_SOUND']:
-        if os.path.exists('kcs/sound/ship/{}'.format(path)): return send_from_directory('kcs/sound/ship', path)
-        # Gotcha, you bastard API name obfuscation
-        p = pathlib.PurePath(path).parts[0]
-        if not os.path.exists('kcs/sound/ship'): os.makedirs('kcs/sound/ship')
-        if not os.path.exists('kcs/sound/ship/{}'.format(p)):
-                os.makedirs('kcs/sound/ship/{}'.format(p))
-        for x in range(0, 50):
-            r = requests.get("http://203.104.209.39/kcs/sound/{}/{}.mp3".format(p, x), stream=True)
-            if r:
-                with open("kcs/sound/ship/{}/{}.mp3".format(p, x), 'wb') as f:
-                    for chunk in r.iter_content(chunk_size=1024):
-                        f.write(chunk)
-                print("Downloaded {}".format(x))
-            else:
-                print("Could not download {}".format(x))
     return send_from_directory('kcs/sound/ship', path)
 
 
