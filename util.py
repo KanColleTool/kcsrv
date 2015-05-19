@@ -107,7 +107,7 @@ def get_admiral_v2(api_token: str):
         db.db.session.commit()
     return user.admiral
 
-def get_admiral_v2_from_id(search: object):
+def get_admiral_v2_from_id_or_token(search: object):
     """
     Grabs an admiral object from the specified API token or ID, or creates a new one if possible, for APIv2.
     :param search: The id or token to search.

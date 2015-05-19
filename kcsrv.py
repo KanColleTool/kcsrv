@@ -34,8 +34,10 @@ from modules.api.core import api_core
 app.register_blueprint(api_core, url_prefix='/kcsapi')
 from modules.api.v1.user import api_user
 
-from modules.api.v2.AdmiralAPI import admiral_api_v2
-app.register_blueprint(admiral_api_v2, url_prefix='/api/v2/admiral')
+from modules.api.v2.AdmiralAPI import AdmiralAPIv2
+from modules.api.v2.DockAPI import DockAPIv2
+app.register_blueprint(AdmiralAPIv2, url_prefix='/api/v2/admiral')
+app.register_blueprint(DockAPIv2, url_prefix='/api/v2/docks')
 
 app.register_blueprint(api_user, url_prefix='/kcsapi')
 
