@@ -10,10 +10,6 @@ from forms import *
 from admin import admin
 from app import app
 
-if not os.path.exists('./config.py'):
-    print("Your config file does not exist. "
-          "Create it by copying config.example.py to config.py and editing the required variables.")
-    exit(1)
 
 # --> Extension setup
 db.init_app(app)
