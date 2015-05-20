@@ -32,7 +32,10 @@ def build():
 @api_user.route('/api_req_kousyou/getship', methods=['POST'])
 def getship():
     dock = int(request.values.get("api_kdock_id"))
-    data = DockHelper.get_ship(dockid=dock)
+    try:
+        data = DockHelper.get_ship(dockid=dock)
+    except (IndexError, AttributeError):
+        return svdata({}, code=201, message='申し訳ありませんがブラウザを再起動し再ログインしてください。')
     return svdata(data)
 
 @api_user.route('/api_get_member/material')
