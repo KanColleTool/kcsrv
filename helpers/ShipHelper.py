@@ -4,9 +4,21 @@ import util
 
 __author__ = 'eyes'
 
-def get_repair_base(original_ship):
+def get_repair_materials(original_ship: db.AdmiralShip):
+    """
+    Get the amount of materials required to repair a ship.
+    :param original_ship: The db.AdmiralShip object that you wish to repair.
+    :return: A four part string, "fuel,ammo,steel,bauxite"
+    """
     return "0,0,0,0"
 
+def get_repair_time(original_ship: db.AdmiralShip):
+    """
+    Get the time required to repair a ship
+    :param original_ship: The db.AdmiralShip object that you wish to repair
+    :return: The time to repair the ship.
+    """
+    return original_ship.repair_base
 
 def generate_new_ship(shipid: int, fleetid: int=None, active: bool=True) -> db.AdmiralShip:
     """
@@ -24,7 +36,7 @@ def generate_new_ship(shipid: int, fleetid: int=None, active: bool=True) -> db.A
         fuel = original_ship.fuel_max,
         exp = 0,
         level = 1,
-        repair_base = get_repair_base(original_ship),
+        repair_base = get_repair_materials(original_ship),
         luck = original_ship.luck_base,
         luck_eq = original_ship.luck_base,
         firepower = original_ship.firepower_base,

@@ -33,7 +33,7 @@ def build():
 def getship():
     dock = int(request.values.get("api_kdock_id"))
     try:
-        data = DockHelper.get_ship(dockid=dock)
+        data = DockHelper.get_and_remove_ship(dockid=dock)
     except (IndexError, AttributeError):
         return svdata({}, code=201, message='申し訳ありませんがブラウザを再起動し再ログインしてください。')
     return svdata(data)
