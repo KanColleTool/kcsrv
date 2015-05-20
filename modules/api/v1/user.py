@@ -10,6 +10,7 @@ prepare_api_blueprint(api_user)
 
 @api_user.route('/api_get_member/material')
 def material():
+    """Resources such as fuel, ammo, etc..."""
     admiral = get_token_admiral_or_error()
     return svdata([
         {"api_id": n + 1,
@@ -25,11 +26,13 @@ def get_incentive():
 
 @api_user.route('/api_get_member/basic', methods=['GET', 'POST'])
 def basic():
+    """Basic admiral data."""
     return svdata(AdmiralHelper.get_admiral_basic_info())
 
 
 @api_user.route('/api_get_member/furniture', methods=['GET', 'POST'])
 def furniture():
+    """Available furniture."""
     # TODO: Implement this properly
     admiral = get_token_admiral_or_error()
     return svdata([{
@@ -66,11 +69,13 @@ def useitem():
 
 @api_user.route('/api_get_member/kdock', methods=['GET', 'POST'])
 def kdock():
+    """Krafting docks."""
     admiral = get_token_admiral_or_error()
     return svdata(DockHelper.generate_dock_data(admiral)['cdock'])
 
 @api_user.route('/api_get_member/ndock', methods=['POST'])
 def ndock():
+    """Repair dock endpoint."""
     admiral = get_token_admiral_or_error()
     return svdata(DockHelper.generate_dock_data(admiral)['rdock'])
 
@@ -82,6 +87,7 @@ def unsetslot():
 
 @api_user.route('/api_port/port', methods=['GET', 'POST'])
 def port():
+    """Port endpoint."""
     api_token = request.values.get('api_token', None)
     if api_token is None:
         abort(403)
@@ -91,9 +97,8 @@ def port():
 
 @api_user.route('/api_get_member/ship2', methods=['GET', 'POST'])
 def ship2():
+    """Fuck ship2."""
     return redirect("/play/", code=301)
-
-#@api_user.route('/api')
 
 # Generic routes for anything not implemented.
 
