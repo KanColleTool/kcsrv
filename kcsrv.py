@@ -32,16 +32,19 @@ app.register_blueprint(play, url_prefix='/play')
 from modules.api.core import api_core
 
 app.register_blueprint(api_core, url_prefix='/kcsapi')
-from modules.api.v1.user import api_user
 
+# Declare API v1 blueprints.
+from modules.api.v1.user import api_user
+from modules.api.v1.actions import api_actions
+app.register_blueprint(api_user, url_prefix='/kcsapi')
+app.register_blueprint(api_actions, url_prefix='/kcsapi')
+
+
+# Declare API v2 blueprints.
 from modules.api.v2.AdmiralAPI import AdmiralAPIv2
 from modules.api.v2.DockAPI import DockAPIv2
 app.register_blueprint(AdmiralAPIv2, url_prefix='/api/v2/admiral')
 app.register_blueprint(DockAPIv2, url_prefix='/api/v2/docks')
-
-app.register_blueprint(api_user, url_prefix='/kcsapi')
-
-
 
 from modules.resources import resources
 
