@@ -22,23 +22,52 @@ def get_ship_from_recipe(fuel: int=30, ammo: int=30, steel: int=30, baux: int=30
     return random.choice(ship_choices)
 
 
-def update_dock(dock: db.Dock, fuel: int, ammo: int, steel: int, baux: int, ship: db.AdmiralShip):
+def update_dock(dock: db.Dock, fuel: int=None, ammo: int=None, steel: int=None, baux: int=None,
+                ship: db.AdmiralShip=None, build=True):
+    """
+    Updates a dock with the correct values.
+    Can be called just like ```update_dock(dock)``` to reset the dock.
+    :param dock: The dock object to work on.
+    :param fuel: The amount of fuel in the recipe.
+    :param ammo: The amount of ammo in the recipe.
+    :param steel: The amount of steel in the recipe.
+    :param baux: The amount of Bauxite in the recipe.
+    :param ship: The ship object to add to the dock.
+    :return:
+    """
     dock.fuel = fuel
     dock.ammo = ammo
     dock.steel = steel
     dock.baux = baux
-    dock.cmats = 1
-
+    if ship is not None:
+        dock.cmats = 1
+        try:
+            if build:
+                ntime = util.millisecond_timestamp(
+                    datetime.datetime.now() + datetime.timedelta(minutes=ship.ship.buildtime))
+            else:
+                ntime = util.millisecond_timestamp(
+                    datetime.datetime.now() + datetime.timedelta(minutes=ShipHelper.get_repair_time(ship)))
+        except TypeError:
+            ntime = util.millisecond_timestamp(datetime.datetime.now() + datetime.timedelta(minutes=22))
+        dock.complete = ntime
+    else:
+        dock.cmats = 0
+        dock.complete = 0
     dock.ship = ship
-    try:
-        ntime = util.millisecond_timestamp(datetime.datetime.now() + datetime.timedelta(minutes=ship.ship.buildtime))
-    except TypeError:
-        ntime = util.millisecond_timestamp(datetime.datetime.now() + datetime.timedelta(minutes=22))
-    dock.complete = ntime
+
     return dock
 
 
-def get_ship(dockid: int):
+def get_and_remove_ship(dockid: int, build=True):
+    """
+    Used by the /getship APIv1 endpoint.
+
+    Retrieves a ship from the specified dock and removes it.
+    :param dockid: The specified dock ID.
+    :param build: If the ship is being built or not. If false, it's repaired.
+    :return: The v1 API data for the dock.
+    """
     admiral = util.get_token_admiral_or_error()
     try:
         dock = admiral.docks.all()[dockid]
@@ -48,10 +77,12 @@ def get_ship(dockid: int):
     dock.fuel, dock.ammo, dock.steel, dock.baux, dock.cmats = 0, 0, 0, 0, 0
 
     dock.ship.active = True
+    if not build:
+        dock.ship.current_hp = dock.ship.ship.hp_base if not dock.ship.ship.kai else dock.ship.ship.maxhp
     db.db.session.add(dock.ship)
     api_data = {
         "api_ship_id": dock.ship.ship.id,
-        "api_kdock": generate_dock_data(admiral_obj=admiral)['cdock'],
+        "api_kdock": generate_dock_data(admiral_obj=admiral)['cdock' if build else 'rdock'],
         "api_id": dock.ship.local_ship_num,
         "api_slotitem": [],
         "api_ship": ShipHelper.generate_api_data(admiralid=admiral.id, original_ship=dock.ship)
@@ -63,15 +94,25 @@ def get_ship(dockid: int):
     return api_data
 
 
-def craft_ship(fuel: int, ammo: int, steel: int, baux: int, admiral: db.Admiral, dock: int):
+def craft_ship(fuel: int, ammo: int, steel: int, baux: int, admiral: db.Admiral, dockid: int):
+    """
+    Crafts a ship from a recipe.
+    :param fuel: The amount of fuel to use.
+    :param ammo: The amount of ammo to use.
+    :param steel: The amount of steel to use.
+    :param baux: The amount of bauxite to use.
+    :param admiral: The admiral object to use.
+    :param dockid: The local dock id.
+    :return: The v1 api data for a crafted ship.
+    """
     ship = get_ship_from_recipe(fuel, ammo, steel, baux)
     nship = ShipHelper.generate_new_ship(ship, active=False)
     nship.local_ship_num = len(admiral.admiral_ships.all())
 
     # Change dock data.
-    dock = admiral.docks.all()[dock]
-    dock = update_dock(dock, fuel, ammo, steel, baux, nship)
-    db.db.session.add(dock)
+    dockid = admiral.docks.all()[dockid]
+    dockid = update_dock(dockid, fuel, ammo, steel, baux, nship)
+    db.db.session.add(dockid)
     db.db.session.commit()
     admiral.admiral_ships.append(nship)
     db.db.session.add(admiral)
@@ -88,7 +129,7 @@ def craft_ship(fuel: int, ammo: int, steel: int, baux: int, admiral: db.Admiral,
 
 def generate_dock_data(admiral_obj: db.Admiral=None, admiralid: int=None) -> dict:
     """
-    Generates dock data.
+    Generates v1 dock data.
     :param admiral: Generate from this db.Admiral instance.
     :param admiralid: Generate from this admiral ID.
     :return: A dict containing the dock data. d['rdock'] for repair docks, d['cdock'] for crafting docks
