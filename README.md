@@ -103,7 +103,11 @@ Cooking Instructions:
     Please note that this won't pull new ships automatically, you'll need to feed the server a new api_start2.json every time DMM introduces more ships to collect. Gotta ship 'em all!
 
         ./manage.py dlassets
-
+1.  ** Setup your config file.**
+    Make sure to edit the file and add password salts and your secret key.
+    
+        cp ./config.example.py ./config.py
+    
 1.  **Create an account for yourself.**  
     Be sure to give yourself the `admin` and `staff` roles!
     Depending on your terminal, you may need to put the email address in quotation marks.
