@@ -15,6 +15,7 @@ import requests
 
 
 
+
 # Define some stuff for later use.
 # Thank you for KCT's uppfinnarn for this code snippet that I've adapted
 def load_datadump(filename) -> dict:
@@ -36,7 +37,7 @@ def get_standard_swf():
     # These arrays will need to be updated with extra SWF filenames.
     core_swf_files = ["Core.swf", "mainD2.swf", "PortMain.swf"]  # Core game files. Wrappers?
     resource_swf_files = ["commonAssets.swf", "font.swf", "icons.swf", "sound_bgm.swf",
-                          "sound_se.swf"]  # Core game resources
+                          "sound_se.swf", "itemicons.swf"]  # Core game resources
     scene_swf_files = ["AlbumMain.swf", "ArsenalMain.swf", "DutyMain.swf", "InteriorMain.swf", "ItemlistMain.swf",
                        "OrganizeMain.swf", "RecordMain.swf", "RemodelMain.swf", "RepairMain.swf", "SallyMain.swf",
                        "SupplyMain.swf", "TitleMain.swf", "tutorial.swf"]  # All the scenes I can remember.
