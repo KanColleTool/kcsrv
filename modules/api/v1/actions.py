@@ -10,9 +10,10 @@ prepare_api_blueprint(api_actions)
 
 @api_actions.route('/api_req_hensei/lock', methods=['POST'])
 def lock():
+    """Heartlock/unheartlock a ship."""
     admiral = get_token_admiral_or_error()
     admiralship = admiral.admiral_ships.filter_by(local_ship_num=int(request.values.get("api_ship_id"))).first()
-    admiralship.heartlocked = True
+    admiralship.heartlocked = not admiralship.heartlocked
     db.db.session.add(admiralship)
     db.db.session.commit()
     return svdata({})
