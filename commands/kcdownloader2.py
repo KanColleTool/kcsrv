@@ -11,11 +11,6 @@ import os.path
 import requests
 
 
-
-
-
-
-
 # Define some stuff for later use.
 # Thank you for KCT's uppfinnarn for this code snippet that I've adapted
 def load_datadump(filename) -> dict:
