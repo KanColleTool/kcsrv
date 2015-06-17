@@ -11,6 +11,7 @@ from admin import admin
 from app import app
 
 
+
 # --> Extension setup
 db.init_app(app)
 admin.init_app(app)
@@ -51,11 +52,9 @@ app.register_blueprint(resources, url_prefix='/kcs')
 def index():
     return render_template('index.html')
 
-
 @app.route('/kcs/<path:path>')
 def kcs(path):
     return send_from_directory('kcs', path)
-
 
 if __name__ == '__main__':
     print("Checking for updated api_start2.json...")
