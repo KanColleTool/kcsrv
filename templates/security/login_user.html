@@ -1,4 +1,4 @@
-{% extends "_modal_dialog.html" %}
+{% extends "layout/_modal_dialog.html" %}
 {% set tab = "login" %}
 {% block modal_title %}<span class="pull-left">Log in</span>{% endblock %}
 {% block modal_title_post %}
@@ -25,11 +25,10 @@
 			</label>
 		</div>
 		{{ login_user_form.next }}
-		{{ login_user_form.submit(value='Log in', class='btn btn-default pull-right') }}
-		
+		{{ login_user_form.submit(value='Log in', class='col-md-12 btn btn-default pull-right btn-material-light-green') }}
+
 		<hr />
-		
-		<p>
+		<p class="text-center">
 			Don't have an account? <a href="{{ url_for_security('register') }}">Create one here</a>
 		</p>
 	</form>
