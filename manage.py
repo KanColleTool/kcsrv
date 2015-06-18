@@ -2,7 +2,6 @@
 import os
 
 from flask.ext.script import Manager, Server
-
 from flask.ext.migrate import Migrate, MigrateCommand
 
 from helpers import ShipHelper
@@ -46,7 +45,7 @@ def cheat_addship(id, admiral_id):
     ship.local_ship_num = len(admiral.admiral_ships.all())
     if admiral:
         admiral.admiral_ships.append(ship)
-    db.session.merge(admiral)
+    db.session.add(admiral)
     db.session.commit()
     print("Added ship {}".format(ship.ship.name))
 
@@ -104,7 +103,7 @@ def update_db():
             maxplanes = ','.join(str(x) for x in ship['api_maxeq'])
         )
         # ugh
-        db.session.merge(s)
+        db.session.add(s)
         print("Added ship {} - {}".format(ship['api_id'], ship['api_name']))
         count += 1
     db.session.commit()

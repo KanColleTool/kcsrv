@@ -84,11 +84,11 @@ def change_position():
             # BLEH
             original_ship.local_fleet_num = None
             original_ship.fleet_id = None
-            db.db.session.merge(original_ship)
+            db.db.session.add(original_ship)
             new_ship = admiral.admiral_ships.filter_by(local_ship_num=ship_id).first()
             new_ship.local_fleet_num = ship_pos
             fleet.ships.append(new_ship)
-            db.db.session.merge(fleet)
+            db.db.session.add(fleet)
             db.db.session.commit()
             return svdata({})
         # Do the bullshit swap.
