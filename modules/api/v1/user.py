@@ -1,8 +1,8 @@
-from flask import Blueprint, redirect
+from flask import Blueprint
 # from flask.ext.security import current_user
 from util import *
 from modules.api import placeholderdata
-from helpers import generate_port, AdmiralHelper, DockHelper
+from helpers import generate_port, AdmiralHelper, DockHelper, ShipHelper
 
 api_user = Blueprint('api_user', __name__)
 prepare_api_blueprint(api_user)
@@ -98,7 +98,16 @@ def port():
 @api_user.route('/api_get_member/ship2', methods=['GET', 'POST'])
 def ship2():
     """Fuck ship2."""
-    return redirect("/play/", code=301)
+    ships = {'api_ship': []}
+    admiral = get_token_admiral_or_error()
+    admiral_ships = sorted(admiral.admiral_ships.all(), key=lambda x: x.local_ship_num)
+    for num, ship in enumerate(admiral_ships):
+        if not ship.active:
+            continue
+        assert isinstance(ship, db.AdmiralShip)
+        ships['api_ship'].append(ShipHelper.generate_api_data(admiral.id, ship.local_ship_num))
+
+    return svdata(ships)
 
 # Generic routes for anything not implemented.
 
