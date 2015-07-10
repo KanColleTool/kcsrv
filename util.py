@@ -8,6 +8,7 @@ import math
 
 from flask import request, abort
 
+from helpers import AdmiralGenerator
 import db
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -85,7 +86,7 @@ def get_token_admiral_or_error(api_token: str=None):
         abort(403)
     # Create a new admiral object if it doesn't exist.
     if not user.admiral:
-        adm = db.Admiral()
+        adm = AdmiralGenerator.new_admiral()
         user.admiral = adm
         db.db.session.add(user)
         db.db.session.commit()

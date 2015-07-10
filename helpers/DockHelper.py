@@ -139,7 +139,16 @@ def generate_dock_data(admiral_obj: db.Admiral=None, admiralid: int=None) -> dic
         admiral = admiral_obj
     elif admiralid:
         admiral = db.Admiral.query.filter_by(id=admiralid)
+    else:
+        admiral = None
     ob = {"rdock": [], "cdock": []}
+
+    if admiral is None:
+        return ob
+
+
+    print(admiral.docks.all(), admiral.available_cdocks)
+
     for x in range(0, 4):
         if admiral.available_cdocks - 1 >= x:
             dock = admiral.docks.all()[x]

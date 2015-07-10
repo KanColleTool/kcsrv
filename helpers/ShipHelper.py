@@ -2,7 +2,6 @@ import db
 from helpers import LevelHelper
 import util
 
-__author__ = 'eyes'
 
 def get_repair_materials(original_ship: db.AdmiralShip):
     """
@@ -104,3 +103,17 @@ def generate_api_data(admiralid: int, local_ship_id: int=None, original_ship: db
             'api_sakuteki': [ship.ship.los_base, ship.ship.maxlos]
         }
     return temp_dict
+
+def assign_ship(admiral: db.Admiral, ship_id: int):
+    ship = generate_new_ship(ship_id, 0)
+    # Assign ship the correct local ship number.
+    ship.local_ship_num = len(admiral.admiral_ships.all())
+    # Create a new fleet.
+    fleet = db.Fleet()
+    # Add the ship to the first fleet.
+    fleet.ships.append(ship)
+    # Add the ship to the admiral
+    admiral.admiral_ships.append(ship)
+    # Add the fleet to the admiral
+    admiral.fleets.append(fleet)
+    db.db.session.add(admiral)

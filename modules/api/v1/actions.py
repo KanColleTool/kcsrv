@@ -1,7 +1,7 @@
 from flask import request, Blueprint
 
 import db
-from helpers import DockHelper, AdmiralHelper
+from helpers import DockHelper, ShipHelper
 from util import get_token_admiral_or_error, svdata, prepare_api_blueprint
 
 api_actions = Blueprint('api_actions', __name__)
@@ -13,10 +13,13 @@ def lock():
     """Heartlock/unheartlock a ship."""
     admiral = get_token_admiral_or_error()
     admiralship = admiral.admiral_ships.filter_by(local_ship_num=int(request.values.get("api_ship_id"))).first()
-    admiralship.heartlocked = not admiralship.heartlocked
+
+    locked = not admiralship.heartlocked
+
+    admiralship.heartlocked = locked
     db.db.session.add(admiralship)
     db.db.session.commit()
-    return svdata({})
+    return svdata({"api_locked": int(locked)})
 
 
 @api_actions.route('/api_req_kousyou/createship', methods=['POST'])
@@ -110,7 +113,10 @@ def firstship():
     if admiral.setup:
         return svdata({'api_result_msg': "Nice try.", 'api_result': 200})
     shipid = request.values.get("api_ship_id")
-    new_admiral = AdmiralHelper.setup(shipid, admiral)
-    db.db.session.add(new_admiral)
+    ShipHelper.assign_ship(admiral, shipid)
+
+    admiral.setup = True
+
+    db.db.session.add(admiral)
     db.db.session.commit()
     return svdata({'api_result_msg': 'shitty api is shitty', 'api_result': 1})
