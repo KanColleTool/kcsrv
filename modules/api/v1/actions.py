@@ -12,7 +12,7 @@ prepare_api_blueprint(api_actions)
 def lock():
     """Heartlock/unheartlock a ship."""
     admiral = get_token_admiral_or_error()
-    admiralship = admiral.admiral_ships.filter_by(local_ship_num=int(request.values.get("api_ship_id"))).first()
+    admiralship = admiral.admiral_ships.filter_by(local_ship_num=int(request.values.get("api_ship_id")) - 1).first()
 
     locked = not admiralship.heartlocked
 
