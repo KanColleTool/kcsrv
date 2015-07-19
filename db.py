@@ -159,9 +159,9 @@ class Admiral(db.Model):
     furniture = db.Column(db.String(), default="1,1,1,1,1,1")
     furniture_coins = db.Column(db.Integer, default=0)
 
-    max_ships = db.Column(db.Integer, default=500)
-    max_equips = db.Column(db.Integer, default=1000)
-    max_furniture = db.Column(db.Integer, default=0)
+    max_ships = db.Column(db.Integer, default=5000)
+    max_equips = db.Column(db.Integer, default=10000)
+    max_furniture = db.Column(db.Integer, default=10000)
     available_fleets = db.Column(db.Integer, default=1)
     available_cdocks = db.Column(db.Integer, default=4)
     available_rdocks = db.Column(db.Integer, default=4)
