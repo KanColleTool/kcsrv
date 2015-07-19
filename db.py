@@ -188,6 +188,8 @@ class Admiral(db.Model):
     setup = db.Column(db.Boolean())
     docks = db.relationship("Dock", backref='admiral', lazy='dynamic', order_by='Dock.id')
 
+    lastaction = db.Column(db.DateTime)
+
     def __unicode__(self):
         return "Admiral " + self.user.nickname
 
