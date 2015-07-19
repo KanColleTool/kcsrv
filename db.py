@@ -190,7 +190,7 @@ class Admiral(db.Model):
 
     lastaction = db.Column(db.DateTime)
 
-    def __unicode__(self):
+    def __str__(self):
         return "Admiral " + self.user.nickname
 
 
@@ -209,8 +209,9 @@ class User(db.Model, UserMixin):
 
     roles = db.relationship('Role', secondary=role__user, backref=db.backref('users', lazy='dynamic'))  # Fix roles
 
-    def __unicode__(self):
+    def __str__(self):
         return self.email
+
 
 
 class Role(db.Model, RoleMixin):
@@ -218,5 +219,5 @@ class Role(db.Model, RoleMixin):
     name = db.Column(db.String(80), unique=True, nullable=False)
     description = db.Column(db.Text)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
