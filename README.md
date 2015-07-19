@@ -103,7 +103,7 @@ Cooking Instructions:
     Please note that this won't pull new ships automatically, you'll need to feed the server a new api_start2.json every time DMM introduces more ships to collect. Gotta ship 'em all!
 
         ./manage.py dlassets
-1.  ** Setup your config file.**
+1.  **Setup your config file.**
     Make sure to edit the file and add password salts and your secret key.
     
         cp ./config.example.py ./config.py
@@ -114,10 +114,15 @@ Cooking Instructions:
 
         ./manage.py user create username user@localhost
     
-1.  **Run the development server.**  
+1.  **Run the server.**  
     It will run on port 5000 by default.
 
         ./kcsrv.py
+        
+    Or, if you want to use the gunicorn server, run this:
+    
+        ./start.sh
+        
 
 1.  **Connect to the game**  
   Since the game will always connect on Port 80 (blame Flash), you need to proxy the dev server to your local Port 80:

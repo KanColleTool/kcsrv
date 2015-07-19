@@ -1,6 +1,5 @@
 from flask import render_template, send_from_directory
 from flask.ext.migrate import Migrate
-
 from flask.ext.security import Security, SQLAlchemyUserDatastore
 
 from forms import *
@@ -11,7 +10,6 @@ modules = {
     "security": None,
     "user_datastore": None
 }
-
 
 def init(app):
     # --> Extension setup
