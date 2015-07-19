@@ -26,12 +26,12 @@
 				{{ register_user_form.password(class='form-control', placeholder='Password') }}
 			</div>
 		</div>
-		
+
 		{{ register_user_form.next }}
-		{{ register_user_form.submit(value='Create account', class='btn btn-default pull-right') }}
-		
+		{{ register_user_form.submit(value='Create account', class='btn btn-default pull-right btn-material-light-green') }}
+
 		<hr />
-		
+
 		<p>
 			Already have an account? <a href="{{ url_for_security('login') }}">Log in here</a>
 		</p>
