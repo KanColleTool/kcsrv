@@ -1,16 +1,15 @@
 # coding=utf-8
 from wtforms import fields, validators
 from wtforms_alchemy import model_form_factory
-
 from flask.ext.wtf import Form
-from flask.ext.security.forms import RegisterForm
-from db import *
+from flask.ext.security.forms import ConfirmRegisterForm
 
+from db import *
 
 BaseModelForm = model_form_factory(Form)
 
 
-class MyRegisterForm(RegisterForm):
+class MyRegisterForm(ConfirmRegisterForm):
     nickname = fields.StringField('Nickname', [validators.required()])
 
 
