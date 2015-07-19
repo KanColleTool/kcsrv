@@ -1,5 +1,6 @@
 from flask import render_template, send_from_directory
 from flask.ext.migrate import Migrate
+
 from flask.ext.security import Security, SQLAlchemyUserDatastore
 
 from forms import *
@@ -20,7 +21,7 @@ def init(app):
     modules["migrate"] = Migrate(app, db)
 
     modules["user_datastore"] = SQLAlchemyUserDatastore(db, User, Role)
-    security = Security(app, modules["user_datastore"], confirm_register_form=MyRegisterForm)
+    modules["security"] = Security(app, modules["user_datastore"], confirm_register_form=MyRegisterForm)
 
     # --> Register blueprints
     from modules.play.play import play

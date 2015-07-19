@@ -2,6 +2,7 @@ from flask.ext.admin import Admin, AdminIndexView, BaseView
 from flask.ext.admin.contrib.sqla import ModelView
 from flask.ext.security import current_user
 from wtforms import fields
+
 from db import *
 
 
@@ -32,7 +33,10 @@ class UserModelView(MyModelView):
 
 
 class AdmiralModelView(MyModelView):
-    pass
+    column_exclude_list = ['tutorial_progress', 'max_furniture', 'furniture', 'furniture_coins', 'max_ships', 'max_equips',
+                           'available_fleets', 'available_cdocks', 'available_rdocks',
+                           'sortie_successes', 'sortie_total', 'expedition_successes', 'expedition_total',
+                           'pvp_successes', 'pvp_total', 'resources', 'setup']
 
 
 admin = Admin(index_view=MyAdminIndexView())
