@@ -90,7 +90,29 @@ def get_token_admiral_or_error(api_token: str=None):
         user.admiral = adm
         db.db.session.add(user)
         db.db.session.commit()
+
+    # Do resource creating here, rather than elsewhere.
+    last = user.admiral.lastaction
+    now = datetime.datetime.utcnow()
+    seconds = math.floor((last - now).total_seconds())
+
+    resources = extract_resources(user.admiral.resources)
+    for n, val in enumerate(resources):
+        resources[n] += (3 * seconds) if n != 3 else seconds
+
+    user.admiral.resources = pack_resources(resources)
+    user.admiral.lastaction = datetime.datetime.utcnow()
+
+    db.db.session.add(user)
+    db.db.session.commit()
+
     return user.admiral
+
+def pack_resources(r: list) -> str:
+    return ",".join([str(x) for x in r])
+
+def extract_resources(r: str) -> list:
+    return list(map(int, (x for x in r.split(','))))
 
 def get_admiral_v2(api_token: str):
     """
