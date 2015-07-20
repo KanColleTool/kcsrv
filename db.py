@@ -92,6 +92,8 @@ class AdmiralShip(db.Model):
 
     active = db.Column(db.Boolean, default=False, nullable=False)
 
+    def __str__(self):
+        return self.ship.name
 
 class Ship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -145,6 +147,8 @@ class Ship(db.Model):
 
     maxplanes = db.Column(db.String())
 
+    def __str__(self):
+        return self.name
 
 class Admiral(db.Model):
     id = db.Column(db.Integer, primary_key=True)
