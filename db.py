@@ -92,6 +92,8 @@ class AdmiralShip(db.Model):
 
     active = db.Column(db.Boolean, default=False, nullable=False)
 
+    items = db.relationship("Item", backref="admiral_ship", lazy="dynamic")
+
     def __str__(self):
         return self.ship.name
 
@@ -112,6 +114,8 @@ class Ship(db.Model):
     stype = db.Column(db.Integer)
 
     voicef = db.Column(db.Integer)
+
+    itemslots = db.Column(db.Integer)
 
     modern_use = db.Column(db.String)
     # Minimums
@@ -142,10 +146,10 @@ class Ship(db.Model):
     kai = db.Column(db.Boolean, default=False)
 
     # Messages
-    getmsg = db.Column(db.String(255))
+    getmsg = db.Column(db.Text())
     buildtime = db.Column(db.Integer)
 
-    maxplanes = db.Column(db.String())
+    maxplanes = db.Column(db.Integer())
 
     def __str__(self):
         return self.name
@@ -196,6 +200,28 @@ class Admiral(db.Model):
 
     def __str__(self):
         return "Admiral " + self.user.nickname
+
+
+class Item(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    admiral_ship_id = db.Column(db.Integer, db.ForeignKey("admiral_ship.id"))
+
+    name = db.Column(db.String(255), primary_key=True)
+    desc = db.Column(db.Text)
+
+    usable = db.Column(db.Boolean, default=False)
+
+    increase_fp = db.Column(db.Boolean)
+    increase_aa = db.Column(db.Boolean)
+    increase_tp = db.Column(db.Boolean)
+    increase_ar = db.Column(db.Boolean)
+
+    increase_amount = db.Column(db.Integer, nullable=False)
+
+    rarity = db.Column(db.Integer, nullable=False)
+
+    sortno = db.Column(db.Integer)
 
 
 class User(db.Model, UserMixin):
