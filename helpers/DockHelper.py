@@ -182,10 +182,10 @@ def generate_dock_data(admiral_obj: db.Admiral=None, admiralid: int=None) -> dic
                                 'api_item5': 0
                                 })
     for x in range(4, 8):
-        if admiral.available_rdocks - 1 >= x:
+        if admiral.available_rdocks - 1 >= x - 3:
             dock = admiral.docks.all()[x]
             ob['rdock'].append({'api_member_id': admiral.id,
-                                'api_id': x,
+                                'api_id': x - 3,
                                 'api_state': 0 if dock.complete is None
                                 else 2 if dock.complete > time.time()
                                 else 3 if dock.complete < time.time() else -1,
@@ -202,8 +202,8 @@ def generate_dock_data(admiral_obj: db.Admiral=None, admiralid: int=None) -> dic
                                 })
         else:
             ob['rdock'].append({'api_member_id': admiral.id,
-                                'api_id': x,
-                                'api_state': -1,
+                                'api_id': x - 3,
+                                'api_state': 0,
                                 'api_created_ship_id': 0,
                                 'api_complete_time': 0,
                                 'api_complete_time_str': "",
