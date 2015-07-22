@@ -1,9 +1,11 @@
 from flask import render_template, send_from_directory
 from flask.ext.migrate import Migrate
 from flask.ext.security import Security, SQLAlchemyUserDatastore
+from flask.ext.login import user_logged_in
 
 from forms import *
 from admin import admin
+from util import generate_api_token
 
 modules = {
     "migrate": None,
@@ -55,3 +57,11 @@ def init(app):
     @app.route('/kcs/<path:path>')
     def kcs(path):
         return send_from_directory('kcs', path)
+
+    # --> Signals
+    @user_logged_in.connect_via(app)
+    def u_logged_in(sender, user):
+        """
+        Regenerate the API token every login.
+        """
+        user.api_token = generate_api_token()
