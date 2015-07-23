@@ -59,9 +59,11 @@ def update_db():
     ships = dump['api_mst_ship']
     count = 0
     for ship in ships:
+        if 'api_backs' not in ship:
+            print("Skipping ship ID {}".format(ship['api_id']))
+            continue
         s = Ship(
             # Misc ship stats
-            id = ship['api_id'],
             rarity = ship['api_backs'],
             broken = ship['api_broken'],
             name = ship['api_name'],
