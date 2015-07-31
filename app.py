@@ -13,4 +13,8 @@ if not os.path.exists('./config.py'):
 app.config.from_object('config_default')
 app.config.from_object('config')
 
+# Check config files
+if not "SECURITY_PASSWORD_SALT" in app.config or app.config["SECURITY_PASSWORD_SALT"] == "":
+    print("Security salt has not been set. Please edit config.py.")
+
 init.init(app)

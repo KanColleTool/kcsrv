@@ -38,8 +38,12 @@ class AdmiralModelView(MyModelView):
                            'sortie_successes', 'sortie_total', 'expedition_successes', 'expedition_total',
                            'pvp_successes', 'pvp_total', 'resources', 'setup']
 
+class RecipeModelView(MyModelView):
+    pass
+
 
 admin = Admin(index_view=MyAdminIndexView())
 admin.add_view(RoleModelView(Role, db.session, endpoint='role'))
 admin.add_view(UserModelView(User, db.session, endpoint='user'))
 admin.add_view(AdmiralModelView(Admiral, db.session, endpoint='admiral'))
+admin.add_view(RecipeModelView(Recipe, db.session, endpoint='recipes'))
