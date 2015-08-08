@@ -16,3 +16,4 @@ WTForms
 WTForms-Alchemy 
 WTForms-Components
 gunicorn
+psycopg2
