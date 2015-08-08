@@ -88,7 +88,7 @@ def get_ship_girl_data(filename):
                 print(".. Downloaded GFX for shipgirl ID " + str(ship['api_sortno']) + "(" + str(count) + ")")
             else:
                 print("... No such file " + ship['api_filename'])
-            print("Downloading ship sounds...")
+        print("Downloading ship sounds...")
         for x in range(1, 70): # 1-70 is a reasonable guess.
             f = get_file("kcs/sound/kc{}/{}.mp3".format(ship['api_filename'], x))
             if f:
