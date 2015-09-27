@@ -30,7 +30,6 @@ def build():
     steel = int(request.values.get("api_item3"))
     baux = int(request.values.get("api_item4"))
     dock = int(request.values.get("api_kdock_id")) # -1 # For some reason, it doesn't need minusing one. ¯\_(ツ)_/¯
-    print(dock)
     DockHelper.craft_ship(fuel, ammo, steel, baux, admiral, dock)
     return svdata({})
 

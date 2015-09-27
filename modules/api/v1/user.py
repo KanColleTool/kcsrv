@@ -1,7 +1,6 @@
 from flask import Blueprint
 # from flask.ext.security import current_user
 from util import *
-from modules.api import placeholderdata
 from helpers import generate_port, AdmiralHelper, DockHelper, ShipHelper
 
 api_user = Blueprint('api_user', __name__)
@@ -82,7 +81,7 @@ def ndock():
 @api_user.route('/api_get_member/unsetslot', methods=['GET', 'POST'])
 def unsetslot():
     # TODO: Figure out what the hell this even is!
-    return svdata(placeholderdata.unsetslot)
+    return svdata({})
 
 
 @api_user.route('/api_port/port', methods=['GET', 'POST'])

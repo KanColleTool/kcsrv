@@ -2,16 +2,6 @@ from flask import Blueprint, send_from_directory
 
 from app import app
 
-try:
-    import requests
-except ImportError:
-    requests = None
-try:
-    import pathlib
-except ImportError:
-    # Reraise.
-    raise ImportError("You must be running Python 3.4 or newer, or using a python with a backported pathlib module.")
-
 resources = Blueprint('resources', __name__)
 
 cfg = app.config
