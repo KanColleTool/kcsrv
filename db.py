@@ -154,6 +154,14 @@ class Ship(db.Model):
     def __str__(self):
         return self.name
 
+
+class AdmiralSortie(db.Model):
+    __tablename__ = 'admiral_sortie'
+    admiral_id = db.Column(db.Integer, db.ForeignKey('admiral.id'),primary_key=True)
+    sortie_id = db.Column(db.Integer, db.ForeignKey('sortie.id'),primary_key=True)
+    cleared = db.Column(db.Integer,default=0)
+    defeat_count = db.Column(db.Integer)   
+
 class Admiral(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -186,6 +194,8 @@ class Admiral(db.Model):
     resources = db.Column(db.String())
 
     fleets = db.relationship(Fleet, backref='admiral', lazy='dynamic')
+
+    sorties = db.relationship(AdmiralSortie, backref='admiral', lazy='dynamic')
 
     # If this is false...
     # 1) api_req_init is enabled
@@ -251,3 +261,10 @@ class Role(db.Model, RoleMixin):
 
     def __str__(self):
         return self.name
+
+class Sortie(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+
+    is_boss = db.Column(db.Integer, default=0)
+    level = db.Column(db.String(10))
+

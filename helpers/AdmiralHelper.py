@@ -1,4 +1,4 @@
-import util
+import util, db
 
 """These are API version 1 functions only."""
 
@@ -46,4 +46,21 @@ def get_admiral_basic_info():
         'api_tutorial_progress': 100,
         'api_pvp': [0, 0]
     }
+
+def get_admiral_sorties():
+    """
+    Gets Admiral's unlocked Sorties
+    :return: A list containing dicts of KanColle Sortie info for the Admiral
+    """
+    admiral = util.get_token_admiral_or_error()
+    data = []
+    for admiral_sortie in admiral.sorties.all():
+        sortie = db.Sortie.query.filter_by(id=admiral_sortie.sortie_id).first()
+        data.append({
+            'api_id': sortie.level,
+            'api_cleared': admiral_sortie.cleared,
+            'api_exboss_flag': sortie.is_boss,
+            'api_defeat_count': admiral_sortie.defeat_count #Unnecessary if is not boss
+        })
+    return data
 

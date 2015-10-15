@@ -108,6 +108,10 @@ def ship2():
 
     return svdata(ships)
 
+@api_user.route('/api_get_member/mapinfo', methods=['GET', 'POST'])
+def mapinfo():
+    return svdata(AdmiralHelper.get_admiral_sorties())
+
 # Generic routes for anything not implemented.
 
 @api_user.route('/api_req_init/<path:path>', methods=['GET', 'POST'])
