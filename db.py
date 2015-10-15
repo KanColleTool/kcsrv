@@ -154,6 +154,17 @@ class Ship(db.Model):
     def __str__(self):
         return self.name
 
+class AdmiralQuest(db.Model):
+    """
+    progress: None,50,80
+    state: Inactive, Active, Complete
+    """
+    __tablename__ = 'admiral_quest'
+    admiral_id = db.Column(db.Integer, db.ForeignKey('admiral.id'),primary_key=True)
+    quest_id = db.Column(db.Integer, db.ForeignKey('quest.id'),primary_key=True)
+
+    progress = db.Column(db.Integer)
+    state = db.Column(db.Integer)
 
 class AdmiralSortie(db.Model):
     __tablename__ = 'admiral_sortie'
@@ -196,6 +207,8 @@ class Admiral(db.Model):
     fleets = db.relationship(Fleet, backref='admiral', lazy='dynamic')
 
     sorties = db.relationship(AdmiralSortie, backref='admiral', lazy='dynamic')
+
+    quests = db.relationship(AdmiralQuest, backref='admiral', lazy='dynamic')
 
     # If this is false...
     # 1) api_req_init is enabled
@@ -267,4 +280,26 @@ class Sortie(db.Model):
 
     is_boss = db.Column(db.Integer, default=0)
     level = db.Column(db.String(10))
+
+class Quest(db.Model):
+    """
+    no: quest number
+    frequency: Once,Daily,Weekly
+    category: Compostition, Exercise, etc.
+    bonus_flag: ?
+    invalid_flag: ?
+    get_material: "[val,val,val,val]"
+    code: A1,B20, etc. Not required. Maybe easier to maintain?
+    """
+    id = db.Column(db.Integer,primary_key=True)
+
+    no = db.Column(db.Integer)
+    category = db.Column(db.Integer)
+    frequency = db.Column(db.Integer) #Kancolle calls it 'type'
+    title = db.Column(db.String(255))
+    detail = db.Column(db.Text)
+    bonus_flag = db.Column(db.Integer)
+    invalid_flag = db.Column(db.Integer)
+    get_material = db.Column(db.String(25))
+    code = db.Column(db.String(3))
 

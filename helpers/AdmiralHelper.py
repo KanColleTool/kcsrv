@@ -63,4 +63,3 @@ def get_admiral_sorties():
             'api_defeat_count': admiral_sortie.defeat_count #Unnecessary if is not boss
         })
     return data
-

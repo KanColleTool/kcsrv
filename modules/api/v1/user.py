@@ -112,6 +112,17 @@ def ship2():
 def mapinfo():
     return svdata(AdmiralHelper.get_admiral_sorties())
 
+@api_user.route('/api_get_member/questlist', methods=['GET', 'POST'])
+def questlist(api_page_no):
+  print('Page no: ' + api_page_no)
+  data = {}
+  admiral = get_token_admiral_or_error()
+  data['api_count'] = admiral.quests.length
+  data['api_page_count'] = 1,
+  data["api_disp_page"] = 1
+  data["api_list"] = "[]"
+  return svdata(data)
+
 # Generic routes for anything not implemented.
 
 @api_user.route('/api_req_init/<path:path>', methods=['GET', 'POST'])
