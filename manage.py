@@ -6,7 +6,9 @@ from flask.ext.migrate import Migrate, MigrateCommand
 
 from helpers import ShipHelper
 from kcsrv import app
-from kancolle import db
+from db import db
+from kancolle import Ship,Role
+import util
 
 if not os.path.exists('./config.py'):
     print("Your config file does not exist. "

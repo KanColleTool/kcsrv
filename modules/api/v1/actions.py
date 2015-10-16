@@ -116,6 +116,6 @@ def firstship():
 
     admiral.setup = True
 
-    db.db.session.add(admiral)
-    db.db.session.commit()
+    db.session.add(admiral)
+    db.session.commit()
     return svdata({'api_result_msg': 'shitty api is shitty', 'api_result': 1})

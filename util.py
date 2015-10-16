@@ -1,6 +1,4 @@
 import os
-import string
-import random
 import datetime
 import time
 import json
@@ -11,15 +9,6 @@ from db import db
 from kancolle import User,Admiral
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
-
-
-def generate_api_token() -> str:
-    """
-    Generate a random API token.
-    :return: A 40 character hexadecimal string.
-    """
-    return ''.join(random.choice(string.hexdigits) for _ in range(40)).lower()
-
 
 def svdata(obj: object, code: int=1, message: str="成功", errormsg: str="Invalid API request.") -> tuple:
     """
@@ -90,8 +79,8 @@ def get_token_admiral_or_error(api_token: str=None):
     if not user.admiral:
         adm = Admiral.create()
         user.admiral = adm
-        db.db.session.add(user)
-        db.db.session.commit()
+        db.session.add(user)
+        db.session.commit()
 
     # Do resource creating here, rather than elsewhere.
     last = user.admiral.lastaction

@@ -2,9 +2,8 @@ import random
 import datetime
 import time
 
-from kancolle import db
-from kancolle.admiral import Admiral,AdmiralShip
-from kancolle.navalbase import Recipe,Dock
+from db import db
+from kancolle import Admiral,AdmiralShip,Recipe,Dock
 from helpers import ShipHelper
 import util
 
@@ -149,7 +148,7 @@ def generate_dock_data(admiral_obj: Admiral=None, admiralid: int=None) -> dict:
         return ob
 
 
-    print(admiral.docks.all(), admiral.available_cdocks)
+    #print(admiral.docks.all(), admiral.available_cdocks)
 
     for x in range(0, 4):
         if admiral.available_cdocks - 1 >= x:

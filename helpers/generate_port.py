@@ -1,13 +1,12 @@
-from kancolle import db
-from kancolle.admiral import Admiral,AdmiralShip
+from db import db
+from kancolle import Admiral,AdmiralShip
 import util
 from helpers import AdmiralHelper, ShipHelper, DockHelper
 
 
 def generate_port(api_token):
     # First, get the admiral.
-    admiral = util.get_token_admiral_or_error(api_token)
-    print(type(admiral))
+    admiral = util.get_token_admiral_or_error(api_token)   
     assert isinstance(admiral, Admiral)
     # Initial KanColle reply.
     port2 = {

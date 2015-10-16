@@ -3,9 +3,8 @@ from flask.ext.admin.contrib.sqla import ModelView
 from flask.ext.security import current_user
 from wtforms import fields
 
-from kancolle import db,auth
-from kancolle.admiral import Admiral
-from kancolle.navalbase import Recipe
+from db import db
+from kancolle import auth,Admiral,Recipe
 
 
 class AdminAuthMixin(object):

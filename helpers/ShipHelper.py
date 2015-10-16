@@ -1,5 +1,5 @@
-from kancolle import db
-from kancolle.admiral import Admiral,AdmiralShip
+from db import db
+from kancolle import Admiral,AdmiralShip,Ship,Fleet
 from helpers import LevelHelper
 import util
 
@@ -27,8 +27,8 @@ def generate_new_ship(shipid: int, fleetid: int=None, active: bool=True) -> Admi
     :param fleetid: The optional fleet ID to give to the ship.
     :return: A new AdmiralShip object.
     """
-    original_ship = db.Ship.query.filter_by(id=shipid).first()
-    assert isinstance(original_ship, db.Ship)
+    original_ship = Ship.query.filter_by(id=shipid).first()
+    assert isinstance(original_ship, Ship)
     if not original_ship: return
     admiral_ship = AdmiralShip(
         ship = original_ship,
@@ -110,11 +110,11 @@ def assign_ship(admiral: Admiral, ship_id: int):
     # Assign ship the correct local ship number.
     ship.local_ship_num = len(admiral.admiral_ships.all())
     # Create a new fleet.
-    fleet = db.Fleet()
+    fleet = Fleet()
     # Add the ship to the first fleet.
     fleet.ships.append(ship)
     # Add the ship to the admiral
     admiral.admiral_ships.append(ship)
     # Add the fleet to the admiral
     admiral.fleets.append(fleet)
-    db.db.session.add(admiral)
+    db.session.add(admiral)

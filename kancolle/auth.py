@@ -1,4 +1,5 @@
 from . import UserMixin, RoleMixin, db
+import string, random
 
 role__user = db.Table('role__user',
                       db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
@@ -14,7 +15,7 @@ class User(db.Model, UserMixin):
     confirmed_at = db.Column(db.DateTime())
 
     nickname = db.Column(db.String(255), unique=True, nullable=False)
-    api_token = db.Column(db.String(40), default=lambda: util.generate_api_token(), unique=True)
+    api_token = db.Column(db.String(40), default=lambda: User.generate_api_token(), unique=True)
 
     admiral = db.relationship("Admiral", backref='user', uselist=False)
 
@@ -22,6 +23,13 @@ class User(db.Model, UserMixin):
 
     def __str__(self):
         return self.email
+
+    def generate_api_token():
+        """
+        Generate a random API token.
+        :return: A 40 character hexadecimal string.
+        """
+        return ''.join(random.choice(string.hexdigits) for _ in range(40)).lower()
 
 
 

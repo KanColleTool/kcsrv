@@ -1,7 +1,7 @@
 from flask import Blueprint,request
 # from flask.ext.security import current_user
 from util import *
-from kancolle import api
+from kancolle import api,AdmiralShip
 from helpers import generate_port, AdmiralHelper, DockHelper, ShipHelper
 
 api_user = Blueprint('api_user', __name__)
@@ -104,7 +104,7 @@ def ship2():
     for num, ship in enumerate(admiral_ships):
         if not ship.active:
             continue
-        assert isinstance(ship, db.AdmiralShip)
+        assert isinstance(ship, AdmiralShip)
         ships['api_ship'].append(ShipHelper.generate_api_data(admiral.id, ship.local_ship_num))
 
     return svdata(ships)
