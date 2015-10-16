@@ -1,5 +1,5 @@
-import util, db
-
+import util
+from kancolle import db
 """These are API version 1 functions only."""
 
 def get_admiral_furniture():

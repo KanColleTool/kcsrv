@@ -3,7 +3,7 @@ import datetime
 from flask.ext.script import Manager, prompt_pass, prompt_bool
 from flask.ext.security.utils import encrypt_password
 
-from db import *
+from kancolle import db
 
 manager = Manager(usage="Manage users")
 

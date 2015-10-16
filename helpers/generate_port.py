@@ -1,4 +1,5 @@
-import db
+from kancolle import db
+from kancolle.admiral import Admiral,AdmiralShip
 import util
 from helpers import AdmiralHelper, ShipHelper, DockHelper
 
@@ -6,7 +7,8 @@ from helpers import AdmiralHelper, ShipHelper, DockHelper
 def generate_port(api_token):
     # First, get the admiral.
     admiral = util.get_token_admiral_or_error(api_token)
-    assert isinstance(admiral, db.Admiral)
+    print(type(admiral))
+    assert isinstance(admiral, Admiral)
     # Initial KanColle reply.
     port2 = {
         "api_data": {}
@@ -72,7 +74,7 @@ def generate_port(api_token):
     for num, ship in enumerate(admiral_ships):
         if not ship.active:
             continue
-        assert isinstance(ship, db.AdmiralShip)
+        assert isinstance(ship, AdmiralShip)
         port2['api_data']['api_ship'].append(ShipHelper.generate_api_data(admiral.id, ship.local_ship_num))
     # Generate ndock.
     port2['api_data']['api_ndock'] = DockHelper.generate_dock_data(admiral)['rdock']

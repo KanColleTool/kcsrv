@@ -1,35 +1,36 @@
-import db
+from kancolle import db
+from kancolle.admiral import Admiral,AdmiralShip
 from helpers import LevelHelper
 import util
 
 
-def get_repair_materials(original_ship: db.AdmiralShip):
+def get_repair_materials(original_ship: AdmiralShip):
     """
     Get the amount of materials required to repair a ship.
-    :param original_ship: The db.AdmiralShip object that you wish to repair.
+    :param original_ship: The AdmiralShip object that you wish to repair.
     :return: A four part string, "fuel,ammo,steel,bauxite"
     """
     return "0,0,0,0"
 
-def get_repair_time(original_ship: db.AdmiralShip):
+def get_repair_time(original_ship: AdmiralShip):
     """
     Get the time required to repair a ship
-    :param original_ship: The db.AdmiralShip object that you wish to repair
+    :param original_ship: The AdmiralShip object that you wish to repair
     :return: The time to repair the ship.
     """
     return original_ship.repair_base
 
-def generate_new_ship(shipid: int, fleetid: int=None, active: bool=True) -> db.AdmiralShip:
+def generate_new_ship(shipid: int, fleetid: int=None, active: bool=True) -> AdmiralShip:
     """
     Generates a new ship from the specified ship id.
     :param shipid: The ship ID to generate from.
     :param fleetid: The optional fleet ID to give to the ship.
-    :return: A new db.AdmiralShip object.
+    :return: A new AdmiralShip object.
     """
     original_ship = db.Ship.query.filter_by(id=shipid).first()
     assert isinstance(original_ship, db.Ship)
     if not original_ship: return
-    admiral_ship = db.AdmiralShip(
+    admiral_ship = AdmiralShip(
         ship = original_ship,
         ammo = original_ship.ammo_max,
         fuel = original_ship.fuel_max,
@@ -54,7 +55,7 @@ def generate_new_ship(shipid: int, fleetid: int=None, active: bool=True) -> db.A
     )
     return admiral_ship
 
-def generate_api_data(admiralid: int, local_ship_id: int=None, original_ship: db.AdmiralShip=None) -> dict:
+def generate_api_data(admiralid: int, local_ship_id: int=None, original_ship: AdmiralShip=None) -> dict:
     """
     Generates an APIv1 compatible dictionary to pass to the KanColle official client.
     :param admiralid: The ID of the admiral getting the ship.
@@ -62,7 +63,7 @@ def generate_api_data(admiralid: int, local_ship_id: int=None, original_ship: db
     :param original_ship:
     :return:
     """
-    admiral = db.Admiral.query.filter_by(id=admiralid).first()
+    admiral = Admiral.query.filter_by(id=admiralid).first()
     if local_ship_id is not None:
         ship = admiral.admiral_ships.filter_by(local_ship_num=local_ship_id).first()
     elif original_ship:
@@ -104,7 +105,7 @@ def generate_api_data(admiralid: int, local_ship_id: int=None, original_ship: db
         }
     return temp_dict
 
-def assign_ship(admiral: db.Admiral, ship_id: int):
+def assign_ship(admiral: Admiral, ship_id: int):
     ship = generate_new_ship(ship_id, 0)
     # Assign ship the correct local ship number.
     ship.local_ship_num = len(admiral.admiral_ships.all())

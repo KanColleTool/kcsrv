@@ -7,6 +7,9 @@ from forms import *
 from admin import admin
 from util import generate_api_token
 
+from kancolle import db
+from kancolle.auth import User,Role
+
 modules = {
     "migrate": None,
     "security": None,

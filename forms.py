@@ -4,7 +4,7 @@ from wtforms_alchemy import model_form_factory
 from flask.ext.wtf import Form
 from flask.ext.security.forms import ConfirmRegisterForm
 
-from db import *
+from kancolle import db
 
 BaseModelForm = model_form_factory(Form)
 

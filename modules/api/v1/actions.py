@@ -1,6 +1,6 @@
 from flask import request, Blueprint
 
-import db
+from kancolle import db
 from helpers import DockHelper, ShipHelper
 from util import get_token_admiral_or_error, svdata, prepare_api_blueprint
 

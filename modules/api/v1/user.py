@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint,request
 # from flask.ext.security import current_user
 from util import *
 from helpers import generate_port, AdmiralHelper, DockHelper, ShipHelper
@@ -113,14 +113,15 @@ def mapinfo():
     return svdata(AdmiralHelper.get_admiral_sorties())
 
 @api_user.route('/api_get_member/questlist', methods=['GET', 'POST'])
-def questlist(api_page_no):
-  print('Page no: ' + api_page_no)
+def questlist():
+  import math
   data = {}
+  page_number = request.values.get('api_page_no', None)  
   admiral = get_token_admiral_or_error()
-  data['api_count'] = admiral.quests.length
-  data['api_page_count'] = 1,
-  data["api_disp_page"] = 1
-  data["api_list"] = "[]"
+  data['api_count'] = admiral.quests.count()
+  data['api_page_count'] = int(math.ceil(data['api_count'] / 5))
+  data["api_disp_page"] = page_number
+  data["api_list"] = [quest.getAPIData() for quest in admiral.quests]
   return svdata(data)
 
 # Generic routes for anything not implemented.

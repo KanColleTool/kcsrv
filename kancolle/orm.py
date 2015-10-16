@@ -1,17 +1,18 @@
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.security import UserMixin, RoleMixin
-
-import util
-
-db = SQLAlchemy()
+from . import db
+from . import UserMixin, RoleMixin
 
 role__user = db.Table('role__user',
                       db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
                       db.Column('role_id', db.Integer, db.ForeignKey('role.id'))
                       )
 
+class KCModel():
+    def byId(self,id=0):
+        return db.session.query(type(self)).get(id)
 
-class Recipe(db.Model):
+
+class RecipeMap(db.Model,KCModel):
+    __tablename__ = 'recipe'
     id = db.Column(db.Integer, primary_key=True)
     ship = db.relationship("Ship", uselist=False)
     ship_id = db.Column(db.Integer, db.ForeignKey('ship.id'))
@@ -28,7 +29,8 @@ class Recipe(db.Model):
     maxbaux = db.Column(db.Integer, nullable=False, default=30)
 
 
-class Fleet(db.Model):
+class FleetMap(db.Model,KCModel):
+    __tablename__ = 'fleet'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, default="Unnamed")
     admiral_id = db.Column(db.Integer, db.ForeignKey('admiral.id'))
@@ -36,7 +38,8 @@ class Fleet(db.Model):
     ships = db.relationship("AdmiralShip", lazy='dynamic', order_by='AdmiralShip.local_fleet_num')
 
 
-class Dock(db.Model):
+class DockMap(db.Model,KCModel):
+    __tablename__ = 'dock'
     id = db.Column(db.Integer, primary_key=True)
     state = db.Column(db.Integer)
     complete = db.Column(db.BigInteger, nullable=True)
@@ -52,7 +55,8 @@ class Dock(db.Model):
     admiral_id = db.Column(db.Integer, db.ForeignKey("admiral.id"))
 
 
-class AdmiralShip(db.Model):
+class AdmiralShipMap(db.Model,KCModel):
+    __tablename__ = 'admiral_ship'
     id = db.Column(db.Integer, primary_key=True)
     admiral_id = db.Column(db.Integer, db.ForeignKey('admiral.id'))
     ship = db.relationship("Ship", uselist=False)
@@ -97,7 +101,8 @@ class AdmiralShip(db.Model):
     def __str__(self):
         return self.ship.name
 
-class Ship(db.Model):
+class ShipMap(db.Model,KCModel):
+    __tablename__ = 'ship'
     id = db.Column(db.Integer, primary_key=True)
     afterlv = db.Column(db.Integer, nullable=True)
     aftership_num = db.Column(db.Integer, nullable=True)
@@ -154,7 +159,7 @@ class Ship(db.Model):
     def __str__(self):
         return self.name
 
-class AdmiralQuest(db.Model):
+class AdmiralQuestMap(db.Model,KCModel):
     """
     progress: None,50,80
     state: Inactive, Active, Complete
@@ -166,14 +171,15 @@ class AdmiralQuest(db.Model):
     progress = db.Column(db.Integer)
     state = db.Column(db.Integer)
 
-class AdmiralSortie(db.Model):
+class AdmiralSortieMap(db.Model,KCModel):
     __tablename__ = 'admiral_sortie'
     admiral_id = db.Column(db.Integer, db.ForeignKey('admiral.id'),primary_key=True)
     sortie_id = db.Column(db.Integer, db.ForeignKey('sortie.id'),primary_key=True)
     cleared = db.Column(db.Integer,default=0)
     defeat_count = db.Column(db.Integer)   
 
-class Admiral(db.Model):
+class AdmiralMap(db.Model,KCModel):
+    __tablename__ = 'admiral'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     last_login = db.Column(db.DateTime)
@@ -200,15 +206,15 @@ class Admiral(db.Model):
     pvp_successes = db.Column(db.Integer, default=0)
     pvp_total = db.Column(db.Integer, default=0)
 
-    admiral_ships = db.relationship(AdmiralShip, backref='admiral', lazy='dynamic')
+    admiral_ships = db.relationship("AdmiralShip", backref='admiral', lazy='dynamic')
 
     resources = db.Column(db.String())
 
-    fleets = db.relationship(Fleet, backref='admiral', lazy='dynamic')
+    fleets = db.relationship("Fleet", backref='admiral', lazy='dynamic')
 
-    sorties = db.relationship(AdmiralSortie, backref='admiral', lazy='dynamic')
+    sorties = db.relationship("AdmiralSortie", backref='admiral', lazy='dynamic')
 
-    quests = db.relationship(AdmiralQuest, backref='admiral', lazy='dynamic')
+    quests = db.relationship("AdmiralQuest", backref='admiral', lazy='dynamic')
 
     # If this is false...
     # 1) api_req_init is enabled
@@ -225,7 +231,8 @@ class Admiral(db.Model):
         return "Admiral " + self.user.nickname
 
 
-class Item(db.Model):
+class ItemMap(db.Model,KCModel):
+    __tablename__ = 'item'
     id = db.Column(db.Integer, primary_key=True)
 
     admiral_ship_id = db.Column(db.Integer, db.ForeignKey("admiral_ship.id"))
@@ -247,7 +254,8 @@ class Item(db.Model):
     sortno = db.Column(db.Integer)
 
 
-class User(db.Model, UserMixin):
+class UserMap(db.Model,KCModel, UserMixin):
+    __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
     active = db.Column(db.Boolean)
 
@@ -258,7 +266,7 @@ class User(db.Model, UserMixin):
     nickname = db.Column(db.String(255), unique=True, nullable=False)
     api_token = db.Column(db.String(40), default=lambda: util.generate_api_token(), unique=True)
 
-    admiral = db.relationship(Admiral, backref='user', uselist=False)
+    admiral = db.relationship("Admiral", backref='user', uselist=False)
 
     roles = db.relationship('Role', secondary=role__user, backref=db.backref('users', lazy='dynamic'))  # Fix roles
 
@@ -267,7 +275,8 @@ class User(db.Model, UserMixin):
 
 
 
-class Role(db.Model, RoleMixin):
+class RoleMap(db.Model,KCModel, RoleMixin):
+    __tablename__ = 'role'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
     description = db.Column(db.Text)
@@ -275,13 +284,15 @@ class Role(db.Model, RoleMixin):
     def __str__(self):
         return self.name
 
-class Sortie(db.Model):
+class SortieMap(db.Model,KCModel):
+    __tablename__ = 'sortie'
     id = db.Column(db.Integer, primary_key=True)
 
     is_boss = db.Column(db.Integer, default=0)
     level = db.Column(db.String(10))
 
-class Quest(db.Model):
+class QuestMap(db.Model,KCModel):
+    __tablename__ = 'quest'
     """
     no: quest number
     frequency: Once,Daily,Weekly

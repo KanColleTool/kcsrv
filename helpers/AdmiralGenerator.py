@@ -1,4 +1,4 @@
-import db
+from kancolle import db
 
 
 def new_admiral():

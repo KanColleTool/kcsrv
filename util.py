@@ -9,7 +9,8 @@ import math
 from flask import request, abort
 
 from helpers import AdmiralGenerator
-import db
+from kancolle import db
+from kancolle.auth import User
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -68,20 +69,23 @@ def prepare_api_blueprint(bp):
 
 
 def get_token_admiral_or_error(api_token: str=None):
+    #ALLOW_NO_API = True
     """
     Grabs an admiral object from the specified API token, or creates a new one if possible.
     :param api_token: Optional: The API token to use. If this is not specified, it uses the token from the POST request.
     :return: A valid admiral object.
-    """
+    """ 
 
     # Get the API token.
     if api_token is None:
         api_token = request.values.get('api_token', None)
+    if ALLOW_NO_API:
+        api_token = User().byId(id=1).api_token
     if api_token is None:
         abort(403)
 
     # TODO: Optimize out some querying here
-    user = db.User.query.filter_by(api_token=api_token).first()
+    user = User.query.filter_by(api_token=api_token).first()
     if not user:
         abort(403)
     # Create a new admiral object if it doesn't exist.
@@ -134,7 +138,7 @@ def get_admiral_v2(api_token: str):
     :param api_token: The API token to use. Not optional.
     :return: A valid admiral object, or None if the token is not valid.
     """
-    user = db.User.query.filter_by(api_token=api_token).first()
+    user = User.query.filter_by(api_token=api_token).first()
     if not user:
         return None
     if not user.admiral:
@@ -151,9 +155,9 @@ def get_admiral_v2_from_id_or_token(search: object):
     :return: A valid admiral object, or None if the token/id is not valid.
     """
     if len(search) == 40:
-        user = db.User.query.filter_by(api_token=search).first()
+        user = User.query.filter_by(api_token=search).first()
     elif search:
-        user = db.User.query.filter_by(id=search).first()
+        user = User.query.filter_by(id=search).first()
     else:
         return None
     if not user:

@@ -2,7 +2,9 @@ import random
 import datetime
 import time
 
-import db
+from kancolle import db
+from kancolle.admiral import Admiral,AdmiralShip
+from kancolle.navalbase import Recipe,Dock
 from helpers import ShipHelper
 import util
 
@@ -12,18 +14,18 @@ def get_ship_from_recipe(fuel: int=30, ammo: int=30, steel: int=30, baux: int=30
     Gets a ship id from the specified recipe.
     :return: The ship id that was chosen.
     """
-    ships = db.Recipe.query.filter((db.Recipe.minfuel >= fuel) & (db.Recipe.maxfuel <= fuel)) \
-        .filter((db.Recipe.minammo >= ammo) & (db.Recipe.maxammo <= ammo)) \
-        .filter((db.Recipe.minsteel >= steel) & (db.Recipe.maxsteel <= steel)) \
-        .filter((db.Recipe.minbaux >= baux) & (db.Recipe.maxsteel <= baux))
+    ships = Recipe.query.filter((Recipe.minfuel >= fuel) & (Recipe.maxfuel <= fuel)) \
+        .filter((Recipe.minammo >= ammo) & (Recipe.maxammo <= ammo)) \
+        .filter((Recipe.minsteel >= steel) & (Recipe.maxsteel <= steel)) \
+        .filter((Recipe.minbaux >= baux) & (Recipe.maxsteel <= baux))
 
     ship_choices = [[x.id] * x.chance for x in ships]
     ship_choices = [item for sublist in ship_choices for item in sublist]
     return random.choice(ship_choices)
 
 
-def update_dock(dock: db.Dock, fuel: int=None, ammo: int=None, steel: int=None, baux: int=None,
-                ship: db.AdmiralShip=None, build=True):
+def update_dock(dock: Dock, fuel: int=None, ammo: int=None, steel: int=None, baux: int=None,
+                ship: AdmiralShip=None, build=True):
     """
     Updates a dock with the correct values.
     Can be called just like ```update_dock(dock)``` to reset the dock.
@@ -94,7 +96,7 @@ def get_and_remove_ship(dockid: int, build=True):
     return api_data
 
 
-def craft_ship(fuel: int, ammo: int, steel: int, baux: int, admiral: db.Admiral, dockid: int):
+def craft_ship(fuel: int, ammo: int, steel: int, baux: int, admiral: Admiral, dockid: int):
     """
     Crafts a ship from a recipe.
     :param fuel: The amount of fuel to use.
@@ -127,10 +129,10 @@ def craft_ship(fuel: int, ammo: int, steel: int, baux: int, admiral: db.Admiral,
     return api_data
 
 
-def generate_dock_data(admiral_obj: db.Admiral=None, admiralid: int=None) -> dict:
+def generate_dock_data(admiral_obj: Admiral=None, admiralid: int=None) -> dict:
     """
     Generates v1 dock data.
-    :param admiral: Generate from this db.Admiral instance.
+    :param admiral: Generate from this Admiral instance.
     :param admiralid: Generate from this admiral ID.
     :return: A dict containing the dock data. d['rdock'] for repair docks, d['cdock'] for crafting docks
     """
@@ -138,7 +140,7 @@ def generate_dock_data(admiral_obj: db.Admiral=None, admiralid: int=None) -> dic
     if admiral_obj:
         admiral = admiral_obj
     elif admiralid:
-        admiral = db.Admiral.query.filter_by(id=admiralid)
+        admiral = Admiral.query.filter_by(id=admiralid)
     else:
         admiral = None
     ob = {"rdock": [], "cdock": []}

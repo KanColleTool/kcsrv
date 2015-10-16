@@ -3,7 +3,9 @@ from flask.ext.admin.contrib.sqla import ModelView
 from flask.ext.security import current_user
 from wtforms import fields
 
-from db import *
+from kancolle import db,auth
+from kancolle.admiral import Admiral
+from kancolle.navalbase import Recipe
 
 
 class AdminAuthMixin(object):
@@ -43,7 +45,7 @@ class RecipeModelView(MyModelView):
 
 
 admin = Admin(index_view=MyAdminIndexView())
-admin.add_view(RoleModelView(Role, db.session, endpoint='role'))
-admin.add_view(UserModelView(User, db.session, endpoint='user'))
+admin.add_view(RoleModelView(auth.Role, db.session, endpoint='role'))
+admin.add_view(UserModelView(auth.User, db.session, endpoint='user'))
 admin.add_view(AdmiralModelView(Admiral, db.session, endpoint='admiral'))
 admin.add_view(RecipeModelView(Recipe, db.session, endpoint='recipes'))
