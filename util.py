@@ -69,7 +69,7 @@ def prepare_api_blueprint(bp):
 
 
 def get_token_admiral_or_error(api_token: str=None):
-    #ALLOW_NO_API = True
+    ALLOW_NO_API = False
     """
     Grabs an admiral object from the specified API token, or creates a new one if possible.
     :param api_token: Optional: The API token to use. If this is not specified, it uses the token from the POST request.
