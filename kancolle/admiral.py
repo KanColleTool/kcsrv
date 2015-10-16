@@ -1,3 +1,5 @@
+from . import db
+
 class Admiral(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
@@ -48,6 +50,24 @@ class Admiral(db.Model):
 
     def __str__(self):
         return "Admiral " + self.user.nickname
+
+    def create():
+        """
+        Sets up an admiral.
+        This is for both APIv1 and APIv2.
+        :param first_ship_id: The ID of the very first ship.
+        :param admiral: The admiral object to setup.
+        :return: The setup admiral.
+        """
+        admiral = db.Admiral()
+        # Give the admiral starting resources
+        admiral.resources = "500,500,500,500,1,1,3,0"
+        # Give the admiral some docks.
+        docks = [db.Dock() for _ in range(8)]
+        admiral.docks = docks
+        # Return the admiral
+        admiral.setup = False
+        return admiral
 
 class AdmiralShip(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -106,6 +126,21 @@ class AdmiralQuest(db.Model):
 
     progress = db.Column(db.Integer)
     state = db.Column(db.Integer)
+
+    def getAPIData(self):
+        quest = db.session.query(Quest).get(self.quest_id)
+        return {
+        "api_no": quest.no,
+        "api_category": quest.category,
+        "api_type": quest.frequency,
+        "api_title": quest.title,
+        "api_detail": quest.detail,
+        "api_get_material": eval(quest.get_material),
+        "api_bonus_flag": quest.bonus_flag,
+        "api_invalid_flag": quest.invalid_flag,
+        "api_progress_flag": self.progress,
+        "api_state": self.state
+        }
 
 class AdmiralSortie(db.Model):
     admiral_id = db.Column(db.Integer, db.ForeignKey('admiral.id'),primary_key=True)

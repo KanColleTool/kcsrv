@@ -1,7 +1,6 @@
 import os
 
 from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
 import init
 
 app = Flask(__name__)
@@ -18,5 +17,3 @@ if not "SECURITY_PASSWORD_SALT" in app.config or app.config["SECURITY_PASSWORD_S
     print("Security salt has not been set. Please edit config.py.")
 
 init.init(app)
-
-db = SQLAlchemy()

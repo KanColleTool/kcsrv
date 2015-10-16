@@ -1,3 +1,5 @@
+from . import db
+
 class Sortie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 

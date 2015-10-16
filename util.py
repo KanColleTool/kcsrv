@@ -5,12 +5,10 @@ import datetime
 import time
 import json
 import math
-
 from flask import request, abort
 
-from helpers import AdmiralGenerator
-from kancolle import db
-from kancolle.auth import User
+from db import db
+from kancolle import User,Admiral
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -90,7 +88,7 @@ def get_token_admiral_or_error(api_token: str=None):
         abort(403)
     # Create a new admiral object if it doesn't exist.
     if not user.admiral:
-        adm = AdmiralGenerator.new_admiral()
+        adm = Admiral.create()
         user.admiral = adm
         db.db.session.add(user)
         db.db.session.commit()

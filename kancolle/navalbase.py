@@ -1,3 +1,5 @@
+from . import db
+
 class Ship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     afterlv = db.Column(db.Integer, nullable=True)

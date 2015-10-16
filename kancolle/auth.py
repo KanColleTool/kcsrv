@@ -1,4 +1,4 @@
-from . import UserMixin, RoleMixin
+from . import UserMixin, RoleMixin, db
 
 role__user = db.Table('role__user',
                       db.Column('user_id', db.Integer, db.ForeignKey('user.id')),

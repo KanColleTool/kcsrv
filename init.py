@@ -3,12 +3,13 @@ from flask.ext.migrate import Migrate
 from flask.ext.security import Security, SQLAlchemyUserDatastore
 from flask.ext.login import user_logged_in
 
+
+
 from forms import *
 from admin import admin
 from util import generate_api_token
-
-from kancolle import db
-from kancolle.auth import User,Role
+from db import db
+from kancolle import User,Role
 
 modules = {
     "migrate": None,
