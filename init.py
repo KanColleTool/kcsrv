@@ -7,8 +7,8 @@ from flask.ext.login import user_logged_in
 
 from forms import *
 from admin import admin
-from db import db
-from kancolle import User,Role
+from db import db,User,Role
+from util import generate_api_token
 
 modules = {
     "migrate": None,
@@ -67,4 +67,4 @@ def init(app):
         """
         Regenerate the API token every login.
         """
-        user.api_token = User.generate_api_token()
+        user.api_token = generate_api_token()

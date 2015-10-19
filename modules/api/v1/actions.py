@@ -1,7 +1,7 @@
 from flask import request, Blueprint
 
-from kancolle import db
-from helpers import DockHelper, ShipHelper
+from db import db
+from helpers import DockHelper, ShipHelper,AdmiralHelper,QuestHelper
 from util import get_token_admiral_or_error, svdata, prepare_api_blueprint
 
 api_actions = Blueprint('api_actions', __name__)
@@ -17,8 +17,8 @@ def lock():
     locked = not admiralship.heartlocked
 
     admiralship.heartlocked = locked
-    db.db.session.add(admiralship)
-    db.db.session.commit()
+    db.session.add(admiralship)
+    db.session.commit()
     return svdata({"api_locked": int(locked)})
 
 
@@ -86,22 +86,22 @@ def change_position():
             # BLEH
             original_ship.local_fleet_num = None
             original_ship.fleet_id = None
-            db.db.session.add(original_ship)
+            db.session.add(original_ship)
             new_ship = admiral.admiral_ships.filter_by(local_ship_num=ship_id).first()
             new_ship.local_fleet_num = ship_pos
             fleet.ships.append(new_ship)
-            db.db.session.add(fleet)
-            db.db.session.commit()
+            db.session.add(fleet)
+            db.session.commit()
             return svdata({})
         # Do the bullshit swap.
         original_ship.local_fleet_num, new_ship.local_fleet_num = new_ship.local_fleet_num, original_ship.local_fleet_num
         # Eww, merge ships back into the admiral_ships table
-        db.db.session.add(original_ship)
-        db.db.session.add(new_ship)
+        db.session.add(original_ship)
+        db.session.add(new_ship)
 
     # Update the fleet.
-    db.db.session.add(fleet)
-    db.db.session.commit()
+    db.session.add(fleet)
+    db.session.commit()
     return svdata({})
 
 
@@ -119,3 +119,38 @@ def firstship():
     db.session.add(admiral)
     db.session.commit()
     return svdata({'api_result_msg': 'shitty api is shitty', 'api_result': 1})
+
+@api_actions.route('/api_req_quest/start', methods=['GET', 'POST'])
+# Start quest
+def queststart():
+    admiral = get_token_admiral_or_error()
+    quest_id = request.values.get("api_quest_id")
+    AdmiralHelper.activate_quest(quest_id,admiral)
+    QuestHelper.update_quest_progress(quest_id,admiral)
+    return svdata({'api_result_msg': 'ok', 'api_result': 1})
+
+@api_actions.route('/api_req_quest/stop', methods=['GET', 'POST'])
+# Stop quest
+def queststop():
+    admiral = get_token_admiral_or_error()
+    quest_id = request.values.get("api_quest_id")
+    AdmiralHelper.deactivate_quest(quest_id,admiral)
+    return svdata({'api_result_msg': 'ok', 'api_result': 1})
+
+@api_actions.route('/api_req_quest/clearitemget', methods=['GET', 'POST'])
+# Complete quest
+def clearitemget():
+    admiral = get_token_admiral_or_error()
+    quest_id = request.values.get("api_quest_id")
+    data = QuestHelper.complete_quest(admiral,quest_id)
+    return svdata(data)
+
+@api_actions.route('/api_req_kaisou/slotset', methods=['GET', 'POST'])
+# Change Item
+def slotset():
+    admiral = get_token_admiral_or_error()
+    admiral_ship_id = request.values.get("api_id")
+    admiral_item_id = request.values.get("api_item_id")
+    slot = request.values.get("api_slot_idx")    
+    ShipHelper.change_ship_item(admiral_ship_id,admiral_item_id,slot)
+    return svdata({'api_result_msg': 'ok', 'api_result': 1})

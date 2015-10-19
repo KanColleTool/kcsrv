@@ -1,7 +1,6 @@
-from db import db
-from kancolle import Admiral,AdmiralShip
+from db import db,Admiral,AdmiralShip
 import util
-from helpers import AdmiralHelper, ShipHelper, DockHelper
+from helpers import AdmiralHelper, ShipHelper, DockHelper,ResourceHelper
 
 
 def generate_port(api_token):
@@ -35,10 +34,10 @@ def generate_port(api_token):
             'api_medals': 0,
             'api_large_dock': 0
         })
-    port2['api_data']['api_deck_port'] = []
+    port2['api_data']['api_deck_port'] = AdmiralHelper.get_admiral_deck_api_data(admiral)    
+    """
     count = 0
-    # Sort the admiral ships list. Not even sure if this is needed...
-    admiral_ships = sorted(admiral.admiral_ships.all(), key=lambda x: x.local_ship_num)
+    # Sort the admiral ships list. Not even sure if this is needed...    
 
     # Fleets.
     for fleet in admiral.fleets.all():
@@ -62,19 +61,17 @@ def generate_port(api_token):
         }
 
         port2['api_data']['api_deck_port'].append(temp_dict)
-    # Materials.
-    port2['api_data']['api_material'] = [
-        {"api_id": n + 1,
-         "api_member_id": admiral.id,
-         "api_value": int(val)} for n, val in enumerate(admiral.resources.split(','))
-    ]
+    """
+    # Materials.        
+    port2['api_data']['api_material'] = AdmiralHelper.get_admiral_resources_api_data(admiral)
     port2['api_data']['api_ship'] = []
     # Ship data, Luckily this is generated for us by a helper class.
+    admiral_ships = sorted(admiral.admiral_ships.all(), key=lambda x: x.local_ship_num)
     for num, ship in enumerate(admiral_ships):
         if not ship.active:
             continue
         assert isinstance(ship, AdmiralShip)
-        port2['api_data']['api_ship'].append(ShipHelper.generate_api_data(admiral.id, ship.local_ship_num))
+        port2['api_data']['api_ship'].append(ShipHelper.get_admiral_ship_api_data(ship.id))
     # Generate ndock.
     port2['api_data']['api_ndock'] = DockHelper.generate_dock_data(admiral)['rdock']
     return port2

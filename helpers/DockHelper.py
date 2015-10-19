@@ -2,9 +2,8 @@ import random
 import datetime
 import time
 
-from db import db
-from kancolle import Admiral,AdmiralShip,Recipe,Dock
-from helpers import ShipHelper
+from db import db,Admiral,AdmiralShip,Recipe,Dock
+from . import ShipHelper
 import util
 
 
