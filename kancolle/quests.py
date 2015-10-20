@@ -15,7 +15,9 @@ def get_quest_progress(admiral,admiral_quest=None,id_admiralquest=None,code=None
     data = json.loads(admiral_quest.data) if admiral_quest.data else None
     return globals()[code](admiral,data)
 
-def A00(admiral,data=None):
+    
+#If we don't have a function with the code of the Quest, we catbomb
+def A0(admiral,data=None):
     """
     Never complete, idk
     """

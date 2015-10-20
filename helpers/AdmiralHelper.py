@@ -1,5 +1,5 @@
 import util,datetime,time,math
-from db import db,User,Admiral,Dock,AdmiralQuest,Resource
+from db import db,User,Admiral,Dock,AdmiralQuest,Resource,AdmiralItem
 from . import ResourceHelper
 """These are API version 1 functions only."""
 

@@ -387,7 +387,7 @@ class Quest(db.Model):
     resource_id = db.Column(db.Integer,db.ForeignKey("resource.id"))
 
     reward = db.relationship("Resource")
-    bonuses = db.relationship("QuestBonus")
+    bonuses = db.relationship("QuestBonus", lazy='dynamic', foreign_keys="QuestBonus.quest_id")
 
 class QuestRequirement(db.Model):
     """

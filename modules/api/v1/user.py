@@ -122,7 +122,7 @@ def mapinfo():
     return svdata(AdmiralHelper.get_admiral_sorties())
 
 @api_user.route('/api_get_member/questlist', methods=['GET', 'POST'])
-#My god, he rebuilds the entire questlist whenever you (de)activate a quest...
+#My god, he rebuilds the questlist every time you (de)activate a quest...
 def questlist():
     import math
     page_number = request.values.get('api_page_no', None)      

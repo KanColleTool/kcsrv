@@ -124,17 +124,19 @@ def assign_ship(admiral: Admiral, ship_id: int):
 def change_ship_item(admiral_ship_id,admiral_item_id,slot):
     #TODO: When remove gear, reorder slots to keep top slots filled.
     admiral_item_id = None if int(admiral_item_id) == -1 else admiral_item_id
-    db.session.query(AdmiralShipItem)\
+    query = db.session.query(AdmiralShipItem)\
     .filter(AdmiralShipItem.admiral_ship_id==admiral_ship_id,AdmiralShipItem.slot==slot)\
     .update({"admiral_item_id":admiral_item_id})
     db.session.commit()
 
-
 def get_admiral_ship_api_data(admiral_ship_id):
-    # I mostly copied this from ShipHelper.generate_api_data. Might be worth refactoring.
+    # I mostly copied this from ShipHelper.generate_api_data
     admiral_ship = db.session.query(AdmiralShip).get(admiral_ship_id)
     ship = admiral_ship.ship
-    items = [item.admiral_item_id if item.admiral_item_id else -1 for item in admiral_ship.items] #Python is sexy.
+
+    # AdmiralShip *must have* entries in AdmiralShipItem table, or we catbomb.
+    # Currently this is done manually. (Fixing it asap)
+    items = [item.admiral_item_id if item.admiral_item_id else -1 for item in admiral_ship.items]
     
     api_ship_data = {
             'api_id': admiral_ship.id,
@@ -158,7 +160,7 @@ def get_admiral_ship_api_data(admiral_ship_id):
             # Guesswork on exp part.
             'api_exp': [admiral_ship.exp, LevelHelper.get_exp_required(admiral_ship.level, admiral_ship.exp), 0],
             #'api_slot': items,
-            'api_slot': [-1, -1, -1, -1, -1],
+            'api_slot': items,
             'api_backs': ship.rarity,
             'api_sally_area': 0,  # dunno
             'api_ndock_item': list(map(int, util.take_items(admiral_ship.repair_base.split(','), [1, 3]))),

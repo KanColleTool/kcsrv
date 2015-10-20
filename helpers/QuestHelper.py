@@ -38,11 +38,15 @@ def complete_quest(admiral,quest_id=None,quest=None):
     AdmiralHelper.admiral_grant_resources(admiral,quest.reward)
 
     api_response = {}
-    api_response['api_material'] = ResourceHelper.get_resource_list(quest.reward)
-    api_response["api_bounus_count"] = len(quest.bonuses)
+    api_response['api_material'] = quest.reward.to_list()
+    api_response["api_bounus_count"] = quest.bonuses.count()
     api_response["api_bounus"] = []
-    for bonus in quest.bonuses:
-        #TODO unlock Fleet, LSC, etc.
+    for bonus in quest.bonuses.all():
+        """
+        TODO unlock Fleet, LSC, etc.
+        Also, I still can't get the effect announcing bonus items. They are added to Admiral's inventory,
+        but the bonus reward announcent doesn't show up.
+        """
         api_bonus = {
                 "api_type": bonus.kind,
                 "api_count": bonus.quantity
@@ -61,11 +65,14 @@ def complete_quest(admiral,quest_id=None,quest=None):
                 "api_name": ""
             }
             AdmiralHelper.admiral_grant_item(admiral,bonus.item_id,bonus.quantity)
+        api_response["api_bounus"].append(api_bonus)
 
-    #db.session.query(AdmiralQuest).filter(AdmiralQuest.id==admiral_quest.id).update({"state":QUEST_STATE_HIDDEN,"progress":QUEST_PROGRESS_0})
-
+    db.session.query(AdmiralQuest).filter(AdmiralQuest.id==admiral_quest.id)\
+        .update({"state":QUEST_STATE_HIDDEN,"progress":QUEST_PROGRESS_0})
+    db.session.commit() #Er...
+    
     """Unlocking new quests"""
-    list_maybe_unlocked = db.session.query(QuestRequirement).filter(QuestRequirement.required_id==4).all()
+    list_maybe_unlocked = db.session.query(QuestRequirement).filter(QuestRequirement.required_id==quest.id).all()
     for maybe_unlocked in list_maybe_unlocked:
         """maybe_unlocked -> requires quest just completed, so it may be unlocked"""
         id_quest_maybe = maybe_unlocked.quest_id
@@ -73,8 +80,8 @@ def complete_quest(admiral,quest_id=None,quest=None):
         """quests_required -> all quests required to unlock maybe_unlocked"""
         number_required = len(quests_required)
         if number_required == 1:
-            """We just completed it, so might as well save one query"""
-            unlock_quest(admiral,quests_required[0].id)
+            """We just completed the one needed, so might as well save one query"""
+            unlock_quest(admiral,id_quest_maybe)
             break
         ids_required =  [quest.required_id for quest in quests_required]
         """
@@ -84,5 +91,4 @@ def complete_quest(admiral,quest_id=None,quest=None):
         quest_count = db.session.query(AdmiralQuest).filter(AdmiralQuest.state==QUEST_STATE_HIDDEN,AdmiralQuest.quest_id.in_(ids_required)).count()
         if number_required == quest_count:
             unlock_quest(admiral,quest_id)
-
     return api_response
