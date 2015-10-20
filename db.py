@@ -1,5 +1,6 @@
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.security import UserMixin, RoleMixin
+from sqlalchemy import inspect
 from util import generate_api_token
 from constants import *
 db = SQLAlchemy()
@@ -55,63 +56,35 @@ class Admiral(db.Model):
     def __str__(self):
         return "Admiral " + self.user.nickname
 
-class Stats(db.Model):
-    """
-    Because we must protect out sanity.
+"""
+Stats are a Ship intrinsic attributes. She has 30 firepower. She has 40 hp.
+Current hp, fuel, ammo are stored in AdmiralShip table.
+"""
 
-    About defaults: this creates and awkward situation where, for instance, Items have hp.
-    This will not have any consequences unless you decide that if an Item has hp, it must be a Ship.
-    The alternative would be leaving it None, but whenever you create a new Ship you'd have to set that all manually.
-    That would be a bother, so let's not go crazy out there, huh?
-    """
+class Stats(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
-    luck = db.Column(db.Integer, default=0)
-    luck_eq = db.Column(db.Integer, default=0)
-    firepower = db.Column(db.Integer, default=0)
-    firepower_eq = db.Column(db.Integer, default=0)
+    luck = db.Column(db.Integer, default=0)    
+    firepower = db.Column(db.Integer, default=0)    
     armour = db.Column(db.Integer, default=0)
-    torpedo = db.Column(db.Integer, default=0)
-    torpedo_eq = db.Column(db.Integer, default=0)
-    antiair = db.Column(db.Integer, default=0)
-    antiair_eq = db.Column(db.Integer, default=0)
+    torpedo = db.Column(db.Integer, default=0)    
+    antiair = db.Column(db.Integer, default=0)    
     antisub = db.Column(db.Integer, default=0)
     evasion = db.Column(db.Integer, default=0)
     los = db.Column(db.Integer, default=0)
-    hp = db.Column(db.Integer,default=1)
+    srange = db.Column(db.Integer,default=0)
 
-    #Probably worth including it here
+    hp = db.Column(db.Integer)
     ammo = db.Column(db.Integer)
     fuel = db.Column(db.Integer)
 
-class AdmiralShip(db.Model):
-    id = db.Column(db.Integer, primary_key=True)   
-
-    local_fleet_num = db.Column(db.Integer)
-    local_ship_num = db.Column(db.Integer, nullable=False)
-    
-    fatigue = db.Column(db.Integer, default=49)
-
-    exp = db.Column(db.Integer)
-    level = db.Column(db.Integer)
-    repair_base = db.Column(db.String())
-    
-    heartlocked = db.Column(db.Boolean, default=False)
-    active = db.Column(db.Boolean, default=False, nullable=False)
-
-    admiral_id = db.Column(db.Integer, db.ForeignKey('admiral.id'))    
-    ship_id = db.Column(db.Integer, db.ForeignKey('ship.id'))
-    fleet_id = db.Column(db.Integer, db.ForeignKey('fleet.id'))
-    stats_id = db.Column(db.Integer, db.ForeignKey('stats.id'))
-
-    ship = db.relationship("Ship", uselist=False)    
-    items = db.relationship("AdmiralShipItem",order_by='AdmiralShipItem.slot')
-    stats = db.relationship("Stats")
-
-    def __str__(self):
-        return self.ship.name
-
-
+    def copy(self,target=None):        
+        target = target if target else Stats()
+        id = target.id
+        for c in inspect(Stats).c:
+            setattr(target, c.name, getattr(self, c.name))
+        target.id = id
+        return target
 
 class AdmiralQuest(db.Model):
     """
@@ -137,45 +110,80 @@ class AdmiralSortie(db.Model):
 
 class Ship(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    afterlv = db.Column(db.Integer, nullable=True)
+    aftership_num = db.Column(db.Integer, nullable=True)
+    remodel_cost = db.Column(db.String())
 
-    #Must mirror api_data2 for modernization porposes, or we'd have to do it manually
-    api_id = db.Column(db.Integer)
-    
-    remodel = db.Column(db.Integer, nullable=True)    
-    remodel_level = db.Column(db.Integer, nullable=True)
+    rarity = db.Column(db.Integer)
+    broken = db.Column(db.String())
 
-    rarity = db.Column(db.Integer)    
+    ammo_max = db.Column(db.Integer)
+    fuel_max = db.Column(db.Integer)
 
     name = db.Column(db.String)
     number = db.Column(db.Integer)
     stype = db.Column(db.Integer)
 
-    voicef = db.Column(db.Integer)    
+    voicef = db.Column(db.Integer)
+
+    itemslots = db.Column(db.Integer)
 
     modern_use = db.Column(db.String)
+    # Minimums
+    luck_base = db.Column(db.Integer, default=0)
+    firepower_base = db.Column(db.Integer, default=0)
+    torpedo_base = db.Column(db.Integer, default=0)
+    armour_base = db.Column(db.Integer, default=0)
+    antiair_base = db.Column(db.Integer, default=0)
+    antisub_base = db.Column(db.Integer, default=0)
+    los_base = db.Column(db.Integer, default=0)
+    evasion_base = db.Column(db.Integer, default=0)
+    hp_base = db.Column(db.Integer, default=0)
+
+    # Maximums
+    luck_max = db.Column(db.Integer, default=0)
+    firepower_max = db.Column(db.Integer, default=0)
+    torpedo_max = db.Column(db.Integer, default=0)
+    armour_max = db.Column(db.Integer, default=0)
+    antiair_max = db.Column(db.Integer, default=0)
+    antisub_max = db.Column(db.Integer, default=0)
+    maxslots = db.Column(db.Integer, default=0)
+    maxlos = db.Column(db.Integer, default=0)
+    evasion_max = db.Column(db.Integer, default=0)
+
+    maxhp = db.Column(db.Integer)
     srange = db.Column(db.Integer, default=0)
 
     kai = db.Column(db.Boolean, default=False)
-
-    id_remodel_cost = db.Column(db.Integer, db.ForeignKey('resource.id'))
-    id_broken = db.Column(db.Integer, db.ForeignKey('resource.id'))
-    id_stats =db.Column(db.Integer, db.ForeignKey('stats.id'))
-    id_max_stats = db.Column(db.Integer, db.ForeignKey('stats.id'))
-    
-    remodel_cost = db.relationship("Resource",foreign_keys='Ship.id_remodel_cost')
-    broken = db.relationship("Resource",foreign_keys='Ship.id_broken')
-    stats = db.relationship("Stats",foreign_keys='Ship.id_stats')
-    max_stats = db.relationship("Stats",foreign_keys='Ship.id_max_stats')
 
     # Messages
     getmsg = db.Column(db.Text())
     buildtime = db.Column(db.Integer)
 
     maxslots = db.Column(db.Integer())
-    maxplanes = db.Column(db.Integer())
+    maxplanes = db.Column(db.String())
 
     def __str__(self):
         return self.name
+"""
+    repair_base_id = db.Column(db.Integer,db.ForeignKey('resource.id'))
+    remodel_cost_id = db.Column(db.Integer, db.ForeignKey('resource.id'))
+    broken_id = db.Column(db.Integer, db.ForeignKey('resource.id'))
+    
+    
+    remodel_cost = db.relationship("Resource",foreign_keys='Ship.remodel_cost_id')
+    broken = db.relationship("Resource",foreign_keys='Ship.broken_id')
+    # There's no repair base on api_data2, we'll have to do it manually...
+    repair_base = db.relationship("Resource",foreign_keys='Ship.repair_base_id')
+
+
+    modernization = db.relationship("Stats",foreign_keys='Ship.modernization_id')
+    stats = db.relationship("Stats",foreign_keys='Ship.stats_id')
+    stats_max = db.relationship("Stats",foreign_keys='Ship.stats_max_id')
+    modernization_id = db.Column(db.Integer, db.ForeignKey('stats.id'))
+    stats_id =db.Column(db.Integer, db.ForeignKey('stats.id'))
+    stats_max_id = db.Column(db.Integer, db.ForeignKey('stats.id'))
+""" 
 
 class Recipe(db.Model):
     __tablename__ = 'recipe'
@@ -202,6 +210,52 @@ class Fleet(db.Model):
 
     ships = db.relationship("AdmiralShip", lazy='dynamic', order_by='AdmiralShip.local_fleet_num')
 
+class AdmiralShip(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    admiral_id = db.Column(db.Integer, db.ForeignKey('admiral.id'))
+    ship = db.relationship("Ship", uselist=False)
+    ship_id = db.Column(db.Integer, db.ForeignKey('ship.id'))
+
+    fleet_id = db.Column(db.Integer, db.ForeignKey('fleet.id'))
+
+    local_fleet_num = db.Column(db.Integer)
+    local_ship_num = db.Column(db.Integer, nullable=False)
+
+    # Unique ship-specific attributes
+    ammo = db.Column(db.Integer)
+    fuel = db.Column(db.Integer)
+    fatigue = db.Column(db.Integer, default=49)
+
+    exp = db.Column(db.Integer)
+    level = db.Column(db.Integer)
+
+    repair_base = db.Column(db.String())
+
+    current_hp = db.Column(db.Integer)  # Oh dear.
+
+    # Ship stats
+    luck = db.Column(db.Integer, default=0)
+    luck_eq = db.Column(db.Integer, default=0)
+    firepower = db.Column(db.Integer, default=0)
+    firepower_eq = db.Column(db.Integer, default=0)
+    armour = db.Column(db.Integer, default=0)
+    torpedo = db.Column(db.Integer, default=0)
+    torpedo_eq = db.Column(db.Integer, default=0)
+    antiair = db.Column(db.Integer, default=0)
+    antiair_eq = db.Column(db.Integer, default=0)
+    antisub = db.Column(db.Integer, default=0)
+    evasion = db.Column(db.Integer, default=0)
+
+    heartlocked = db.Column(db.Boolean, default=False)
+
+    active = db.Column(db.Boolean, default=False, nullable=False)
+    items = db.relationship("AdmiralShipItem",order_by='AdmiralShipItem.slot')
+    """
+    stats = db.relationship("Stats")
+    stats_id = db.Column(db.Integer, db.ForeignKey('stats.id'))
+    """
+    def __str__(self):
+        return self.ship.name
 
 class Dock(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -222,54 +276,65 @@ class Item(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     # I'm pretty sure we have to have a field to mirror the Item api_id from api_data2.
     # I might be wrong. My head hurts.
-    api_id = db.Column(db.Integer,default=0) 
-    rarity = db.Column(db.Integer,default=0)
-    info = db.Column(db.String(255))
-    usebull = db.Column(db.String(1))
     sortno = db.Column(db.Integer)
-    name = db.Column(db.String(255))
-    types = db.Column(db.String(50))
+    api_id = db.Column(db.Integer)
+    info = db.Column(db.String())
+    usebull = db.Column(db.String())
+    name = db.Column(db.String())
+    rarity = db.Column(db.String())
+    broken = db.Column(db.String())
+    types = db.Column(db.String())
+    taik = db.Column(db.Integer,default=0)
+    souk = db.Column(db.Integer,default=0)
+    houg = db.Column(db.Integer,default=0)
+    raig = db.Column(db.Integer,default=0)
+    soku = db.Column(db.Integer,default=0)
+    baku = db.Column(db.Integer,default=0)
+    tyku = db.Column(db.Integer,default=0)
+    tais = db.Column(db.Integer,default=0)
+    atap = db.Column(db.Integer,default=0)
+    houm = db.Column(db.Integer,default=0)
+    raim = db.Column(db.Integer,default=0)
+    houk = db.Column(db.Integer,default=0)
+    raik = db.Column(db.Integer,default=0)
+    bakk = db.Column(db.Integer,default=0)
+    saku = db.Column(db.Integer,default=0)
+    sakb = db.Column(db.Integer,default=0)
+    luck = db.Column(db.Integer,default=0)
+    leng = db.Column(db.Integer,default=0)
 
-    id_broken = db.Column(db.Integer, db.ForeignKey('resource.id'))
-    id_stats = db.Column(db.Integer, db.ForeignKey('stats.id'))    
+    """
+    broken_id = db.Column(db.Integer, db.ForeignKey('resource.id'))
+    stats_id = db.Column(db.Integer, db.ForeignKey('stats.id'))    
 
     stats = db.relationship("Stats")
     broken = db.relationship("Resource")
-
-class ItemType(db.Model):
     """
-    Table of slottypes. Not necessary, but we should use this for efficiency.
-    The alternative would be a column on type with an String and eval it.
-
-    Currently not being used, but I'll leave this here to when I find out what slottypes actually does.
-    """
-    id = db.Column(db.Integer,primary_key=True)
-    number = db.Column(db.Integer)
 
 class Resource(db.Model):
     """
     Because parsing strings suck.
     """
     id = db.Column(db.Integer,primary_key=True)
-    fuel = db.Column(db.Integer,default=0)
-    ammo = db.Column(db.Integer,default=0)
-    steel = db.Column(db.Integer,default=0)
-    baux = db.Column(db.Integer,default=0)
+    fuel = db.Column(db.Integer)
+    ammo = db.Column(db.Integer)
+    steel = db.Column(db.Integer)
+    baux = db.Column(db.Integer)
 
-    flame = db.Column(db.Integer,default=0)
-    bucket = db.Column(db.Integer,default=0)
-    material = db.Column(db.Integer,default=0)
+    flame = db.Column(db.Integer)
+    bucket = db.Column(db.Integer)
+    material = db.Column(db.Integer)
 
     def to_list(self):
         data = []
-        if resource.fuel is not None: data.append(resource.fuel)
-        if resource.ammo is not None: data.append(resource.ammo)
-        if resource.steel is not None: data.append(resource.steel)
-        if resource.baux is not None: data.append(resource.baux)
+        if self.fuel is not None: data.append(self.fuel)
+        if self.ammo is not None: data.append(self.ammo)
+        if self.steel is not None: data.append(self.steel)
+        if self.baux is not None: data.append(self.baux)
     
-        if resource.flame is not None: data.append(resource.flame)
-        if resource.bucket is not None: data.append(resource.bucket)
-        if resource.material is not None: data.append(resource.material)
+        if self.flame is not None: data.append(self.flame)
+        if self.bucket is not None: data.append(self.bucket)
+        if self.material is not None: data.append(self.material)
         return data
 
 class AdmiralItem(db.Model):

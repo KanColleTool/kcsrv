@@ -34,8 +34,8 @@ def generate_port(api_token):
             'api_medals': 0,
             'api_large_dock': 0
         })
-    port2['api_data']['api_deck_port'] = AdmiralHelper.get_admiral_deck_api_data(admiral)    
-    """
+    port2['api_data']['api_deck_port'] = [] #AdmiralHelper.get_admiral_deck_api_data(admiral)    
+    
     count = 0
     # Sort the admiral ships list. Not even sure if this is needed...    
 
@@ -61,7 +61,7 @@ def generate_port(api_token):
         }
 
         port2['api_data']['api_deck_port'].append(temp_dict)
-    """
+    
     # Materials.        
     port2['api_data']['api_material'] = AdmiralHelper.get_admiral_resources_api_data(admiral)
     port2['api_data']['api_ship'] = []

@@ -1,3 +1,4 @@
+bcrypt
 requests 
 Flask 
 Flask-Admin 

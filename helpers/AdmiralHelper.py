@@ -3,9 +3,6 @@ from db import db,User,Admiral,Dock,AdmiralQuest,Resource
 from . import ResourceHelper
 """These are API version 1 functions only."""
 
-def get_admiral_furniture():
-    return [int(x) for x in util.get_token_admiral_or_error().furniture.split(',')]
-
 def get_admiral_basic_info():
     """
     Gets the basic info for the admiral.
@@ -48,6 +45,9 @@ def get_admiral_basic_info():
         'api_pvp': [0, 0]
     }
 
+def get_admiral_furniture():
+    return [int(x) for x in util.get_token_admiral_or_error().furniture.split(',')]
+
 def get_admiral_sorties():
     """
     Gets Admiral's unlocked Sorties
@@ -75,7 +75,7 @@ def new_admiral():
         """
         admiral = Admiral()
         # Give the admiral starting resources
-        admiral.resources = Resource(500,500,500,500,1,1,3,0)
+        admiral.resources = Resource(fuel=500,ammo=500,steel=500,baux=500,flame=1,bucket=1,material=3)
         # Give the admiral some docks.
         docks = [Dock() for _ in range(8)]
         admiral.docks = docks
@@ -121,7 +121,7 @@ def get_admiral_from_token(api_token=None):
 
     minutes = math.floor(int(d1_ts-d2_ts) / 60)
     
-    resources = ResourceHelper.get_resource_list(user.admiral.resources)    
+    resources = user.admiral.resources.to_list()
     if minutes != 0:
         for n, val in enumerate(resources):
             if n >= 4:
@@ -208,8 +208,7 @@ def get_admiral_deck_api_data(admiral):
     return fleet_api_data
 
 def get_admiral_resources_api_data(admiral):
-    print('aaaa')
-    resources = ResourceHelper.get_resource_list(admiral.resources)
+    resources = admiral.resources.to_list()
     data = [{
         "api_id": n + 1,
         "api_member_id": admiral.id,
@@ -218,7 +217,6 @@ def get_admiral_resources_api_data(admiral):
     # I have no idea what this is, it can have any api_value
     # but without it flame/bucket/mat always show up as 0.
     data.append({"api_id": 8,"api_member_id": admiral.id,"api_value":1})
-    print(data)
     return data
 
 
@@ -232,8 +230,8 @@ def admiral_grant_item(admiral,item_id,quantity=1):
         db.session.add(AdmiralItem(admiral_id=admiral.id,item_id=item_id))
     db.session.commit()
 
-def admiral_grant_ship(admiral,ship_id,quantity=1):
-    pass
-    #for _ in range(quantity):
-        #db.session.add(AdmiralShip(admiral_id=admiral.id,item_id=item_id))
-    #db.session.commit()
+def admiral_grant_ship(admiral,ship_id=None,ship_api_id=None,quantity=1):
+    for _ in range(quantity):
+        admiral.admiral_ships.append(ShipHelper.get_new_admiral_ship(admiral,ship_id,ship_api_id))
+    db.session.add(admiral)
+    db.session.commit()

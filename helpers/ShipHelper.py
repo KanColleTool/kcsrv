@@ -129,6 +129,7 @@ def change_ship_item(admiral_ship_id,admiral_item_id,slot):
     .update({"admiral_item_id":admiral_item_id})
     db.session.commit()
 
+
 def get_admiral_ship_api_data(admiral_ship_id):
     # I mostly copied this from ShipHelper.generate_api_data. Might be worth refactoring.
     admiral_ship = db.session.query(AdmiralShip).get(admiral_ship_id)
@@ -156,7 +157,8 @@ def get_admiral_ship_api_data(admiral_ship_id):
             'api_taisen': [admiral_ship.antisub, ship.antisub_base],
             # Guesswork on exp part.
             'api_exp': [admiral_ship.exp, LevelHelper.get_exp_required(admiral_ship.level, admiral_ship.exp), 0],
-            'api_slot': items,
+            #'api_slot': items,
+            'api_slot': [-1, -1, -1, -1, -1],
             'api_backs': ship.rarity,
             'api_sally_area': 0,  # dunno
             'api_ndock_item': list(map(int, util.take_items(admiral_ship.repair_base.split(','), [1, 3]))),
@@ -170,3 +172,14 @@ def get_admiral_ship_api_data(admiral_ship_id):
             'api_sakuteki': [ship.los_base, ship.maxlos]
     }
     return api_ship_data
+
+def assign_fleet(admiral_ship,fleet,position):
+    query = db.session.query(FleetShip).filter(FleetShip.fleet_id==fleet.id,FleetShip.position==position)
+    print(query)
+    print(fleet.id)
+    print(position)
+    fleet_ship = query.first()
+
+    fleet_ship.ship = admiral_ship
+    db.session.add(fleet_ship)
+    db.session.commit()

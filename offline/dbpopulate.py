@@ -10,8 +10,13 @@ def items():
         i = Item(
         sortno = item["api_sortno"],
         api_id = item["api_id"],
+        info = item["api_info"],
+        usebull = item["api_usebull"],
         name = item["api_name"],
+        rarity = item["api_rare"],
+        broken = item["api_broken"],
         types = item["api_type"], #
+
         taik = item["api_taik"],
         souk = item["api_souk"],
         houg = item["api_houg"],
@@ -29,16 +34,12 @@ def items():
         saku = item["api_saku"],
         sakb = item["api_sakb"],
         luck = item["api_luck"],
-        leng = item["api_leng"],
-        rarity = item["api_rare"],
-        broken = item["api_broken"],
-        info = item["api_info"],
-        usebull = item["api_usebull"]
+        leng = item["api_leng"],        
         )
         # mercy
         db.session.add(i)
     db.session.commit()
-"""
+
 def ships():
     ships = data['api_mst_ship']
     count = 0
@@ -94,8 +95,8 @@ def ships():
         count += 1
     db.session.commit()
     print("Updated database, {} entries merged.".format(count))
-"""
 
+"""
 def ships():
     ships = data['api_mst_ship']
     count = 0
@@ -111,18 +112,23 @@ def ships():
             name = ship['api_name'],
             number = ship['api_sortno'],
             stype = ship['api_stype'],
-            modern_use = ship['api_powup'],
             voicef = ship['api_voicef'],
             getmsg = ship['api_getmes'],
-            srange = ship['api_leng'],
             buildtime = ship['api_buildtime'],
             kai = '改' in ship['api_name'],
             # Remodel
             remodel_level = ship['api_afterlv'],
             remodel = ship['api_aftershipid'],
             remodel_cost = Resource(fuel=ship['api_afterfuel'],ammo=ship['api_afterbull']),
+            modernization = Stats(
+                firepower=ship['api_powup'][0],
+                torpedo=ship['api_powup'][1],
+                antiair=ship['api_powup'][2],
+                armour=ship['api_powup'][3],
+            ),
             # Minimums
             stats = Stats(
+                srange = ship['api_leng'],
                 luck = ship['api_luck'][0],
                 firepower = ship['api_houg'][0],
                 armour = ship['api_souk'][0],
@@ -134,7 +140,7 @@ def ships():
                 hp = ship['api_taik'][0],
             ),
             # Maximums
-            max_stats = Stats(
+            stats_max = Stats(
                 luck = ship['api_luck'][1],
                 firepower = ship['api_houg'][1],
                 armour = ship['api_souk'][1],
@@ -156,3 +162,4 @@ def ships():
         count += 1
     db.session.commit()
     print("Updated database, {} entries merged.".format(count))
+"""

@@ -163,6 +163,11 @@ def ship3():
   }
   return svdata(data)
 
+from db import db,Fleet
+@api_user.route('/api_get_member/test', methods=['GET', 'POST'])
+def test():
+    return svdata({})
+
 
 # Generic routes for anything not implemented.
 
