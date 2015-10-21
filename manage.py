@@ -7,7 +7,7 @@ from flask.ext.migrate import Migrate, MigrateCommand
 from helpers import ShipHelper
 from kcsrv import app
 from db import db,Ship,Role
-from offline import dbpopulate
+from offline import dbpopulate,kccheat
 import util
 
 if not os.path.exists('./config.py'):
@@ -27,8 +27,6 @@ from commands.user import manager as user_manager
 manager.add_command('user', user_manager)
 
 import commands.kcdownloader2
-
-import offline
 
 @manager.command
 def setup():
@@ -54,24 +52,30 @@ def cheat_addship(id, admiral_id):
     print("Added ship {}".format(ship.ship.name))
 
 @manager.command
+def cheat(where,id, admiral_id,action=None):
+    if where == "quest":
+        if action == "add":
+            kccheat.quest_add(admiral_id,id)
+        elif action == "complete":
+            kccheat.quest_complete(admiral_id,id)
+    elif where == "ship":
+        kccheat.ship_add(admiral_id,id)
+    elif where == "item":
+        kccheat.item_add(admiral_id,id)
+    else:
+        print("Unknown cheat")
+
+
+
+
+@manager.command
 def update_db():
     """Merge the ships DB from api_start.json into the DB"""
     dbpopulate.ships()
     # Truncate ships table.
     # db.db.session.query(db.Ship).delete()
     # Load ships from dump
-
-@manager.command
-def sitems():
-    """Merge the ships DB from api_start.json into the DB"""
     dbpopulate.items()
-
-@manager.command
-def test():
-    import json
-    f = open('temp/slot_item','r')
-    x = json.loads(f.read())
-    print(len(x))
 
 if __name__ == '__main__':
     manager.run()
