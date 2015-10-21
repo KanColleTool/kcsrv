@@ -357,6 +357,8 @@ class AdmiralShipItem(db.Model):
     admiral_ship_id = db.Column(db.Integer, db.ForeignKey("admiral_ship.id"))
     admiral_item_id = db.Column(db.Integer, db.ForeignKey("admiral_item.id"))
 
+    admiral_ship = db.relationship("AdmiralShip")
+
 class Sortie(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 

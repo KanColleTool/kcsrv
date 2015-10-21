@@ -111,6 +111,8 @@ def assign_ship(admiral: Admiral, ship_id: int):
     ship = generate_new_ship(ship_id, 0)
     # Assign ship the correct local ship number.
     ship.local_ship_num = len(admiral.admiral_ships.all())
+    for n in range(ship.ship.maxslots):
+        db.session.add(AdmiralShipItem(slot=n,admiral_ship=ship))
     # Create a new fleet.
     fleet = Fleet()
     # Add the ship to the first fleet.
