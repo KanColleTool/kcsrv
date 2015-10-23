@@ -3,7 +3,7 @@ from . import db
 class Quest(db.Model):
     __tablename__ = 'quest'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('quest_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
     no = db.Column(db.Integer)
     category = db.Column(db.Integer)
     type_ = db.Column(db.Integer)
@@ -20,7 +20,7 @@ class Quest(db.Model):
 class QuestBonus(db.Model):
     __tablename__ = 'quest_bonus'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('quest_bonus_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
     type_ = db.Column(db.Integer)
     quantity = db.Column(db.Integer)
     quest_id = db.Column(db.ForeignKey('quest.id'))
@@ -35,7 +35,7 @@ class QuestBonus(db.Model):
 class QuestRequirement(db.Model):
     __tablename__ = 'quest_requirement'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('quest_requirement_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
     quest_id = db.Column(db.ForeignKey('quest.id'))
     required_quest_id = db.Column(db.ForeignKey('quest.id'))
 

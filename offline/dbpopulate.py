@@ -1,5 +1,5 @@
 import util
-from db import db,Equipment, Ship,Stats,Resources,Remodel,Item
+from db import db,Equipment, Ship,Stats,Resources,Remodel,Goods
 #from helpers import ResourceHelper
 data = util.load_datadump('api_start2.json')
 
@@ -7,22 +7,23 @@ def items():
     items = data["api_mst_useitem"]
     count = 0
     for item in items:
-        old = db.session.query(Item).filter(Item.api_id==item["api_id"]).first()
+        old = db.session.query(Goods).filter(Goods.api_id==item["api_id"]).first()
         #TODO - Update data if api_id already exists
         if old:
             continue
-        i = Item(
+        i = Goods(
             api_id = item["api_id"],
             type_ = item["api_usetype"],
             category = item["api_category"],
             name = item["api_name"],
-            description = item["api_description"],
+            description = item["api_description"][0],
+            description2 = item["api_description"][1],
             price = item["api_price"]
         )
         db.session.add(i)
-        print("Merged equip {} - {}".format(i.api_id,i.name))
+        print("Merged goods {} - {}".format(i.api_id,i.name))
         count += 1
-    print("Updated Item database, {} entries added.".format(count))
+    print("Updated Goods database, {} entries added.".format(count))
     db.session.commit()
 
 

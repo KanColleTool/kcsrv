@@ -3,16 +3,24 @@ from . import db
 class Resources(db.Model):
     __tablename__ = 'resources'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('resources_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
     fuel = db.Column(db.Integer)
     ammo = db.Column(db.Integer)
     steel = db.Column(db.Integer)
     baux = db.Column(db.Integer)
 
+    def to_list(self):
+        data = []
+        if self.fuel is not None: data.append(self.fuel)
+        if self.ammo is not None: data.append(self.ammo)
+        if self.steel is not None: data.append(self.steel)
+        if self.baux is not None: data.append(self.baux)
+        return data
+
 class Stats(db.Model):
     __tablename__ = 'stats'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('stats_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
     luck = db.Column(db.Integer)
     firepower = db.Column(db.Integer)
     armour = db.Column(db.Integer)
@@ -33,7 +41,7 @@ class Stats(db.Model):
 class Recipe(db.Model):
     __tablename__ = 'recipe'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('recipe_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
     chance = db.Column(db.Integer)
     ship_id = db.Column(db.ForeignKey('ship.id'))
     min_resources_id = db.Column(db.ForeignKey('resources.id'), index=True)
@@ -41,4 +49,3 @@ class Recipe(db.Model):
 
     max_resources = db.relationship('Resources', primaryjoin='Recipe.max_resources_id == Resources.id')
     min_resources = db.relationship('Resources', primaryjoin='Recipe.min_resources_id == Resources.id')
-    ship = db.relationship('Ship')

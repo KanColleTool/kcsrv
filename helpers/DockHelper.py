@@ -1,3 +1,4 @@
+"""
 import random
 import datetime
 import time
@@ -5,13 +6,64 @@ import time
 from db import db,Admiral,AdmiralShip,Recipe,Dock
 from . import ShipHelper
 import util
+"""
+from flask import g
+#from db import db,Dock
+
+def dock_data(dock_list):
+    admiral = g.admiral
+    response = []
+    count = len(dock_list)
+    """ Append admiral dock data """    
+    for n in range(count):
+        dock = dock_list[n]
+        response.append({
+                'api_member_id': admiral.id,
+                'api_id': dock.number,
+                'api_state': 0 if dock.complete is None
+                    else 2 if dock.complete > time.time()
+                    else 3 if dock.complete < time.time() else -1,
+                'api_created_ship_id': dock.kanmusu.ship.id if dock.kanmusu is not None else 0,
+                'api_complete_time': dock.complete,
+                'api_complete_time_str': datetime.datetime.fromtimestamp(
+                        dock.complete / 1000
+                    ).strftime('%Y-%m-%d %H:%M:%S') if dock.complete is not None else "",
+                'api_item1': dock.resources.fuel,
+                'api_item2': dock.resources.ammo,
+                'api_item3': dock.resources.steel,
+                'api_item4': dock.resources.baux,
+                'api_item4': 0,
+        })
+    """ Fill the rest with empty dock data """
+    while count < 4:
+        response.append({
+                'api_member_id': admiral.id,
+                'api_id': count+1,
+                'api_state': -1,
+                'api_created_ship_id': 0,
+                'api_complete_time': 0,
+                'api_complete_time_str': "",
+                'api_item1': 0,
+                'api_item2': 0,
+                'api_item3': 0,
+                'api_item4': 0,
+                'api_item5': 0
+        })
+        count += 1
+    return response
 
 
+def kdock():
+    return dock_data(g.admiral.docks_craft)
+
+def rdock():
+    return dock_data(g.admiral.docks_repair)
+    
+            
+
+
+"""
 def get_ship_from_recipe(fuel: int=30, ammo: int=30, steel: int=30, baux: int=30) -> int:
-    """
-    Gets a ship id from the specified recipe.
-    :return: The ship id that was chosen.
-    """
     ships = Recipe.query.filter((Recipe.minfuel >= fuel) & (Recipe.maxfuel <= fuel)) \
         .filter((Recipe.minammo >= ammo) & (Recipe.maxammo <= ammo)) \
         .filter((Recipe.minsteel >= steel) & (Recipe.maxsteel <= steel)) \
@@ -24,17 +76,7 @@ def get_ship_from_recipe(fuel: int=30, ammo: int=30, steel: int=30, baux: int=30
 
 def update_dock(dock: Dock, fuel: int=None, ammo: int=None, steel: int=None, baux: int=None,
                 ship: AdmiralShip=None, build=True):
-    """
-    Updates a dock with the correct values.
-    Can be called just like ```update_dock(dock)``` to reset the dock.
-    :param dock: The dock object to work on.
-    :param fuel: The amount of fuel in the recipe.
-    :param ammo: The amount of ammo in the recipe.
-    :param steel: The amount of steel in the recipe.
-    :param baux: The amount of Bauxite in the recipe.
-    :param ship: The ship object to add to the dock.
-    :return:
-    """
+    
     dock.fuel = fuel
     dock.ammo = ammo
     dock.steel = steel
@@ -59,15 +101,7 @@ def update_dock(dock: Dock, fuel: int=None, ammo: int=None, steel: int=None, bau
     return dock
 
 
-def get_and_remove_ship(dockid: int, build=True):
-    """
-    Used by the /getship APIv1 endpoint.
-
-    Retrieves a ship from the specified dock and removes it.
-    :param dockid: The specified dock ID.
-    :param build: If the ship is being built or not. If false, it's repaired.
-    :return: The v1 API data for the dock.
-    """
+def get_and_remove_ship(dockid: int, build=True):    
     admiral = util.get_token_admiral_or_error()
     try:
         dock = admiral.docks.all()[dockid]
@@ -94,17 +128,7 @@ def get_and_remove_ship(dockid: int, build=True):
     return api_data
 
 
-def craft_ship(fuel: int, ammo: int, steel: int, baux: int, admiral: Admiral, dockid: int):
-    """
-    Crafts a ship from a recipe.
-    :param fuel: The amount of fuel to use.
-    :param ammo: The amount of ammo to use.
-    :param steel: The amount of steel to use.
-    :param baux: The amount of bauxite to use.
-    :param admiral: The admiral object to use.
-    :param dockid: The local dock id.
-    :return: The v1 api data for a crafted ship.
-    """
+def craft_ship(fuel: int, ammo: int, steel: int, baux: int, admiral: Admiral, dockid: int):   
     ship = get_ship_from_recipe(fuel, ammo, steel, baux)
     nship = ShipHelper.generate_new_ship(ship, active=False)
     nship.local_ship_num = len(admiral.admiral_ships.all())
@@ -128,12 +152,7 @@ def craft_ship(fuel: int, ammo: int, steel: int, baux: int, admiral: Admiral, do
 
 
 def generate_dock_data(admiral_obj: Admiral=None, admiralid: int=None) -> dict:
-    """
-    Generates v1 dock data.
-    :param admiral: Generate from this Admiral instance.
-    :param admiralid: Generate from this admiral ID.
-    :return: A dict containing the dock data. d['rdock'] for repair docks, d['cdock'] for crafting docks
-    """
+
     # TODO: Refactor and make this nicer.
     if admiral_obj:
         admiral = admiral_obj
@@ -214,3 +233,4 @@ def generate_dock_data(admiral_obj: Admiral=None, admiralid: int=None) -> dict:
                                 'api_item5': 0
                                 })
     return ob
+"""

@@ -1,31 +1,57 @@
-from db import db,Admiral,AdmiralShip,Ship,AdmiralShipItem,AdmiralItem,Fleet
+#from db import db,Admiral,AdmiralShip,Ship,AdmiralShipItem,AdmiralItem,Fleet
 from helpers import LevelHelper
 import util
 
+def kanmusu_data(kanmusu):
+    ship = kanmusu.ship
 
+    # AdmiralShip *must have* entries in AdmiralShipItem table, or we catbomb.
+    equips = [equip.equipment_id if equip.equipment_id else -1 for equip in kanmusu.equipment]
+    
+    kanmusu_data = {
+            'api_id': kanmusu.id,
+            'api_onslot': [0, 0, 0, 0, 0], #?
+            'api_locked_equip': 0,
+            'api_bull': kanmusu.current_ammo,
+            'api_soukou': [kanmusu.stats.armour, ship.max_stats.armour],
+            'api_locked': kanmusu.locked,
+            'api_nowhp': kanmusu.current_hp,
+            'api_raisou': [kanmusu.stats.torpedo, ship.max_stats.torpedo],
+            'api_lv': kanmusu.level,
+            'api_slotnum': ship.maxslots,
+            'api_srate': 1,  # TODO: Implement stars
+            'api_cond': kanmusu.fatigue,
+            'api_kaihi': [kanmusu.stats.evasion, ship.max_stats.evasion],
+            'api_sortno': ship.number,
+            'api_fuel': kanmusu.current_fuel,
+            'api_taiku': [kanmusu.stats.antiair, ship.max_stats.antiair],
+            'api_leng': ship.max_stats.range_,
+            'api_taisen': [kanmusu.stats.antisub, ship.max_stats.antisub],
+            # Guesswork on exp part.
+            'api_exp': [kanmusu.exp, LevelHelper.get_exp_required(kanmusu.level, kanmusu.exp), 0],
+            'api_slot': equips,
+            'api_backs': ship.rarity,
+            'api_sally_area': 0,  # dunno
+            'api_ndock_item': list(map(int, util.take_items(kanmusu.repair_base.split(','), [1, 3]))),
+            'api_id': kanmusu.id,
+            'api_karyoku': [kanmusu.stats.firepower, ship.max_stats.firepower],
+            'api_maxhp': ship.max_stats.hp,
+            'api_lucky': [kanmusu.stats.luck, ship.max_stats.luck],
+            'api_ship_id': ship.id,
+            'api_ndock_time': 0,
+            'api_kyouka': [0, 0, 0, 0, 0],
+            'api_sakuteki': [ship.base_stats.los, ship.max_stats.los]
+    }
+    return kanmusu_data
+"""
 def get_repair_materials(original_ship: AdmiralShip):
-    """
-    Get the amount of materials required to repair a ship.
-    :param original_ship: The AdmiralShip object that you wish to repair.
-    :return: A four part string, "fuel,ammo,steel,bauxite"
-    """
+    
     return "0,0,0,0"
 
-def get_repair_time(original_ship: AdmiralShip):
-    """
-    Get the time required to repair a ship
-    :param original_ship: The AdmiralShip object that you wish to repair
-    :return: The time to repair the ship.
-    """
+def get_repair_time(original_ship: AdmiralShip):    
     return original_ship.repair_base
 
 def generate_new_ship(shipid: int, fleetid: int=None, active: bool=True):
-    """
-    Generates a new ship from the specified ship id.
-    :param shipid: The ship ID to generate from.
-    :param fleetid: The optional fleet ID to give to the ship.
-    :return: A new AdmiralShip object.
-    """
     original_ship = Ship.query.filter_by(id=shipid).first()
     assert isinstance(original_ship, Ship)
     if not original_ship: return
@@ -55,16 +81,6 @@ def generate_new_ship(shipid: int, fleetid: int=None, active: bool=True):
     return admiral_ship
 
 def generate_api_data(admiralid: int, local_ship_id: int=None, original_ship: AdmiralShip=None):
-    """"
-    Use get_admiral_ship_api_data instead.
-    """
-    """
-    Generates an APIv1 compatible dictionary to pass to the KanColle official client.
-    :param admiralid: The ID of the admiral getting the ship.
-    :param local_ship_id:
-    :param original_ship:
-    :return:
-    """
     admiral = Admiral.query.filter_by(id=admiralid).first()
     if local_ship_id is not None:
         ship = admiral.admiral_ships.filter_by(local_ship_num=local_ship_id).first()
@@ -187,3 +203,4 @@ def assign_fleet(admiral_ship,fleet,position):
     fleet_ship.ship = admiral_ship
     db.session.add(fleet_ship)
     db.session.commit()
+"""

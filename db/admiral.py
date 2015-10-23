@@ -1,12 +1,11 @@
+from sqlalchemy.orm import reconstructor
 from constants import *
-from . import db
-from db.support import Resources
-
+from . import db,Resources,Goods
 
 class Admiral(db.Model):
     __tablename__ = 'admiral'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('admiral_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     level = db.Column(db.Integer,default=1)
     experience = db.Column(db.Integer,default=0)
@@ -31,24 +30,38 @@ class Admiral(db.Model):
 
     resources_id = db.Column(db.ForeignKey('resources.id'))
     user_id = db.Column(db.ForeignKey('user.id'))
+    
+    furniture = db.relationship('AdmiralFurniture')
+    goods = db.relationship('AdmiralGoods')
+    equipment = db.relationship('AdmiralEquipment',lazy='dynamic')
 
-    kanmusu = db.relationship('Kanmusu')
+    kanmusu = db.relationship('Kanmusu',order_by='Kanmusu.number')
     resources = db.relationship('Resources')
     fleets = db.relationship('Fleet')
     docks_craft = db.relationship("Dock",
-                                  primaryjoin="and_(Admiral.id==Dock.admiral_id," +\
+                                    primaryjoin="and_(Admiral.id==Dock.admiral_id," +\
                                               "Dock.type_==" + str(DOCK_TYPE_CRAFT) +")",
-                                  lazy='dynamic', order_by='Dock.number')
+                                    order_by='Dock.number')
     docks_repair = db.relationship("Dock",
-                                   primaryjoin="and_(Admiral.id==Dock.admiral_id," +\
+                                    primaryjoin="and_(Admiral.id==Dock.admiral_id," +\
                                                "Dock.type_==" + str(DOCK_TYPE_REPAIR) +")",
-                                  lazy='dynamic', order_by='Dock.number')
+                                    order_by='Dock.number')
 
     def create(self, user):
+        #db.session.add(self)
         self.resources = Resources(fuel=500, ammo=500, steel=500, baux=500)
         self.docks_craft = [Dock(type_=DOCK_TYPE_CRAFT, number=n + 1) for n in range(3)]
         self.docks_repair = [Dock(type_=DOCK_TYPE_REPAIR, number=n + 1) for n in range(3)]
         self.fleets = [Fleet(number=0)]
+
+        #hm...must do better than this.
+        initial_goods = [
+            AdmiralGoods(goods=Goods.by_name(NAME_BUCKET),quantity=3),
+            AdmiralGoods(goods=Goods.by_name(NAME_FLAME),quantity=4),
+            AdmiralGoods(goods=Goods.by_name(NAME_MATERIAL),quantity=5),
+            AdmiralGoods(goods=Goods.by_name(NAME_SCREW),quantity=1)
+        ]
+        self.goods = initial_goods
         """
         last = user.admiral.lastaction
         if last is None:
@@ -75,11 +88,39 @@ class Admiral(db.Model):
         db.session.commit()
         return self
 
+    def add_item(self,item_id,item_type,quantity=1):
+        if item_type == ITEM_TYPE_GOODS:
+            good = self.goods.find(lambda g: g.goods_id == item_id)
+            if good:
+                good.quantity += quantity
+            else:
+                self.goods.append(AdmiralGoods(goods_id=item_id,quantity=quantity))
+        elif item_type == ITEM_TYPE_FURNITURE:            
+            for _ in range(quantity):
+                self.items.append(AdmiralFurniture(furniture_id=item_id))
+        elif item_type == ITEM_TYPE_EQUIPMENT:
+            for _ in range(quantity):
+                self.items.append(AdmiralEquipment(equipment_id=item_id))
+
+    def get_goods(self,name=None):
+        for g in self.goods:
+            if g.goods.name == name:
+                return g
+
+        goods = Goods.by_name(name)
+        if goods:
+            agoods = AdmiralGoods(goods=goods,quantity=0)
+            self.goods.append(agoods)
+            return agoods        
+        return None
+
+            
+
 
 class AdmiralEquipment(db.Model):
     __tablename__ = 'admiral_equipment'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('admiral_equipment_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
     level = db.Column(db.Integer)
     locked = db.Column(db.Integer)
     admiral_id = db.Column(db.ForeignKey('admiral.id'))
@@ -92,7 +133,7 @@ class AdmiralEquipment(db.Model):
 class AdmiralFurniture(db.Model):
     __tablename__ = 'admiral_furniture'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('admiral_furniture_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
     active = db.Column(db.Boolean)
     admiral_id = db.Column(db.ForeignKey('admiral.id'), index=True)
     furniture_id = db.Column(db.ForeignKey('furniture.id'), index=True)
@@ -101,21 +142,20 @@ class AdmiralFurniture(db.Model):
     furniture = db.relationship('Furniture')
 
 
-class AdmiralItem(db.Model):
-    __tablename__ = 'admiral_item'
+class AdmiralGoods(db.Model):
+    __tablename__ = 'admiral_goods'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('admiral_item_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
+    quantity = db.Column(db.Integer)
     admiral_id = db.Column(db.ForeignKey('admiral.id'), index=True)
-    item_id = db.Column(db.ForeignKey('item.id'), index=True)
+    goods_id = db.Column(db.ForeignKey('goods.id'), index=True)    
 
-    admiral = db.relationship('Admiral')
-    item = db.relationship('Item')
-
+    goods = db.relationship('Goods')
 
 class AdmiralQuest(db.Model):
     __tablename__ = 'admiral_quest'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('admiral_quest_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
     progress = db.Column(db.Integer)
     state = db.Column(db.Integer)
     data = db.Column(db.String(255))
@@ -129,7 +169,7 @@ class AdmiralQuest(db.Model):
 class Dock(db.Model):
     __tablename__ = 'dock'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('dock_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
     number = db.Column(db.Integer)
     type_ = db.Column(db.Integer)
     state = db.Column(db.Integer)
@@ -138,16 +178,22 @@ class Dock(db.Model):
     kanmusu_id = db.Column(db.ForeignKey('kanmusu.id'))
     resources_id = db.Column(db.ForeignKey('resources.id'), index=True)
 
-    resources = db.relationship('Resources')
+    resources = db.relationship('Resources', uselist=False)
     kanmusu = db.relationship('Kanmusu')
+
+    @reconstructor
+    def default_resources(self):
+        if self.resources is None:
+            self.resources = Resources(fuel=0,ammo=0,steel=0,baux=0)
 
 
 class Fleet(db.Model):
     __tablename__ = 'fleet'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('fleet_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String,name="Unnamed")
     number = db.Column(db.Integer)
     admiral_id = db.Column(db.ForeignKey('admiral.id'))
 
     admiral = db.relationship('Admiral')
+    kanmusu = db.relationship('Kanmusu')

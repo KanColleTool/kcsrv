@@ -3,7 +3,7 @@ from flask import Blueprint,request
 from util import *
 #from db import AdmiralShip,Quest
 #from helpers import generate_port, AdmiralHelper, DockHelper, ShipHelper,QuestHelper,ItemHelper,ResourceHelper
-from helpers import AdmiralHelper
+from helpers import AdmiralHelper, DockHelper
 api_user = Blueprint('api_user', __name__)
 prepare_api_blueprint(api_user)
 
@@ -23,14 +23,13 @@ def get_incentive():
 @api_user.route('/api_get_member/basic', methods=['GET', 'POST'])
 def basic():
     """Basic admiral data."""
-    return svdata(AdmiralHelper.get_admiral_basic_info())
+    return svdata(AdmiralHelper.basic())
 
 
 @api_user.route('/api_get_member/furniture', methods=['GET', 'POST'])
 def furniture():
     """Available furniture."""
     # TODO: Implement this properly
-    admiral = get_token_admiral_or_error()
     return svdata([{
                        'api_member_id': admiral.id,
                        'api_id': item.id,
@@ -42,41 +41,18 @@ def furniture():
 
 @api_user.route('/api_get_member/slot_item', methods=['GET', 'POST'])
 def slot_item():
-    # TODO: Implement this properly
-    admiral = get_token_admiral_or_error()
-    itemlist = ItemHelper.get_itemlist_ordered(admiral)
-    data = []
-    for admiral_item,item in itemlist:
-      data.append({
-        'api_id' : admiral_item.id,
-        'api_slotitem_id' : item.id,
-        'api_locked':admiral_item.locked,
-        'api_level':admiral_item.level
-        })
-    return svdata(data)
+    return svdata(AdmiralHelper.slot_info())
 
 
 @api_user.route('/api_get_member/useitem', methods=['GET', 'POST'])
 def useitem():
     # TODO: Implement this properly
-    admiral = get_token_admiral_or_error()
-    return svdata([{
-                       'api_member_id': admiral.id,
-                       'api_id': item.id,
-                       'api_value': item.count,
-                       'api_usetype': item.type,
-                       'api_category': item.category,
-                       'api_name': item.name,  # WHY
-                       'api_description': ["", ""],
-                       'api_price': 0,
-                       'api_count': item.count
-                   } for item in []])
+    return svdata(AdmiralHelper.useitem())
 
 @api_user.route('/api_get_member/kdock', methods=['GET', 'POST'])
 def kdock():
     """Krafting docks."""
-    admiral = get_token_admiral_or_error()
-    return svdata(DockHelper.generate_dock_data(admiral)['cdock'])
+    return svdata(DockHelper.kdock())
 
 @api_user.route('/api_get_member/ndock', methods=['POST'])
 def ndock():
@@ -86,21 +62,12 @@ def ndock():
 
 @api_user.route('/api_get_member/unsetslot', methods=['GET', 'POST'])
 def unsetslot():
-    """
-    see ItemHelper.get_slottype_list
-    """
-    admiral = get_token_admiral_or_error()
-    return svdata(ItemHelper.get_slottype_list(admiral=admiral))
+    return svdata(AdmiralHelper.unsetslot())
 
 
 @api_user.route('/api_port/port', methods=['GET', 'POST'])
 def port():
-    """Port endpoint."""
-    api_token = request.values.get('api_token', None)
-    if api_token is None:
-        abort(403)
-    port = generate_port.generate_port(api_token)['api_data']
-    return svdata(port)
+    return svdata(AdmiralHelper.port())
 
 
 @api_user.route('/api_get_member/ship2', methods=['GET', 'POST'])

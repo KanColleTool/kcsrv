@@ -3,7 +3,7 @@ from . import db
 class Kanmusu(db.Model):
     __tablename__ = 'kanmusu'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('kanmusu_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
     fleet_position = db.Column(db.Integer)
     number = db.Column(db.Integer, nullable=False)
     level = db.Column(db.Integer)
@@ -18,8 +18,7 @@ class Kanmusu(db.Model):
     ship_id = db.Column(db.ForeignKey('ship.id'))
     fleet_id = db.Column(db.ForeignKey('fleet.id'))
     stats_id = db.Column(db.ForeignKey('stats.id'), index=True)
-
-    fleet = db.relationship('Fleet')
+    
     ship = db.relationship('Ship')
     stats = db.relationship('Stats')
 
@@ -27,7 +26,7 @@ class Kanmusu(db.Model):
 class KanmusuEquipment(db.Model):
     __tablename__ = 'kanmusu_equipment'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('kanmusu_equipment_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
     slot = db.Column(db.Integer)
     kanmusu_id = db.Column(db.ForeignKey('kanmusu.id'))
     admiral_equipment_id = db.Column(db.ForeignKey('admiral_equipment.id'))
@@ -40,7 +39,7 @@ class KanmusuEquipment(db.Model):
 class Remodel(db.Model):
     __tablename__ = 'remodel'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('remodel_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
     level = db.Column(db.Integer)
     remodel_api_id = db.Column(db.Integer)
     id_resources = db.Column(db.ForeignKey('resources.id'), index=True)
@@ -51,7 +50,7 @@ class Remodel(db.Model):
 class Ship(db.Model):
     __tablename__ = 'ship'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('ship_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
     api_id = db.Column(db.Integer)
     name = db.Column(db.String)
     number = db.Column(db.Integer)
@@ -76,5 +75,6 @@ class Ship(db.Model):
     modernization = db.relationship('Resources', primaryjoin='Ship.modern_resources_id == Resources.id')
     remodel = db.relationship('Remodel', uselist=False)
 
+#from . import Fleet
 
 

@@ -5,7 +5,7 @@ from . import db
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('user_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
     active = db.Column(db.Boolean)
     email = db.Column(db.String(255), nullable=False, unique=True)
     password = db.Column(db.String(255), nullable=False)
@@ -16,13 +16,13 @@ class User(db.Model, UserMixin):
 
     roles = db.relationship('Role', secondary='role__user')
 
-    admiral = db.relationship("Admiral", backref='user')
+    admiral = db.relationship("Admiral", backref='user', uselist=False)
 
 
 class Role(db.Model, RoleMixin):
     __tablename__ = 'role'
 
-    id = db.Column(db.Integer, primary_key=True, server_default="nextval('role_id_seq'::regclass)")
+    id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False, unique=True)
     description = db.Column(db.Text)
 

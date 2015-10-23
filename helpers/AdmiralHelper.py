@@ -1,12 +1,14 @@
 import util,datetime,time,math
 #from db import db,User,Admiral,Dock,AdmiralQuest,Resource,AdmiralItem
-#from . import ResourceHelper
+from . import DockHelper
+from constants import *
+from db import db, Equipment, Kanmusu, KanmusuEquipment, AdmiralEquipment
 from flask import g
 
 
 """These are API version 1 functions only."""
 
-def get_admiral_basic_info():
+def basic():
     admiral = g.admiral
     """
     Gets the basic info for the admiral.
@@ -24,8 +26,8 @@ def get_admiral_basic_info():
         'api_fleetname': None,
         'api_comment': "",
         'api_comment_id': "",
-        'api_max_chara': admiral.max_ships,
-        'api_max_slotitem': admiral.max_equips,
+        'api_max_chara': admiral.max_kanmusu,
+        'api_max_slotitem': admiral.max_equipment,
         'api_max_kagu': admiral.max_furniture,
         'api_playtime': 0,
         'api_tutorial': 0,
@@ -48,14 +50,127 @@ def get_admiral_basic_info():
         'api_pvp': [0, 0]
     }
 
+def slot_info():
+    admiral = g.admiral
+    return [{
+        'api_id' : aequip.id,
+        'api_slotitem_id' : aequip.equipment.id,
+        'api_locked': aequip.locked,
+        'api_level': aequip.level
+    }for aequip in admiral.equipment.join(Equipment).order_by(Equipment.sortno)]
+
+def useitem():
+    return [{
+        'api_member_id': g.admiral.id,
+        'api_id': agood.id,
+        #'api_value': agood.quantity,
+        'api_usetype': agood.goods.type_,
+        'api_category': agood.goods.category,
+        'api_name': agood.goods.name,  # WHY
+        'api_description': [agood.goods.description, agood.goods.description2],
+        'api_price': agood.goods.price,
+        'api_count': agood.quantity
+    } for agood in g.admiral.goods]
+
+def unsetslot():
+    """
+    Listing all not equipped Equips.
+    In hindsight, this looks dumb.
+    I'm very sure there's a *much* easier way to do this    
+    """
+    admiral = g.admiral
+
+    query_kanmusu = db.session.query(Kanmusu.id)\
+    .filter(Kanmusu.admiral_id==admiral.id)
+
+    query_equipped = db.session.query(KanmusuEquipment.admiral_equipment_id)\
+    .filter(KanmusuEquipment.kanmusu_id.in_(query_kanmusu),\
+        KanmusuEquipment.admiral_equipment_id != None)
+
+    query = db.session.query(AdmiralEquipment)\
+    .filter(AdmiralEquipment.admiral_id==admiral.id,\
+        ~AdmiralEquipment.id.in_(query_equipped))\
+    .join(Equipment).order_by(Equipment.sortno)
+    itemlist = query.all()
+
+    
+    response = {}
+    response["api_slottype1"] = []
+    for admiral_item, item in itemlist:        
+        response["api_slottype1"].append(admiral_item.id)
+    return response
+
+def port():
+    admiral = g.admiral
+    response = {"api_data":{}}
+    # TODO: Log entry
+    response["api_data"]['api_log'] = [
+        {
+            "api_state": "0",
+            "api_no": 0,
+            "api_type": "1",
+            "api_message": "ayy lmao"
+        }
+    ]
+    # Background music?
+    response["api_data"]["api_p_bgm_id"] = 100
+    # This sets the parallel quest count. Don't know what higher values do, default is 5.
+    # I set it to ten because fuck the police
+    response["api_data"]["api_parallel_quest_count"] = 10
+    # Combined flag? Event data probably.
+    response["api_data"]["api_combined_flag"] = 0
+    # API basic - a replica of api_get_member/basic
+    response['api_data']['api_basic'] = util.merge_two_dicts(basic(),
+        {
+            'api_medals': 0,
+            'api_large_dock': 0
+        })
+    response['api_data']['api_deck_port'] = []    
+    # Fleets.
+    for fleet in admiral.fleets:
+        fleet_members = [kanmusu.number+1 for kanmusu in fleet.kanmusu if kanmusu is not None]
+        temp_dict = {
+            # Unknown value, always zero for some reason.
+            'api_flagship': 0,
+            # The Admiral ID, presumably.
+            'api_member_id': admiral.id,
+            # The name of the fleet.
+            'api_name': fleet.name,
+            # Unknown value, always empty.
+            'api_name_id': "",
+            # The local fleet ID.
+            'api_id': fleet.number,
+            # List of ships.
+            "api_ship": fleet_members + [-1] * (6 - len(fleet_members)),
+            # Mission data?
+            "api_mission": [0, 0, 0, 0]
+        }
+        response['api_data']['api_deck_port'].append(temp_dict)
+    
+    # Materials.
+    materials = admiral.resources.to_list()
+    materials.append(admiral.get_goods(NAME_BUCKET).quantity)
+    materials.append(admiral.get_goods(NAME_FLAME).quantity)
+    materials.append(admiral.get_goods(NAME_MATERIAL).quantity)
+    materials.append(admiral.get_goods(NAME_SCREW).quantity)
+    response['api_data']['api_material'] = materials
+
+    response['api_data']['api_ship'] = [ShipHelper.kanmusu_data(kanmusu)
+    for kanmusu in admiral.kanmusu if kanmusu.active]
+
+    # Generate ndock.
+    response['api_data']['api_ndock'] = DockHelper.rdock()
+    return response
+
+"""
 def get_admiral_furniture():
     return [int(x) for x in util.get_token_admiral_or_error().furniture.split(',')]
 
 def get_admiral_sorties():
-    """
+    
     Gets Admiral's unlocked Sorties
     :return: A list containing dicts of KanColle Sortie info for the Admiral
-    """
+    
     admiral = util.get_token_admiral_or_error()
     data = []
     for admiral_sortie in admiral.sorties.all():
@@ -68,12 +183,7 @@ def get_admiral_sorties():
         })
     return data
 
-def get_admiral_v2(api_token: str):
-    """
-    Grabs an admiral object from the specified API token, or creates a new one if possible, for APIv2.
-    :param api_token: The API token to use. Not optional.
-    :return: A valid admiral object, or None if the token is not valid.
-    """
+def get_admiral_v2(api_token: str):    
     user = User.query.filter_by(api_token=api_token).first()
     if not user:
         return None
@@ -85,11 +195,7 @@ def get_admiral_v2(api_token: str):
     return user.admiral
 
 def get_admiral_v2_from_id_or_token(search: object):
-    """
-    Grabs an admiral object from the specified API token or ID, or creates a new one if possible, for APIv2.
-    :param search: The id or token to search.
-    :return: A valid admiral object, or None if the token/id is not valid.
-    """
+
     if len(search) == 40:
         user = User.query.filter_by(api_token=search).first()
     elif search:
@@ -168,3 +274,4 @@ def admiral_grant_ship(admiral,ship_id=None,ship_api_id=None,quantity=1):
         admiral.admiral_ships.append(ShipHelper.get_new_admiral_ship(admiral,ship_id,ship_api_id))
     db.session.add(admiral)
     db.session.commit()
+"""
