@@ -4,10 +4,10 @@ import os
 from flask.ext.script import Manager, Server
 from flask.ext.migrate import Migrate, MigrateCommand
 
-from helpers import ShipHelper
+#from helpers import ShipHelper
 from kcsrv import app
 from db import db,Ship,Role
-from offline import dbpopulate,kccheat
+from offline import dbpopulate
 import util
 
 if not os.path.exists('./config.py'):
@@ -72,9 +72,7 @@ def cheat(where,id, admiral_id,action=None):
 def update_db():
     """Merge the ships DB from api_start.json into the DB"""
     dbpopulate.ships()
-    # Truncate ships table.
-    # db.db.session.query(db.Ship).delete()
-    # Load ships from dump
+    dbpopulate.equip()
     dbpopulate.items()
 
 if __name__ == '__main__':

@@ -1,14 +1,17 @@
 import util,datetime,time,math
-from db import db,User,Admiral,Dock,AdmiralQuest,Resource,AdmiralItem
-from . import ResourceHelper
+#from db import db,User,Admiral,Dock,AdmiralQuest,Resource,AdmiralItem
+#from . import ResourceHelper
+from flask import g
+
+
 """These are API version 1 functions only."""
 
 def get_admiral_basic_info():
+    admiral = g.admiral
     """
     Gets the basic info for the admiral.
     :return: A dict containing the KanColle info for the admiral.
     """
-    admiral = util.get_token_admiral_or_error()
     return {
         'api_member_id': admiral.id,
         'api_nickname': admiral.user.nickname,
@@ -26,10 +29,10 @@ def get_admiral_basic_info():
         'api_max_kagu': admiral.max_furniture,
         'api_playtime': 0,
         'api_tutorial': 0,
-        'api_furniture': [int(x) for x in admiral.furniture.split(',')],
-        'api_count_deck': admiral.available_fleets,
-        'api_count_kdock': admiral.available_cdocks,
-        'api_count_ndock': admiral.available_rdocks,
+        'api_furniture': [1,1,1,1,1,1], #TODO
+        'api_count_deck': len(admiral.fleets),
+        'api_count_kdock': len(admiral.docks_craft),
+        'api_count_ndock': len(admiral.docks_repair),
         'api_fcoin': admiral.furniture_coins,
         'api_st_win': admiral.sortie_successes,
         'api_st_lose': admiral.sortie_total - admiral.sortie_successes,
@@ -40,7 +43,7 @@ def get_admiral_basic_info():
         'api_pt_challenged': 0,
         'api_pt_challenged_win': 0,
         # Disables the opening stuff, and skips straight to the game.
-        'api_firstflag': 1 if admiral.setup else 0,
+        'api_firstflag': 1 if len(admiral.kanmusu)==0 else 0, #meh.
         'api_tutorial_progress': 100,
         'api_pvp': [0, 0]
     }
@@ -64,76 +67,6 @@ def get_admiral_sorties():
             'api_defeat_count': admiral_sortie.defeat_count #Unnecessary if is not boss
         })
     return data
-
-def new_admiral():
-        """
-        Sets up an admiral.
-        This is for both APIv1 and APIv2.
-        :param first_ship_id: The ID of the very first ship.
-        :param admiral: The admiral object to setup.
-        :return: The setup admiral.
-        """
-        admiral = Admiral()
-        # Give the admiral starting resources
-        admiral.resources = Resource(fuel=500,ammo=500,steel=500,baux=500,flame=1,bucket=1,material=3)
-        # Give the admiral some docks.
-        docks = [Dock() for _ in range(8)]
-        admiral.docks = docks
-        # Return the admiral
-        admiral.setup = False
-        return admiral
-
-def get_admiral_from_token(api_token=None):
-    """
-    Grabs an admiral object from the specified API token, or creates a new one if possible.
-    :param api_token: Optional: The API token to use. If this is not specified, it uses the token from the POST request.
-    :return: A valid admiral object.
-    """ 
-
-    # Get the API token.
-    #if api_token is None:
-    #   api_token = request.values.get('api_token', None)
-    #if ALLOW_NO_API:
-        #api_token = User().byId(id=1).api_token
-    if api_token is None:
-        return None
-
-    # TODO: Optimize out some querying here
-    user = User.query.filter_by(api_token=api_token).first()
-    if not user:
-        return None
-    # Create a new admiral object if it doesn't exist.
-    if not user.admiral:
-        adm = new_admiral()
-        user.admiral = adm
-        db.session.add(user)
-        db.session.commit()
-
-    # Do resource creating here, rather than elsewhere.
-    last = user.admiral.lastaction
-    if last is None:
-        last = datetime.datetime.utcnow()
-    now = datetime.datetime.utcnow()
-
-    # convert to unix timestamp
-    d1_ts = time.mktime(now.timetuple())
-    d2_ts = time.mktime(last.timetuple())
-
-    minutes = math.floor(int(d1_ts-d2_ts) / 60)
-    
-    resources = user.admiral.resources.to_list()
-    if minutes != 0:
-        for n, val in enumerate(resources):
-            if n >= 4:
-                break
-            resources[n] += (3 * minutes) if n != 3 else minutes
-        user.admiral.resources = pack_resources(resources)
-        user.admiral.lastaction = datetime.datetime.utcnow()
-
-        db.session.add(user)
-        db.session.commit()
-
-    return user.admiral
 
 def get_admiral_v2(api_token: str):
     """

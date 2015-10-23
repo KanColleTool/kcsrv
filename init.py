@@ -1,4 +1,4 @@
-from flask import render_template, send_from_directory
+from flask import render_template, send_from_directory, request, abort, g
 from flask.ext.migrate import Migrate
 from flask.ext.security import Security, SQLAlchemyUserDatastore
 from flask.ext.login import user_logged_in
@@ -7,7 +7,7 @@ from flask.ext.login import user_logged_in
 
 from forms import *
 from admin import admin
-from db import db,User,Role
+from db import db,User,Role, Admiral
 from util import generate_api_token
 
 modules = {
@@ -15,6 +15,8 @@ modules = {
     "security": None,
     "user_datastore": None
 }
+
+admiral = None
 
 def init(app):
     # --> Extension setup
@@ -25,6 +27,9 @@ def init(app):
 
     modules["user_datastore"] = SQLAlchemyUserDatastore(db, User, Role)
     modules["security"] = Security(app, modules["user_datastore"], confirm_register_form=MyRegisterForm)
+
+    # Admiral load on each request
+
 
     # --> Register blueprints
     from modules.play.play import play
@@ -37,17 +42,30 @@ def init(app):
 
     # Declare API v1 blueprints.
     from modules.api.v1.user import api_user
-    from modules.api.v1.actions import api_actions
+    #from modules.api.v1.actions import api_actions
     app.register_blueprint(api_user, url_prefix='/kcsapi')
-    app.register_blueprint(api_actions, url_prefix='/kcsapi')
+    #app.register_blueprint(api_actions, url_prefix='/kcsapi')
+
+    @app.before_request
+    def admiral_load():
+        #TODO learn how to do this properly
+        if "api_user" in request.endpoint:
+            api_token = request.values.get('api_token', None)
+            if api_token is None:
+                abort(403)
+            user = db.session.query(User).filter(User.api_token==api_token).first()
+            if g is None:
+                return "Invalid api_token"
+            g.admiral = user.admiral if user.admiral else Admiral().create(user)
 
 
+    """
     # Declare API v2 blueprints.
     from modules.api.v2.AdmiralAPI import AdmiralAPIv2
     from modules.api.v2.DockAPI import DockAPIv2
     app.register_blueprint(AdmiralAPIv2, url_prefix='/api/v2/admiral')
     app.register_blueprint(DockAPIv2, url_prefix='/api/v2/docks')
-
+    """
     from modules.resources import resources
 
     app.register_blueprint(resources, url_prefix='/kcs')

@@ -1,9 +1,9 @@
 from flask import Blueprint,request
 # from flask.ext.security import current_user
 from util import *
-from db import AdmiralShip,Quest
-from helpers import generate_port, AdmiralHelper, DockHelper, ShipHelper,QuestHelper,ItemHelper,ResourceHelper
-
+#from db import AdmiralShip,Quest
+#from helpers import generate_port, AdmiralHelper, DockHelper, ShipHelper,QuestHelper,ItemHelper,ResourceHelper
+from helpers import AdmiralHelper
 api_user = Blueprint('api_user', __name__)
 prepare_api_blueprint(api_user)
 

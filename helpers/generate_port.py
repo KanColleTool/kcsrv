@@ -1,6 +1,6 @@
-from db import db,Admiral,AdmiralShip
+#from db import db,Admiral,AdmiralShip
 import util
-from helpers import AdmiralHelper, ShipHelper, DockHelper,ResourceHelper
+#from helpers import AdmiralHelper, ShipHelper, DockHelper,ResourceHelper
 
 
 def generate_port(api_token):
