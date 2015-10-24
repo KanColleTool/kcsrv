@@ -1,5 +1,6 @@
-from flask import Blueprint
+from flask import Blueprint, g
 # from flask.ext.security import current_user
+from db import Kanmusu, Admiral
 from util import *
 # from db import AdmiralShip,Quest
 from helpers import AdmiralHelper, ItemHelper
@@ -8,6 +9,21 @@ from helpers import gamestart, data, QuestHelper, ShipHelper
 
 api_user = Blueprint('api_user', __name__)
 prepare_api_blueprint(api_user)
+
+@api_user.route("/api_get_member/charge", methods=["GET", "POST"])
+def resupply():
+    # Get the ships. Misleading name of the year candidate.
+    ships = request.values.get("api_id_items")
+    ships = ships.split(',')
+    # New dict for api_ships
+    api_ships = {}
+    for ship_id in ships:
+        ship = Kanmusu.query.filter(Admiral.id == g.admiral.id, Kanmusu.number == ship_id).first_or_404()
+        # Assertion for autocompletion in pycharm
+        assert isinstance(ship, Kanmusu)
+        # Calculate requirements.
+        # Follows this formula: how many bars they use x 10% x their fuel/ammo cost
+
 
 
 @api_user.route('/api_get_member/material', methods=['GET', 'POST'])
