@@ -26,7 +26,7 @@ class Kanmusu(db.Model):
     stats = db.relationship('Stats')
 
     def create(self, ship_id=None, ship_api_id=None):
-        ship = Ship.get(ship_id=ship_id, ship_api_id=ship_api_id)
+        ship = Ship.get(id=ship_id, ship_api_id=ship_api_id)
         self.ship = ship
         self.stats = ship.base_stats.copy()
         self.current_ammo = self.stats.ammo
