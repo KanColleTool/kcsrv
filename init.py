@@ -30,7 +30,6 @@ def init(app):
 
     # Admiral load on each request
 
-
     # --> Register blueprints
     from modules.play.play import play
 
@@ -54,7 +53,7 @@ def init(app):
             abort(403)
         user = db.session.query(User).filter(User.api_token == api_token).first()
         if user is None:
-            return "Invalid api_token"
+            abort(404)
         g.admiral = user.admiral if user.admiral else Admiral().create(user)
 
     app.register_blueprint(api_user, url_prefix='/kcsapi')
