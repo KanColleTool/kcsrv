@@ -1,9 +1,10 @@
-from db import db, AdmiralShip, AdmiralItem, Item, AdmiralShipItem
+from db import db, Kanmusu, AdmiralEquipment, Equipment, KanmusuEquipment
 
 
 def get_itemlist_ordered(admiral):
-    query = db.session.query(AdmiralItem, Item).filter(AdmiralItem.item_id == Item.id,
-        AdmiralItem.admiral_id == admiral.id).order_by(Item.sortno)
+    query = db.session.query(AdmiralEquipment, Equipment).filter(AdmiralEquipment.item_id == Equipment.id,
+                                                                 AdmiralEquipment.admiral_id == admiral.id).order_by(
+        Equipment.sortno)
     return query.all()
 
 
@@ -12,20 +13,22 @@ def get_itemlist_not_equipped(admiral):
     The basic idea here is to make a single huge query to get the data we want
     Data we want = All of Admiral's equipment, except the equipped ones.
 
-    So first we list all Admiral_Ships, then we use that to get all AdmiralShipItems
+    So first we list all Admiral_Ships, then we use that to get all KanmusuItems
     belonging to those Ships, making sure we add AdmiralShipItem.admiral_item_id != None.
     We do this because if not, we get a query with empty result (Google empty where clause in subquery).
 
     Now we have the values of IDs of equipped items by all AdmiralShips. Now we simply list all AdmiralItems
     *excluding* these values. Easy.
     """
-    query_admiral_ships = db.session.query(AdmiralShip.id).filter(AdmiralShip.admiral_id == admiral.id)
+    query_admiral_ships = db.session.query(Kanmusu.id).filter(Kanmusu.admiral_id == admiral.id)
 
-    query_equipped_items = db.session.query(AdmiralShipItem.admiral_item_id).filter(
-        AdmiralShipItem.admiral_ship_id.in_(query_admiral_ships), AdmiralShipItem.admiral_item_id != None)
+    query_equipped_items = db.session.query(KanmusuEquipment.admiral_item_id).filter(
+        KanmusuEquipment.admiral_ship_id.in_(query_admiral_ships), KanmusuEquipment.admiral_item_id != None)
 
-    query = db.session.query(AdmiralItem, Item).filter(AdmiralItem.item_id == Item.id,
-        AdmiralItem.admiral_id == admiral.id, ~AdmiralItem.id.in_(query_equipped_items)).order_by(Item.sortno)
+    query = db.session.query(AdmiralEquipment, Equipment).filter(AdmiralEquipment.item_id == Equipment.id,
+                                                                 AdmiralEquipment.admiral_id == admiral.id,
+                                                                 ~AdmiralEquipment.id.in_(
+                                                                     query_equipped_items)).order_by(Equipment.sortno)
     return query.all()
 
 
