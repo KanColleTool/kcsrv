@@ -25,11 +25,15 @@ class Kanmusu(db.Model):
     ship = db.relationship('Ship')
     stats = db.relationship('Stats')
 
-
     def create(self, ship_id=None, ship_api_id=None):
-        ship = Ship().get(ship_id=ship_id, ship_api_id=ship_api_id)
+        ship = Ship.get(ship_id=ship_id, ship_api_id=ship_api_id)
         self.ship = ship
         self.stats = ship.base_stats.copy()
+        # Copy over weird specific stats.
+        # TODO Maybe this should be moved out into stats?
+        self.current_hp = ship.base_stats.hp
+        self.current_ammo = ship.base_stats.ammo
+        self.current_fuel = ship.base_stats.fuel
         self.equipment = [KanmusuEquipment(slot=i) for i in range(ship.maxslots)]
         return self
 
@@ -80,16 +84,26 @@ class Ship(db.Model):
     modern_resources_id = db.Column(db.ForeignKey('resources.id'), index=True)
     remodel_id = db.Column(db.ForeignKey('remodel.id'), unique=True)
 
+    # TODO: Distinction between base_stats/max_stats needs to be made more clear.
+    # If you're wondering, it's found in `offline/dbpopulate:ships()`.
+
     base_stats = db.relationship('Stats', primaryjoin='Ship.base_stats_id == Stats.id')
     dismantling = db.relationship('Resources', primaryjoin='Ship.broken_resources_id == Resources.id')
     max_stats = db.relationship('Stats', primaryjoin='Ship.max_stats_id == Stats.id')
     modernization = db.relationship('Resources', primaryjoin='Ship.modern_resources_id == Resources.id')
     remodel = db.relationship('Remodel', uselist=False)
 
-
-    def get(self, ship_id=None, ship_api_id=None):
-        print('sh.si ' + str(ship_id))
-        print('sh.sai ' + str(ship_api_id))
+    @staticmethod
+    def get(ship_id=None, ship_api_id=None):
+        """
+        Gets a ship.
+        :param ship_id: The Ship internal ID to get.
+        :param ship_api_id: The Ship API id to get.
+        :rtype Ship
+        :return: A new ship object.
+        """
+        # print('sh.si ' + str(ship_id))
+        # print('sh.sai ' + str(ship_api_id))
         if ship_id:
             return Ship.query.get(ship_id)
         elif ship_api_id:
