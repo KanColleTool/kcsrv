@@ -1,9 +1,15 @@
+import datetime
+import time
+
+from flask import g
+
 from sqlalchemy.orm import reconstructor
 
 from constants import *
-from db.ships import Kanmusu
+from db.ships import Kanmusu, KanmusuEquipment
 from db.quests import Quest
-from . import db, Resources, Usable, QuestRequirement
+from . import db, Resources, Usable, QuestRequirement, Equipment
+import util
 
 
 class Admiral(db.Model):
@@ -223,6 +229,131 @@ class Admiral(db.Model):
         db.session.add(self)
         db.session.commit()
 
+    # Methods for getting information about the admiral.
+
+    def basic(self):
+        return {
+            'api_member_id': self.id,
+            'api_nickname': self.user.nickname,
+            'api_nickname_id': self.user.id,
+            'api_active_flag': 1,
+            'api_starttime': 1430603452688,
+            'api_level': self.level,
+            'api_rank': self.rank,
+            'api_experience': self.experience,
+            'api_fleetname': None,
+            'api_comment': "",
+            'api_comment_id': "",
+            'api_max_chara': self.max_kanmusu,
+            'api_max_slotitem': self.max_equipment,
+            'api_max_kagu': self.max_furniture,
+            'api_playtime': 0,
+            'api_tutorial': 0,
+            'api_furniture': [1, 1, 1, 1, 1, 1], # TODO
+            'api_count_deck': len(self.fleets),
+            'api_count_kdock': len(self.docks_craft),
+            'api_count_ndock': len(self.docks_repair),
+            'api_fcoin': self.furniture_coins,
+            'api_st_win': self.sortie_successes,
+            'api_st_lose': self.sortie_total - self.sortie_successes,
+            'api_ms_count': self.expedition_total,
+            'api_ms_success': self.expedition_successes,
+            'api_pt_win': self.pvp_successes,
+            'api_pt_lose': self.pvp_total - self.pvp_successes,
+            'api_pt_challenged': 0,
+            'api_pt_challenged_win': 0,
+            # Disables the opening stuff, and skips straight to the game.
+            'api_firstflag': 0 if len(self.kanmusu) == 0 else 1, # meh.
+            'api_tutorial_progress': 100, 'api_pvp': [0, 0]
+        }
+
+    def slot_info(self):
+        return [{
+            'api_id': aequip.id, 'api_slotitem_id': aequip.equipment.id, 'api_locked': aequip.locked, 'api_level': aequip.level
+        } for aequip in self.equipment.join(Equipment).order_by(Equipment.sortno)]
+
+    def useitem(self):
+        return [{
+            'api_member_id': self.id, 'api_id': ausable.id, # 'api_value': ausable.quantity,
+            'api_usetype': ausable.usable.type_, 'api_category': ausable.usable.category, 'api_name': ausable.usable.name,
+            'api_description': [ausable.usable.description,
+                ausable.usable.description2], 'api_price': ausable.usable.price, 'api_count': ausable.quantity
+        } for ausable in self.usables]
+
+    def unsetslot(self):
+        """
+        Listing all not equipped Equips.
+        In hindsight, this looks dumb.
+        I'm very sure there's a *much* easier way to do this
+        """
+
+        query_kanmusu = db.session.query(Kanmusu.id).filter(Kanmusu.admiral_id == self.id)
+
+        query_equipped = db.session.query(KanmusuEquipment.admiral_equipment_id).filter(
+            KanmusuEquipment.kanmusu_id.in_(query_kanmusu), KanmusuEquipment.admiral_equipment_id is not None)
+
+        query = db.session.query(AdmiralEquipment).filter(AdmiralEquipment.admiral_id == self.id,
+            ~AdmiralEquipment.id.in_(query_equipped)).join(Equipment).order_by(Equipment.sortno)
+        itemlist = query.all()
+
+        response = {"api_slottype1": []}
+        for admiral_item, item in itemlist:
+            response["api_slottype1"].append(admiral_item.id)
+        return response
+
+    def port(self):
+        response = {"api_data": {}}
+        # TODO: Log entry
+        response["api_data"]['api_log'] = [{
+            "api_state": "0", "api_no": 0, "api_type": "1", "api_message": "ayy lmao"
+        }]
+        # Background music?
+        response["api_data"]["api_p_bgm_id"] = 100
+        # This sets the parallel quest count. Don't know what higher values do, default is 5.
+        # I set it to ten because fuck the police
+        response["api_data"]["api_parallel_quest_count"] = 10
+        # Combined flag? Event data probably.
+        response["api_data"]["api_combined_flag"] = 0
+        # API basic - a replica of api_get_member/basic
+        response['api_data']['api_basic'] = util.merge_two_dicts(self.basic(), {
+            'api_medals': 0, 'api_large_dock': 0
+        })
+        response['api_data']['api_deck_port'] = []
+        # Fleets.
+        for fleet in self.fleets:
+            fleet_members = [kanmusu.number for kanmusu in fleet.kanmusu if kanmusu is not None]
+            temp_dict = {
+                # Unknown value, always zero for some reason.
+                'api_flagship': 0, # The Admiral ID, presumably.
+                'api_member_id': self.id, # The name of the fleet.
+                'api_name': fleet.name, # Unknown value, always empty.
+                'api_name_id': "", # The local fleet ID.
+                'api_id': fleet.number, # List of ships.
+                "api_ship": fleet_members + [-1] * (6 - len(fleet_members)), # Mission data?
+                "api_mission": [0, 0, 0, 0]
+            }
+            response['api_data']['api_deck_port'].append(temp_dict)
+
+        # Materials.
+        materials = self.resources.to_list()
+        materials.append(self.get_usable(NAME_BUCKET).quantity)
+        materials.append(self.get_usable(NAME_FLAME).quantity)
+        materials.append(self.get_usable(NAME_MATERIAL).quantity)
+        materials.append(self.get_usable(NAME_SCREW).quantity)
+        response['api_data']['api_material'] = materials
+
+        response['api_data']['api_ship'] = [kanmusu.kanmusu_data() for kanmusu in self.kanmusu if kanmusu.active]
+
+        # Generate ndock.
+        response['api_data']['api_ndock'] = self.rdock()
+        return response
+
+    def kdock(self):
+        return Dock.dock_data(self.docks_craft)
+
+    def rdock(self):
+        return Dock.dock_data(self.docks_repair)
+
 
 class AdmiralEquipment(db.Model):
     __tablename__ = 'admiral_equipment'
@@ -294,6 +425,45 @@ class Dock(db.Model):
         if self.resources is None:
             self.resources = Resources(fuel=0, ammo=0, steel=0, baux=0)
 
+    @staticmethod
+    def dock_data(dock_list):
+        # I don't approve of using this global, but it's easier.
+        admiral = g.admiral
+        response = []
+        count = len(dock_list)
+        """ Append admiral dock data """
+        for n in range(count):
+            dock = dock_list[n]
+            response.append({
+                'api_member_id': admiral.id,
+                'api_id': dock.number,
+                'api_state': 0 if dock.complete is None
+                else 2 if dock.complete > time.time()
+                else 3 if dock.complete < time.time() else -1,
+                'api_created_ship_id': dock.kanmusu.ship.id if dock.kanmusu is not None else 0,
+                'api_complete_time': dock.complete,
+                'api_complete_time_str': datetime.datetime.fromtimestamp(dock.complete / 1000).strftime('%Y-%m-%d %H:%M:%S')
+                if dock.complete is not None else "",
+                'api_item1': dock.resources.fuel,
+                'api_item2': dock.resources.ammo,
+                'api_item3': dock.resources.steel, 'api_item4': dock.resources.baux,
+                'api_item5': None})
+
+        """ Fill the rest with empty dock data """
+        while count < 4:
+            response.append({
+                'api_member_id': admiral.id,
+                'api_id': count + 1,
+                'api_state': -1,
+                'api_created_ship_id': 0,
+                'api_complete_time': 0,
+                'api_complete_time_str': "",
+                'api_item1': 0, 'api_item2': 0, 'api_item3': 0,
+                'api_item4': 0, 'api_item5': 0
+            })
+            count += 1
+        return response
+
 
 class Fleet(db.Model):
     __tablename__ = 'fleet'
@@ -305,3 +475,22 @@ class Fleet(db.Model):
 
     admiral = db.relationship('Admiral')
     kanmusu = db.relationship('Kanmusu')
+
+    def fleet(self):
+        fleet_members = [kanmusu.id for kanmusu in self.kanmusu if kanmusu is not None]
+        return {
+            # Unknown value, always zero for some reason.
+            'api_flagship': 0,
+            # The Admiral ID, presumably.
+            'api_member_id': self.admiral.id,
+            # The name of the fleet.
+            'api_name': self.name,
+            # Unknown value, always empty.
+            'api_name_id': "",
+            # The local fleet ID.
+            'api_id': self.number,
+            # List of ships.
+            "api_ship": fleet_members + [-1] * (6 - len(fleet_members)),
+            # Presumably expedition data.
+            "api_mission": [0, 0, 0, 0]
+        }
