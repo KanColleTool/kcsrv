@@ -24,8 +24,8 @@ class Kanmusu(db.Model):
     ship = db.relationship('Ship')
     stats = db.relationship('Stats')
 
-    def create(self,ship_id):
-        ship = Ship.query.get(ship_id)
+    def create(self,ship_id=None,ship_api_id=None):
+        ship = Ship().get(ship_id=ship_id,ship_api_id=ship_api_id)
         self.ship = ship
         self.stats = ship.base_stats.copy()
         self.equipment = [KanmusuEquipment(slot=i) for i in range(ship.maxslots)]
@@ -85,6 +85,16 @@ class Ship(db.Model):
     max_stats = db.relationship('Stats', primaryjoin='Ship.max_stats_id == Stats.id')
     modernization = db.relationship('Resources', primaryjoin='Ship.modern_resources_id == Resources.id')
     remodel = db.relationship('Remodel', uselist=False)
+
+    def get(self,ship_id=None,ship_api_id=None):
+        print('sh.si ' + str(ship_id))
+        print('sh.sai ' + str(ship_api_id))
+        if ship_id:
+            return Ship.query.get(ship_id)
+        elif ship_api_id:
+            return Ship.query.filter(Ship.api_id==ship_api_id).first()
+        else:
+            return None
 
 
 

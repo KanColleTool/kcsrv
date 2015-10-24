@@ -117,9 +117,9 @@ class Admiral(db.Model):
             return ausable
         return None
 
-    def add_kanmusu(self,ship_id=None,fleet_number=None,position=None):
-        kanmusu = Kanmusu().create(ship_id)
-        kanmusu.number = len(self.kanmusu)
+    def add_kanmusu(self,ship_id=None,ship_api_id=None,fleet_number=None,position=None):
+        kanmusu = Kanmusu().create(ship_id,ship_api_id)
+        kanmusu.number = len(self.kanmusu)+1
         if fleet_number:
             self.fleets[fleet_number-1].kanmusu.append(kanmusu)
             kanmusu.fleet_position = position if position else 1

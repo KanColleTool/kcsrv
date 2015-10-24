@@ -1,20 +1,11 @@
-from db import db,Admiral,AdmiralQuest,Quest,AdmiralItem,Ship
+from db import db,Admiral,AdmiralQuest,Quest,Ship
 from constants import  *
-from helpers import ShipHelper,QuestHelper
 
 def ship_add(admiral_id,ship_id):
-    """
-    This is going to crash the game after 4 uses because tThe method adds a new fleet every time it's called.
-    I could fix it, be we'll refactor most of this really soon, so I can't be bothered.
-    """
     admiral = db.session.query(Admiral).get(admiral_id)
+    admiral.add_kanmusu(ship_id)
     ship = db.session.query(Ship).get(ship_id)
-    if ship is not None:
-        ShipHelper.assign_ship(admiral,ship_id)
-        db.session.commit()
-        print("Ship {} added to Admiral {}".format(ship.name,admiral.id))
-    else:
-        print("Ship id {} not found".format(ship_id))
+    print("Ship {} added to Admiral {}".format(ship.name,admiral.id))
 
 def quest_add(admiral_id,quest_id):
     admiral = db.session.query(Admiral).get(admiral_id)

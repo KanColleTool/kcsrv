@@ -7,7 +7,7 @@ from flask.ext.migrate import Migrate, MigrateCommand
 #from helpers import ShipHelper
 from kcsrv import app
 from db import db,Ship,Role
-from offline import dbpopulate
+from offline import dbpopulate, kccheat
 import util
 
 if not os.path.exists('./config.py'):

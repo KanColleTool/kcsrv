@@ -10,6 +10,7 @@ def kanmusu(kanmusu):
 
     kanmusu_data = {
             'api_id': kanmusu.id,
+            'api_ship_id': ship.api_id, #This must match api_data2 or we get different Ships in the game and DB.
             'api_onslot': [0, 0, 0, 0, 0], #?
             'api_locked_equip': 0,
             'api_bull': kanmusu.current_ammo,
@@ -33,11 +34,9 @@ def kanmusu(kanmusu):
             'api_backs': ship.rarity,
             'api_sally_area': 0,  # dunno
             'api_ndock_item': [0,0], #TODO
-            'api_id': kanmusu.id,
             'api_karyoku': [kanmusu.stats.firepower, ship.max_stats.firepower],
             'api_maxhp': ship.max_stats.hp,
             'api_lucky': [kanmusu.stats.luck, ship.max_stats.luck],
-            'api_ship_id': ship.id,
             'api_ndock_time': 0,
             'api_kyouka': [0, 0, 0, 0, 0],
             'api_sakuteki': [ship.base_stats.los, ship.max_stats.los]
@@ -45,7 +44,7 @@ def kanmusu(kanmusu):
     return kanmusu_data
 
 def fleet(fleet):
-    fleet_members = [kanmusu.number+1 for kanmusu in fleet.kanmusu if kanmusu is not None]
+    fleet_members = [kanmusu.id for kanmusu in fleet.kanmusu if kanmusu is not None]
     return {
         # Unknown value, always zero for some reason.
         'api_flagship': 0,
