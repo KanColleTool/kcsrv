@@ -32,7 +32,7 @@ class Kanmusu(db.Model):
         self.current_ammo = self.stats.ammo
         self.current_fuel = self.stats.fuel
         self.current_hp = self.stats.hp
-        self.equipment = [KanmusuEquipment(slot=i) for i in range(ship.maxslots)]
+        self.equipments = [KanmusuEquipment(slot=i) for i in range(ship.maxslots)]
         return self
 
     @staticmethod

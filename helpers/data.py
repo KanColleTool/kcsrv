@@ -10,7 +10,7 @@ def kanmusu(kanmusu):
     ship = kanmusu.ship
 
     # AdmiralShip *must have* entries in AdmiralShipItem table, or we catbomb.
-    equips = [equip.admiral_equipment.equipment_id if equip.admiral_equipment_id else -1 for equip in kanmusu.equipments]
+    equips = [equip.admiral_equipment.id if equip.admiral_equipment_id else -1 for equip in kanmusu.equipments]
 
     kanmusu_data = {
         # This must match api_data2 or we get different Ships in the game and DB.
