@@ -16,6 +16,9 @@ admiral = None
 
 
 def init(app):
+    # --> Jinja2 Env Update
+    app.jinja_env.globals.update(__builtins__=__builtins__)
+
     # --> Extension setup
     db.init_app(app)
     admin.init_app(app)
@@ -26,7 +29,6 @@ def init(app):
     modules["security"] = Security(app, modules["user_datastore"], confirm_register_form=MyRegisterForm)
 
     # Admiral load on each request
-
 
     # --> Register blueprints
     from modules.play.play import play
@@ -50,7 +52,7 @@ def init(app):
             abort(403)
         user = db.session.query(User).filter(User.api_token == api_token).first()
         if user is None:
-            return "Invalid api_token"
+            abort(404)
         g.admiral = user.admiral if user.admiral else Admiral().create(user)
 
     app.register_blueprint(api_game, url_prefix='/kcsapi')

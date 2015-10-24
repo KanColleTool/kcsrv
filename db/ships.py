@@ -25,9 +25,8 @@ class Kanmusu(db.Model):
     ship = db.relationship('Ship')
     stats = db.relationship('Stats')
 
-
     def create(self, ship_id=None, ship_api_id=None):
-        ship = Ship().get(ship_id=ship_id, ship_api_id=ship_api_id)
+        ship = Ship.get(ship_id=ship_id, ship_api_id=ship_api_id)
         self.ship = ship
         self.stats = ship.base_stats.copy()
         self.current_ammo = self.stats.ammo
@@ -91,16 +90,28 @@ class Ship(db.Model):
     modern_resources_id = db.Column(db.ForeignKey('resources.id'), index=True)
     remodel_id = db.Column(db.ForeignKey('remodel.id'), unique=True)
 
+    # TODO: Distinction between base_stats/max_stats needs to be made more clear.
+    # If you're wondering, it's found in `offline/dbpopulate:ships()`.
+
     base_stats = db.relationship('Stats', primaryjoin='Ship.base_stats_id == Stats.id')
     dismantling = db.relationship('Resources', primaryjoin='Ship.broken_resources_id == Resources.id')
     max_stats = db.relationship('Stats', primaryjoin='Ship.max_stats_id == Stats.id')
     modernization = db.relationship('Resources', primaryjoin='Ship.modern_resources_id == Resources.id')
     remodel = db.relationship('Remodel', uselist=False)
 
-
-    def get(self, id=None, ship_api_id=None):
+    @staticmethod
+    def get(id=None, ship_api_id=None):
+        """
+        Gets a ship.
+        :param ship_id: The Ship internal ID to get.
+        :param ship_api_id: The Ship API id to get.
+        :rtype Ship
+        :return: A new ship object.
+        """
+        # print('sh.si ' + str(ship_id))
+        # print('sh.sai ' + str(ship_api_id))
         if id:
-            return Ship.query.get(id)
+            return db.session.query(Ship).get(id)
         elif ship_api_id:
             return Ship.query.filter(Ship.api_id == ship_api_id).first()
         else:

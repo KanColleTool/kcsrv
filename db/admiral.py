@@ -49,7 +49,6 @@ class Admiral(db.Model):
         primaryjoin="and_(Admiral.id==Dock.admiral_id, Dock.type_== {})".format(DOCK_TYPE_REPAIR),
         order_by='Dock.number')
 
-
     def create(self, user):
         self.resources = Resources(fuel=500, ammo=500, steel=500, baux=500)
         self.docks_craft = [Dock(type_=DOCK_TYPE_CRAFT, number=n + 1, resources=Resources().none()) for n in range(3)]
@@ -57,11 +56,10 @@ class Admiral(db.Model):
         self.fleets = [Fleet(number=1)]
 
         # hm...must do better than this.
-        initial_usables = [
-            AdmiralUsables(usable=Usable.by_name(NAME_BUCKET), quantity=3),
-            AdmiralUsables(usable=Usable.by_name(NAME_FLAME), quantity=4),
-            AdmiralUsables(usable=Usable.by_name(NAME_MATERIAL), quantity=5),
-            AdmiralUsables(usable=Usable.by_name(NAME_SCREW), quantity=1)]
+        initial_usables = [AdmiralUsables(usable=Usable.by_name(NAME_BUCKET), quantity=3),
+                           AdmiralUsables(usable=Usable.by_name(NAME_FLAME), quantity=4),
+                           AdmiralUsables(usable=Usable.by_name(NAME_MATERIAL), quantity=5),
+                           AdmiralUsables(usable=Usable.by_name(NAME_SCREW), quantity=1)]
         self.usables = initial_usables
         """
         last = user.admiral.lastaction
@@ -89,7 +87,6 @@ class Admiral(db.Model):
         db.session.commit()
         return self
 
-
     # Not sure if this one is worth it.
     def add_item(self, item_id, item_type, quantity=1):
         if item_type == ITEM_TYPE_USABLE:
@@ -105,7 +102,6 @@ class Admiral(db.Model):
             for _ in range(quantity):
                 self.items.append(AdmiralEquipment(equipment_id=item_id))
 
-
     def get_usable(self, name):
         for u in self.usables:
             if u.usable.name == name:
@@ -117,7 +113,6 @@ class Admiral(db.Model):
             self.usables.append(ausable)
             return ausable
         return None
-
 
     def add_kanmusu(self, ship_id=None, ship_api_id=None, fleet_number=None, position=None):
         kanmusu = Kanmusu().create(ship_id, ship_api_id)
@@ -194,7 +189,6 @@ class Dock(db.Model):
 
     resources = db.relationship('Resources', uselist=False)
     kanmusu = db.relationship('Kanmusu')
-
 
     @reconstructor
     def default_resources(self):

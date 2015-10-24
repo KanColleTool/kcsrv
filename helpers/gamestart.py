@@ -7,19 +7,47 @@ from . import data
 
 
 def basic():
-    admiral = g.admiral
     """
     Gets the basic info for the admiral.
     :return: A dict containing the KanColle info for the admiral.
     """
+
+    admiral = g.admiral
+
     return {
-        'api_member_id': admiral.id, 'api_nickname': admiral.user.nickname, 'api_nickname_id': admiral.user.id, 'api_active_flag': 1, 'api_starttime': 1430603452688, 'api_level': admiral.level, 'api_rank': admiral.rank, 'api_experience': admiral.experience, 'api_fleetname': None, 'api_comment': "", 'api_comment_id': "", 'api_max_chara': admiral.max_kanmusu, 'api_max_slotitem': admiral.max_equipment, 'api_max_kagu': admiral.max_furniture, 'api_playtime': 0, 'api_tutorial': 0, 'api_furniture': [
-            1, 1, 1, 1, 1, 1], # TODO
-        'api_count_deck': len(admiral.fleets), 'api_count_kdock': len(admiral.docks_craft), 'api_count_ndock': len(
-            admiral.docks_repair), 'api_fcoin': admiral.furniture_coins, 'api_st_win': admiral.sortie_successes, 'api_st_lose': admiral.sortie_total - admiral.sortie_successes, 'api_ms_count': admiral.expedition_total, 'api_ms_success': admiral.expedition_successes, 'api_pt_win': admiral.pvp_successes, 'api_pt_lose': admiral.pvp_total - admiral.pvp_successes, 'api_pt_challenged': 0, 'api_pt_challenged_win': 0,
+        'api_member_id': admiral.id,
+        'api_nickname': admiral.user.nickname,
+        'api_nickname_id': admiral.user.id,
+        'api_active_flag': 1,
+        'api_starttime': 1430603452688,
+        'api_level': admiral.level,
+        'api_rank': admiral.rank,
+        'api_experience': admiral.experience,
+        'api_fleetname': None,
+        'api_comment': "",
+        'api_comment_id': "",
+        'api_max_chara': admiral.max_kanmusu,
+        'api_max_slotitem': admiral.max_equipment,
+        'api_max_kagu': admiral.max_furniture,
+        'api_playtime': 0,
+        'api_tutorial': 0,
+        'api_furniture': [1, 1, 1, 1, 1, 1],  # TODO
+        'api_count_deck': len(admiral.fleets),
+        'api_count_kdock': len(admiral.docks_craft),
+        'api_count_ndock': len(admiral.docks_repair),
+        'api_fcoin': admiral.furniture_coins,
+        'api_st_win': admiral.sortie_successes,
+        'api_st_lose': admiral.sortie_total - admiral.sortie_successes,
+        'api_ms_count': admiral.expedition_total,
+        'api_ms_success': admiral.expedition_successes,
+        'api_pt_win': admiral.pvp_successes,
+        'api_pt_lose': admiral.pvp_total - admiral.pvp_successes,
+        'api_pt_challenged': 0,
+        'api_pt_challenged_win': 0,
         # Disables the opening stuff, and skips straight to the game.
-        'api_firstflag': int(len(admiral.kanmusu) > 0), # False means 0
-        'api_tutorial_progress': 100, 'api_pvp': [0, 0]
+        'api_firstflag': int(len(admiral.kanmusu) > 0),  # False means 0
+        'api_tutorial_progress': 100,
+        'api_pvp': [0, 0]
     }
 
 
@@ -52,8 +80,9 @@ def unsetslot():
 
     query_kanmusu = db.session.query(Kanmusu.id).filter(Kanmusu.admiral_id == admiral.id)
 
-    query_equipped = db.session.query(KanmusuEquipment.admiral_equipment_id).filter(
-        KanmusuEquipment.kanmusu_id.in_(query_kanmusu), KanmusuEquipment.admiral_equipment_id != None)
+    query_equipped = db.session.query(KanmusuEquipment.admiral_equipment_id)\
+        .filter(KanmusuEquipment.kanmusu_id.in_(query_kanmusu),
+                KanmusuEquipment.admiral_equipment_id != None)
 
     query = db.session.query(AdmiralEquipment).filter(AdmiralEquipment.admiral_id == admiral.id, \
         ~AdmiralEquipment.id.in_(query_equipped)).join(Equipment).order_by(Equipment.sortno)

@@ -20,7 +20,7 @@
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    {% if not current_user.is_authenticated %}
+                    {% if (__builtins__.callable(current_user.is_authenticated) and not current_user.is_authenticated()) or not (current_user.is_authenticated) %}
                         <li><a href="{{ url_for_security('login') }}">Log in</a></li>
                     {% else %}
                         <li class="dropdown">
