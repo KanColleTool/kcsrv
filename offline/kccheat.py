@@ -1,6 +1,5 @@
 from constants import *
 from db import db, Admiral, AdmiralQuest, Quest, Ship, AdmiralEquipment
-from helpers import QuestHelper
 
 
 def ship_add(admiral_id, ship_id):
@@ -12,7 +11,7 @@ def ship_add(admiral_id, ship_id):
 
 def quest_add(admiral_id, quest_id):
     admiral = db.session.query(Admiral).get(admiral_id)
-    QuestHelper.unlock_quest(admiral, quest_id)
+    admiral.unlock_quest(admiral)
     print("Eh, if id was correct it probably worked.")
 
 
