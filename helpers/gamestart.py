@@ -67,6 +67,8 @@ def useitem():
             ausable.usable.description2], 'api_price': ausable.usable.price, 'api_count': ausable.quantity
     } for ausable in g.admiral.usables]
 
+def kdock():
+    return data.kdock()
 
 def unsetslot():
     """
@@ -84,12 +86,11 @@ def unsetslot():
 
     query = db.session.query(AdmiralEquipment).filter(AdmiralEquipment.admiral_id == admiral.id, \
         ~AdmiralEquipment.id.in_(query_equipped)).join(Equipment).order_by(Equipment.sortno)
-    itemlist = query.all()
-
+    equiplist = query.all()
     response = {}
     response["api_slottype1"] = []
-    for admiral_item, item in itemlist:
-        response["api_slottype1"].append(admiral_item.id)
+    for equip in equiplist:
+        response["api_slottype1"].append(equip.id)
     return response
 
 

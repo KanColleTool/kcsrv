@@ -4,7 +4,7 @@ from db import Kanmusu, Admiral
 from util import *
 # from db import AdmiralShip,Quest
 from helpers import AdmiralHelper, ItemHelper
-from helpers import game_start, data, QuestHelper, ShipHelper
+from helpers import gamestart, data, QuestHelper, ShipHelper
 
 
 api_user = Blueprint('api_user', __name__)
@@ -30,70 +30,7 @@ def resupply():
 def material():
     """Resources such as fuel, ammo, etc..."""
     admiral = get_token_admiral_or_error()
-    return svdata(game_start.get_admiral_resources_api_data(admiral))
-
-
-@api_user.route('/api_req_member/get_incentive', methods=['GET', 'POST'])
-def get_incentive():
-    return svdata({
-        'api_count': 0
-    })  # What?
-
-
-@api_user.route('/api_get_member/basic', methods=['GET', 'POST'])
-def basic():
-    """Basic admiral data."""
-    return svdata(game_start.basic())
-
-
-@api_user.route('/api_get_member/furniture', methods=['GET', 'POST'])
-def furniture():
-    """Available furniture."""
-    # TODO: Implement this properly
-    return svdata([{
-        'api_member_id': admiral.id, 'api_id': item.id, 'api_furniture_type': item.type, 'api_furniture_no': item.no, 'api_furniture_id': item.id
-    } for item in []])
-
-
-@api_user.route('/api_get_member/slot_item', methods=['GET', 'POST'])
-def slot_item():
-    return svdata(game_start.slot_info())
-
-
-@api_user.route('/api_get_member/useitem', methods=['GET', 'POST'])
-def useitem():
-    # TODO: Implement this properly
-    return svdata(game_start.useitem())
-
-
-@api_user.route('/api_get_member/kdock', methods=['GET', 'POST'])
-def kdock():
-    """Krafting docks."""
-    return svdata(data.kdock())
-
-
-@api_user.route('/api_get_member/ndock', methods=['POST'])
-def ndock():
-    """Repair dock endpoint."""
-    return svdata(data.rdock())
-
-
-@api_user.route('/api_get_member/unsetslot', methods=['GET', 'POST'])
-def unsetslot():
-    return svdata(game_start.unsetslot())
-
-
-@api_user.route('/api_port/port', methods=['GET', 'POST'])
-def port():
-    # return svdata(game_start.port())
-    return svdata(game_start.port())
-
-
-@api_user.route('/api_get_member/ship2', methods=['GET', 'POST'])
-def ship2():
-    """Fuck ship2."""
-    """Agreed."""
-    return svdata({})
+    return svdata(gamestart.get_admiral_resources_api_data(admiral))
 
 
 @api_user.route('/api_get_member/mapinfo', methods=['GET', 'POST'])

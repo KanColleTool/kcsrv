@@ -23,7 +23,7 @@ def quest_complete(admiral_id, quest_id):
     print("Eh, if id was correct it probably worked.")
 
 
-def item_add(admiral, item_id):
-    db.session.add(AdmiralEquipment(admiral_id=admiral.id, item_id=item_id))
+def equip_add(admiral_id, equip_id):
+    db.session.add(AdmiralEquipment(admiral_id=admiral_id, equipment_id=equip_id))
     db.session.commit()
     print("Eh, if id was correct it probably worked.")

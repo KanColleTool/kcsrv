@@ -10,8 +10,8 @@ We also bypass from db.admiral import Admiral and simply use from db import Admi
 Overall, importing everything sounds like a reasonable choice.
 """
 
-from db.auth import *
 from db.support import *
+from db.auth import *
 from db.quests import *
 from db.items import *
 from db.admiral import *

@@ -43,14 +43,13 @@ class Admiral(db.Model):
     fleets = db.relationship('Fleet', order_by='Fleet.number')
 
     docks_craft = db.relationship("Dock",
-        primaryjoin="and_(Admiral.id==Dock.admiral_id," + "Dock.type_==" + str(DOCK_TYPE_CRAFT) + ")",
+        primaryjoin="and_(Admiral.id==Dock.admiral_id, Dock.type_== {})".format(DOCK_TYPE_CRAFT),
         order_by='Dock.number')
     docks_repair = db.relationship("Dock",
-       primaryjoin="and_(Admiral.id==Dock.admiral_id," + "Dock.type_==" + str(DOCK_TYPE_REPAIR) + ")",
-       order_by='Dock.number')
+        primaryjoin="and_(Admiral.id==Dock.admiral_id, Dock.type_== {})".format(DOCK_TYPE_REPAIR),
+        order_by='Dock.number')
 
     def create(self, user):
-        # db.session.add(self)
         self.resources = Resources(fuel=500, ammo=500, steel=500, baux=500)
         self.docks_craft = [Dock(type_=DOCK_TYPE_CRAFT, number=n + 1, resources=Resources().none()) for n in range(3)]
         self.docks_repair = [Dock(type_=DOCK_TYPE_REPAIR, number=n + 1, resources=Resources().none()) for n in range(3)]

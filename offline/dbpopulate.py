@@ -32,7 +32,10 @@ def equip():
         # TODO - Update data if api_id already exists
         if old:
             continue
-        e = Equipment(sortno=equip["api_sortno"], api_id=equip["api_id"], info=equip["api_info"],
+        e = Equipment(
+            sortno=equip["api_sortno"],
+            api_id=equip["api_id"],
+            info=equip["api_info"],
             name=equip["api_name"], rarity=equip["api_rare"], types=equip["api_type"],
             stats=Stats(hp=equip["api_taik"], armour=equip["api_souk"], firepower=equip["api_houg"],
                 torpedo=equip["api_raig"], speed=equip["api_soku"], dive_bomber=equip["api_baku"],
@@ -79,10 +82,10 @@ def ships():
                 cost=Resources(fuel=ship['api_afterfuel'], ammo=ship['api_afterbull'])), # Minimums
             base_stats=Stats(luck=ship['api_luck'][0], firepower=ship['api_houg'][0], armour=ship['api_souk'][0],
                 torpedo=ship['api_raig'][0], antiair=ship['api_tyku'][0], antisub=0, los=0, evasion=0,
-                hp=ship['api_taik'][0], ), # Maximums
+                hp=ship['api_taik'][0], ammo=ship['api_bull_max'], fuel=ship['api_fuel_max']), # Maximums
             max_stats=Stats(luck=ship['api_luck'][1], firepower=ship['api_houg'][1], armour=ship['api_souk'][1],
                 torpedo=ship['api_raig'][1], antiair=ship['api_tyku'][1], antisub=0, los=0, evasion=0,
-                range_=ship['api_leng'], hp=ship['api_taik'][1], ammo=ship['api_bull_max'], fuel=ship['api_fuel_max'],
+                range_=ship['api_leng'], hp=ship['api_taik'][1],
 
             ), maxslots=ship['api_slot_num'], maxplanes=','.join(str(x) for x in ship['api_maxeq']))
         # ugh
