@@ -74,6 +74,7 @@ def update_db():
     dbpopulate.ships()
     dbpopulate.equip()
     dbpopulate.items()
+    setup()
 
 if __name__ == '__main__':
     manager.run()

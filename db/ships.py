@@ -6,21 +6,31 @@ class Kanmusu(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fleet_position = db.Column(db.Integer)
     number = db.Column(db.Integer, nullable=False)
-    level = db.Column(db.Integer)
-    experience = db.Column(db.Integer)
-    current_hp = db.Column(db.Integer)
-    current_fuel = db.Column(db.Integer)
-    current_ammo = db.Column(db.Integer)
-    fatigue = db.Column(db.Integer)
-    locked = db.Column(db.Boolean)
-    active = db.Column(db.Boolean, nullable=False)
+    level = db.Column(db.Integer,default=1)
+    experience = db.Column(db.Integer,default=0)
+    current_hp = db.Column(db.Integer,default=1)
+    current_fuel = db.Column(db.Integer,default=0)
+    current_ammo = db.Column(db.Integer,default=0)
+    fatigue = db.Column(db.Integer,default=49)
+    locked = db.Column(db.Boolean,default=False)
+    active = db.Column(db.Boolean,default=True,nullable=False)
+
     admiral_id = db.Column(db.ForeignKey('admiral.id'))
     ship_id = db.Column(db.ForeignKey('ship.id'))
     fleet_id = db.Column(db.ForeignKey('fleet.id'))
     stats_id = db.Column(db.ForeignKey('stats.id'), index=True)
-    
+
+    equipment = db.relationship('KanmusuEquipment')
     ship = db.relationship('Ship')
     stats = db.relationship('Stats')
+
+    def create(self,ship_id):
+        ship = Ship.query.get(ship_id)
+        self.ship = ship
+        self.stats = ship.base_stats.copy()
+        self.equipment = [KanmusuEquipment(slot=i) for i in range(ship.maxslots)]
+        return self
+
 
 
 class KanmusuEquipment(db.Model):
@@ -63,6 +73,7 @@ class Ship(db.Model):
     buildtime = db.Column(db.Integer)
     maxslots = db.Column(db.Integer)
     maxplanes = db.Column(db.String)
+
     max_stats_id = db.Column(db.ForeignKey('stats.id'), index=True)
     base_stats_id = db.Column(db.ForeignKey('stats.id'), index=True)
     broken_resources_id = db.Column(db.ForeignKey('resources.id'), index=True)
@@ -75,6 +86,5 @@ class Ship(db.Model):
     modernization = db.relationship('Resources', primaryjoin='Ship.modern_resources_id == Resources.id')
     remodel = db.relationship('Remodel', uselist=False)
 
-#from . import Fleet
 
 

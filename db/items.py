@@ -31,8 +31,8 @@ class Furniture(db.Model):
     sale_flag = db.Column(db.Boolean)
 
 
-class Goods(db.Model):
-    __tablename__ = 'goods'
+class Usable(db.Model):
+    __tablename__ = 'usable'
 
     id = db.Column(db.Integer, primary_key=True)
     api_id = db.Column(db.Integer)
@@ -44,4 +44,4 @@ class Goods(db.Model):
     price = db.Column(db.Integer)
 
     def by_name(name):
-        return db.session.query(Goods).filter(Goods.name==name).first()
+        return db.session.query(Usable).filter(Usable.name==name).first()

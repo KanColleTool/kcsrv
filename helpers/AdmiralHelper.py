@@ -62,15 +62,15 @@ def slot_info():
 def useitem():
     return [{
         'api_member_id': g.admiral.id,
-        'api_id': agood.id,
-        #'api_value': agood.quantity,
-        'api_usetype': agood.goods.type_,
-        'api_category': agood.goods.category,
-        'api_name': agood.goods.name,  # WHY
-        'api_description': [agood.goods.description, agood.goods.description2],
-        'api_price': agood.goods.price,
-        'api_count': agood.quantity
-    } for agood in g.admiral.goods]
+        'api_id': ausable.id,
+        #'api_value': ausable.quantity,
+        'api_usetype': ausable.usables.type_,
+        'api_category': ausable.usables.category,
+        'api_name': ausable.usables.name,  # WHY
+        'api_description': [ausable.usables.description, ausable.usables.description2],
+        'api_price': ausable.usables.price,
+        'api_count': ausable.quantity
+    } for ausable in g.admiral.usables]
 
 def unsetslot():
     """
@@ -149,10 +149,10 @@ def port():
     
     # Materials.
     materials = admiral.resources.to_list()
-    materials.append(admiral.get_goods(NAME_BUCKET).quantity)
-    materials.append(admiral.get_goods(NAME_FLAME).quantity)
-    materials.append(admiral.get_goods(NAME_MATERIAL).quantity)
-    materials.append(admiral.get_goods(NAME_SCREW).quantity)
+    materials.append(admiral.get_usables(NAME_BUCKET).quantity)
+    materials.append(admiral.get_usables(NAME_FLAME).quantity)
+    materials.append(admiral.get_usables(NAME_MATERIAL).quantity)
+    materials.append(admiral.get_usables(NAME_SCREW).quantity)
     response['api_data']['api_material'] = materials
 
     response['api_data']['api_ship'] = [ShipHelper.kanmusu_data(kanmusu)

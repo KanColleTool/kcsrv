@@ -10,57 +10,6 @@ import util
 from flask import g
 #from db import db,Dock
 
-def dock_data(dock_list):
-    admiral = g.admiral
-    response = []
-    count = len(dock_list)
-    """ Append admiral dock data """    
-    for n in range(count):
-        dock = dock_list[n]
-        response.append({
-                'api_member_id': admiral.id,
-                'api_id': dock.number,
-                'api_state': 0 if dock.complete is None
-                    else 2 if dock.complete > time.time()
-                    else 3 if dock.complete < time.time() else -1,
-                'api_created_ship_id': dock.kanmusu.ship.id if dock.kanmusu is not None else 0,
-                'api_complete_time': dock.complete,
-                'api_complete_time_str': datetime.datetime.fromtimestamp(
-                        dock.complete / 1000
-                    ).strftime('%Y-%m-%d %H:%M:%S') if dock.complete is not None else "",
-                'api_item1': dock.resources.fuel,
-                'api_item2': dock.resources.ammo,
-                'api_item3': dock.resources.steel,
-                'api_item4': dock.resources.baux,
-                'api_item4': 0,
-        })
-    """ Fill the rest with empty dock data """
-    while count < 4:
-        response.append({
-                'api_member_id': admiral.id,
-                'api_id': count+1,
-                'api_state': -1,
-                'api_created_ship_id': 0,
-                'api_complete_time': 0,
-                'api_complete_time_str': "",
-                'api_item1': 0,
-                'api_item2': 0,
-                'api_item3': 0,
-                'api_item4': 0,
-                'api_item5': 0
-        })
-        count += 1
-    return response
-
-
-def kdock():
-    return dock_data(g.admiral.docks_craft)
-
-def rdock():
-    return dock_data(g.admiral.docks_repair)
-    
-            
-
 
 """
 def get_ship_from_recipe(fuel: int=30, ammo: int=30, steel: int=30, baux: int=30) -> int:

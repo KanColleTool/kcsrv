@@ -1,4 +1,6 @@
 from . import db
+from sqlalchemy import inspect
+
 
 class Resources(db.Model):
     __tablename__ = 'resources'
@@ -16,6 +18,10 @@ class Resources(db.Model):
         if self.steel is not None: data.append(self.steel)
         if self.baux is not None: data.append(self.baux)
         return data
+
+    def none(self):
+        self.ammo = self.fuel = self.steel = self.baux = None
+        return self
 
 class Stats(db.Model):
     __tablename__ = 'stats'
@@ -36,6 +42,13 @@ class Stats(db.Model):
     hp = db.Column(db.Integer)
     ammo = db.Column(db.Integer)
     fuel = db.Column(db.Integer)
+
+    def copy(self,target=None):
+        target = target if target else Stats()
+        mapper = inspect(self)
+        for column in mapper.attrs:
+            if column.key != "id": setattr(target,column.key,getattr(self,column.key))
+        return target
 
 
 class Recipe(db.Model):

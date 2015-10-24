@@ -3,7 +3,7 @@ from flask import Blueprint,request
 from util import *
 #from db import AdmiralShip,Quest
 #from helpers import generate_port, AdmiralHelper, DockHelper, ShipHelper,QuestHelper,ItemHelper,ResourceHelper
-from helpers import AdmiralHelper, DockHelper
+from helpers import game_start,data
 api_user = Blueprint('api_user', __name__)
 prepare_api_blueprint(api_user)
 
@@ -12,7 +12,7 @@ prepare_api_blueprint(api_user)
 def material():
     """Resources such as fuel, ammo, etc..."""
     admiral = get_token_admiral_or_error()
-    return svdata(AdmiralHelper.get_admiral_resources_api_data(admiral))
+    return svdata(game_start.get_admiral_resources_api_data(admiral))
 
 @api_user.route('/api_req_member/get_incentive', methods=['GET', 'POST'])
 def get_incentive():
@@ -23,7 +23,7 @@ def get_incentive():
 @api_user.route('/api_get_member/basic', methods=['GET', 'POST'])
 def basic():
     """Basic admiral data."""
-    return svdata(AdmiralHelper.basic())
+    return svdata(game_start.basic())
 
 
 @api_user.route('/api_get_member/furniture', methods=['GET', 'POST'])
@@ -41,48 +41,40 @@ def furniture():
 
 @api_user.route('/api_get_member/slot_item', methods=['GET', 'POST'])
 def slot_item():
-    return svdata(AdmiralHelper.slot_info())
+    return svdata(game_start.slot_info())
 
 
 @api_user.route('/api_get_member/useitem', methods=['GET', 'POST'])
 def useitem():
     # TODO: Implement this properly
-    return svdata(AdmiralHelper.useitem())
+    return svdata(game_start.useitem())
 
 @api_user.route('/api_get_member/kdock', methods=['GET', 'POST'])
 def kdock():
     """Krafting docks."""
-    return svdata(DockHelper.kdock())
+    return svdata(data.kdock())
 
 @api_user.route('/api_get_member/ndock', methods=['POST'])
 def ndock():
     """Repair dock endpoint."""
-    admiral = get_token_admiral_or_error()
-    return svdata(DockHelper.generate_dock_data(admiral)['rdock'])
+    return svdata(data.rdock())
 
 @api_user.route('/api_get_member/unsetslot', methods=['GET', 'POST'])
 def unsetslot():
-    return svdata(AdmiralHelper.unsetslot())
+    return svdata(game_start.unsetslot())
 
 
 @api_user.route('/api_port/port', methods=['GET', 'POST'])
 def port():
-    return svdata(AdmiralHelper.port())
+    #return svdata(game_start.port())
+    return svdata(game_start.port())
 
 
 @api_user.route('/api_get_member/ship2', methods=['GET', 'POST'])
 def ship2():
     """Fuck ship2."""
-    ships = {'api_ship': []}
-    admiral = get_token_admiral_or_error()
-    admiral_ships = sorted(admiral.admiral_ships.all(), key=lambda x: x.local_ship_num)
-    for num, ship in enumerate(admiral_ships):
-        if not ship.active:
-            continue
-        assert isinstance(ship, AdmiralShip)
-        ships['api_ship'].append(ShipHelper.generate_api_data(admiral.id, ship.local_ship_num))
-
-    return svdata(ships)
+    """Agreed."""
+    return svdata({})
 
 @api_user.route('/api_get_member/mapinfo', methods=['GET', 'POST'])
 def mapinfo():

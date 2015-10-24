@@ -1,8 +1,8 @@
 from flask import request, Blueprint
 
 from db import db
-from helpers import DockHelper, ShipHelper,AdmiralHelper,QuestHelper
 from util import get_token_admiral_or_error, svdata, prepare_api_blueprint
+from flask import g
 
 api_actions = Blueprint('api_actions', __name__)
 prepare_api_blueprint(api_actions)
@@ -108,16 +108,8 @@ def change_position():
 @api_actions.route('/api_req_init/firstship', methods=['GET', 'POST'])
 # Kancolle literally doesn't care, as long as it gets something back
 def firstship():
-    admiral = get_token_admiral_or_error()
-    if admiral.setup:
-        return svdata({'api_result_msg': "Nice try.", 'api_result': 200})
     shipid = request.values.get("api_ship_id")
-    ShipHelper.assign_ship(admiral, shipid)
-
-    admiral.setup = True
-
-    db.session.add(admiral)
-    db.session.commit()
+    g.admiral.add_kanmusu(ship_id=shipid,fleet_number=1,position=0)
     return svdata({'api_result_msg': 'shitty api is shitty', 'api_result': 1})
 
 @api_actions.route('/api_req_quest/start', methods=['GET', 'POST'])
