@@ -1,7 +1,6 @@
 from . import db
 from helpers import LevelHelper
 
-
 class Kanmusu(db.Model):
     __tablename__ = 'kanmusu'
 
@@ -83,9 +82,16 @@ class Kanmusu(db.Model):
     def equip(self,slot,admiral_equip_id=None):
         if int(admiral_equip_id) == -1:
             admiral_equip_id = None
+        else:
+            new_stats = self.admiral.get_equipment(admiral_equip_id).equipment.stats
+            self.stats.add(new_stats)
+
+        if self.equipments[int(slot)].admiral_equipment_id is not None:
+            old_stats = self.equipments[int(slot)].admiral_equipment.equipment.stats
+            self.stats.sub(old_stats)
+
         self.equipments[int(slot)].admiral_equipment_id = admiral_equip_id
         db.session.add(self)
-
 
 class KanmusuEquipment(db.Model):
     __tablename__ = 'kanmusu_equipment'

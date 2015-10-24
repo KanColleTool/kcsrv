@@ -354,6 +354,9 @@ class Admiral(db.Model):
     def rdock(self):
         return Dock.dock_data(self.docks_repair)
 
+    def get_equipment(self,admiral_equip_id):
+        return self.equipment.filter(AdmiralEquipment.id==admiral_equip_id).first()
+
 
 class AdmiralEquipment(db.Model):
     __tablename__ = 'admiral_equipment'

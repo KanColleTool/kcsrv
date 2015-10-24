@@ -57,6 +57,27 @@ class Stats(db.Model):
                 setattr(target, column.key, getattr(self, column.key))
         return target
 
+    def sub(self,target):
+        mapper = inspect(self)
+        for column in mapper.attrs:
+            current = getattr(self, column.key)
+            mod = getattr(target, column.key)
+            if column.key != "id" and current is not None and mod is not None:
+                if column.key == "firepower":
+                    setattr(self, column.key, current - mod)
+        return self
+
+    def add(self,target):
+        mapper = inspect(self)
+        for column in mapper.attrs:
+            current = getattr(self, column.key)
+            mod = getattr(target, column.key)
+            if column.key != "id" and  current is not None and mod is not None:
+                if column.key == "firepower":
+                    setattr(self, column.key, current + mod)
+        return self
+
+
 
 class Recipe(db.Model):
     __tablename__ = 'recipe'
