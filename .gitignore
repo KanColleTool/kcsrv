@@ -12,7 +12,6 @@
 
 /config.py
 /data/_*.json
-/migrations
 /venv
 /.idea
 /temp
