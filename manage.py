@@ -41,20 +41,6 @@ def setup():
 def dlassets():
     commands.kcdownloader2.run()
 
-
-@manager.command
-def cheat_addship(id, admiral_id):
-    """Give the specified admiral a ship."""
-    admiral = Admiral.query.filter_by(id=admiral_id).first()
-    ship = ShipHelper.generate_new_ship(id, None)
-    ship.local_ship_num = len(admiral.admiral_ships.all())
-    if admiral:
-        admiral.admiral_ships.append(ship)
-    db.session.add(admiral)
-    db.session.commit()
-    print("Added ship {}".format(ship.ship.name))
-
-
 @manager.command
 def cheat(where, id, admiral_id, action=None):
     if where == "quest":

@@ -25,7 +25,7 @@ def get_itemlist_not_equipped(admiral):
     query_equipped_items = db.session.query(KanmusuEquipment.admiral_item_id).filter(
         KanmusuEquipment.admiral_ship_id.in_(query_admiral_ships), KanmusuEquipment.admiral_item_id != None)
 
-    query = db.session.query(AdmiralEquipment, Equipment).filter(AdmiralEquipment.item_id == Equipment.id,
+    query = db.session.query(AdmiralEquipment, Equipment).filter(AdmiralEquipment.equipment_id == Equipment.id,
                                                                  AdmiralEquipment.admiral_id == admiral.id,
                                                                  ~AdmiralEquipment.id.in_(
                                                                      query_equipped_items)).order_by(Equipment.sortno)

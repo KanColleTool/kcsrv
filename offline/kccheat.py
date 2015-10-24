@@ -1,5 +1,6 @@
 from constants import *
-from db import db, Admiral, AdmiralQuest, Quest, Ship
+from db import db, Admiral, AdmiralQuest, Quest, Ship, AdmiralEquipment
+from helpers import QuestHelper
 
 
 def ship_add(admiral_id, ship_id):
@@ -23,6 +24,6 @@ def quest_complete(admiral_id, quest_id):
 
 
 def item_add(admiral, item_id):
-    db.session.add(AdmiralItem(admiral_id=admiral.id, item_id=item_id))
+    db.session.add(AdmiralEquipment(admiral_id=admiral.id, item_id=item_id))
     db.session.commit()
     print("Eh, if id was correct it probably worked.")
