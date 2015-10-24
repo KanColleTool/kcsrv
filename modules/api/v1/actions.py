@@ -106,15 +106,6 @@ def change_position():
     return svdata({})
 
 
-@api_actions.route('/api_req_init/firstship', methods=['GET', 'POST'])
-# Kancolle literally doesn't care, as long as it gets something back
-def firstship():
-    shipid = request.values.get("api_ship_id")
-    print('actions: ' + str(shipid))
-    g.admiral.add_kanmusu(ship_api_id=shipid, fleet_number=1, position=0)
-    return svdata({'api_result_msg': 'shitty api is shitty', 'api_result': 1})
-
-
 @api_actions.route('/api_req_quest/start', methods=['GET', 'POST'])
 # Start quest
 def queststart():

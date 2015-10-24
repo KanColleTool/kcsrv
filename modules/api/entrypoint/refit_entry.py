@@ -1,0 +1,15 @@
+from flask import g,request
+from util import svdata
+from . import api_game
+from db import db,Kanmusu
+
+@api_game.route('/api_req_kaisou/slotset', methods=['GET', 'POST'])
+# Change Item
+def slotset():
+    id = request.values.get("api_id")
+    equip_id = request.values.get("api_item_id")
+    slot = request.values.get("api_slot_idx")
+
+    Kanmusu.get(id).equip(admiral_equip_id=equip_id,slot=slot)
+    db.session.commit()
+    return svdata({'api_result_msg': 'ok', 'api_result': 1})

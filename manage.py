@@ -50,8 +50,8 @@ def cheat(where, id, admiral_id, action=None):
             kccheat.quest_complete(admiral_id, id)
     elif where == "ship":
         kccheat.ship_add(admiral_id, id)
-    elif where == "item":
-        kccheat.item_add(admiral_id, id)
+    elif where == "equip":
+        kccheat.equip_add(admiral_id, id)
     else:
         print("Unknown cheat")
 

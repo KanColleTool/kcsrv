@@ -21,7 +21,7 @@ class Kanmusu(db.Model):
     fleet_id = db.Column(db.ForeignKey('fleet.id'))
     stats_id = db.Column(db.ForeignKey('stats.id'), index=True)
 
-    equipment = db.relationship('KanmusuEquipment')
+    equipments = db.relationship('KanmusuEquipment',order_by="KanmusuEquipment.slot")
     ship = db.relationship('Ship')
     stats = db.relationship('Stats')
 
@@ -30,8 +30,19 @@ class Kanmusu(db.Model):
         ship = Ship().get(ship_id=ship_id, ship_api_id=ship_api_id)
         self.ship = ship
         self.stats = ship.base_stats.copy()
+        self.current_ammo = self.stats.ammo
+        self.current_fuel = self.stats.fuel
+        self.current_hp = self.stats.hp
         self.equipment = [KanmusuEquipment(slot=i) for i in range(ship.maxslots)]
         return self
+
+    @staticmethod
+    def get(id):
+        return db.session.query(Kanmusu).get(id)
+
+    def equip(self,slot,admiral_equip_id=None):
+        self.equipments[int(slot)].admiral_equipment_id = admiral_equip_id
+        db.session.add(self)
 
 
 class KanmusuEquipment(db.Model):
@@ -87,11 +98,9 @@ class Ship(db.Model):
     remodel = db.relationship('Remodel', uselist=False)
 
 
-    def get(self, ship_id=None, ship_api_id=None):
-        print('sh.si ' + str(ship_id))
-        print('sh.sai ' + str(ship_api_id))
-        if ship_id:
-            return Ship.query.get(ship_id)
+    def get(self, id=None, ship_api_id=None):
+        if id:
+            return Ship.query.get(id)
         elif ship_api_id:
             return Ship.query.filter(Ship.api_id == ship_api_id).first()
         else:

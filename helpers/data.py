@@ -10,7 +10,7 @@ def kanmusu(kanmusu):
     ship = kanmusu.ship
 
     # AdmiralShip *must have* entries in AdmiralShipItem table, or we catbomb.
-    equips = [equip.admiral_equipment.equipment_id if equip.admiral_equipment_id else -1 for equip in kanmusu.equipment]
+    equips = [equip.admiral_equipment.equipment_id if equip.admiral_equipment_id else -1 for equip in kanmusu.equipments]
 
     kanmusu_data = {
         'api_id': kanmusu.id, 'api_ship_id': ship.api_id,
@@ -29,7 +29,8 @@ def kanmusu(kanmusu):
             0], 'api_slot': equips, 'api_backs': ship.rarity, 'api_sally_area': 0, # dunno
         'api_ndock_item': [0, 0], # TODO
         'api_karyoku': [kanmusu.stats.firepower,
-            ship.max_stats.firepower], 'api_maxhp': ship.max_stats.hp, 'api_lucky': [kanmusu.stats.luck,
+            ship.max_stats.firepower], 'api_maxhp': ship.base_stats.hp, #Ship "maxhp" is level 100HP, otherwise base is used.
+        'api_lucky': [kanmusu.stats.luck,
             ship.max_stats.luck], 'api_ndock_time': 0, 'api_kyouka': [0, 0, 0, 0, 0], 'api_sakuteki': [
             ship.base_stats.los, ship.max_stats.los]
     }

@@ -38,11 +38,10 @@ def init(app):
     app.register_blueprint(api_core, url_prefix='/kcsapi')
 
     # Declare API v1 blueprints.
-    from modules.api.v1.user import api_user
-    from modules.api.v1.actions import api_actions
-
-    @api_user.before_request
-    @api_actions.before_request
+    #from modules.api.v1.user import api_user
+    #from modules.api.v1.actions import api_actions
+    from modules.api.entrypoint import api_game
+    @api_game.before_request
     def admiral_load():
         # TODO learn how to do this properly
         # g.admiral = Admiral.query.get(3)
@@ -54,8 +53,9 @@ def init(app):
             return "Invalid api_token"
         g.admiral = user.admiral if user.admiral else Admiral().create(user)
 
-    app.register_blueprint(api_user, url_prefix='/kcsapi')
-    app.register_blueprint(api_actions, url_prefix='/kcsapi')
+    app.register_blueprint(api_game, url_prefix='/kcsapi')
+    #app.register_blueprint(api_user, url_prefix='/kcsapi')
+    #app.register_blueprint(api_actions, url_prefix='/kcsapi')
 
     """
     # Declare API v2 blueprints.
