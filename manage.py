@@ -4,9 +4,11 @@ import os
 from flask.ext.script import Manager, Server
 from flask.ext.migrate import Migrate, MigrateCommand
 
-from helpers import ShipHelper
+#from helpers import ShipHelper
 from kcsrv import app
-from db import *
+from db import db,Ship,Role
+from offline import dbpopulate, kccheat
+import util
 
 if not os.path.exists('./config.py'):
     print("Your config file does not exist. "
@@ -50,66 +52,29 @@ def cheat_addship(id, admiral_id):
     print("Added ship {}".format(ship.ship.name))
 
 @manager.command
+def cheat(where,id, admiral_id,action=None):
+    if where == "quest":
+        if action == "add":
+            kccheat.quest_add(admiral_id,id)
+        elif action == "complete":
+            kccheat.quest_complete(admiral_id,id)
+    elif where == "ship":
+        kccheat.ship_add(admiral_id,id)
+    elif where == "item":
+        kccheat.item_add(admiral_id,id)
+    else:
+        print("Unknown cheat")
+
+
+
+
+@manager.command
 def update_db():
     """Merge the ships DB from api_start.json into the DB"""
-    dump = util.load_datadump('api_start2.json')
-    # Truncate ships table.
-    # db.db.session.query(db.Ship).delete()
-    # Load ships from dump
-    ships = dump['api_mst_ship']
-    count = 0
-    for ship in ships:
-        if 'api_backs' not in ship:
-            print("Skipping ship ID {}".format(ship['api_id']))
-            continue
-        s = Ship(
-            # Misc ship stats
-            rarity = ship['api_backs'],
-            broken = ship['api_broken'],
-            name = ship['api_name'],
-            number = ship['api_sortno'],
-            stype = ship['api_stype'],
-            modern_use = ship['api_powup'],
-            voicef = ship['api_voicef'],
-            getmsg = ship['api_getmes'],
-            srange = ship['api_leng'],
-            buildtime = ship['api_buildtime'],
-            kai = '改' in ship['api_name'],
-            # Remodel
-            afterlv = ship['api_afterlv'],
-            aftership_num = ship['api_aftershipid'],
-            remodel_cost = ','.join([str(ship['api_afterfuel']), str(ship['api_afterbull'])]),
-            # Minimums
-            luck_base = ship['api_luck'][0],
-            firepower_base = ship['api_houg'][0],
-            armour_base = ship['api_souk'][0],
-            torpedo_base = ship['api_raig'][0],
-            antiair_base = ship['api_tyku'][0],
-            antisub_base = 0,
-            los_base = 0,
-            evasion_base = 0,
-            hp_base = ship['api_taik'][0],
-            # Maximums
-            luck_max = ship['api_luck'][1],
-            firepower_max = ship['api_houg'][1],
-            armour_max = ship['api_souk'][1],
-            torpedo_max = ship['api_raig'][1],
-            antiair_max = ship['api_tyku'][1],
-            antisub_max = 0,
-            maxhp = ship['api_taik'][1],
-            maxslots = ship['api_slot_num'],
-            ammo_max = ship['api_bull_max'],
-            fuel_max = ship['api_fuel_max'],
-            maxlos = 0,
-            evasion_max = 0,
-            maxplanes = ','.join(str(x) for x in ship['api_maxeq'])
-        )
-        # ugh
-        db.session.add(s)
-        print("Added ship {} - {}".format(ship['api_id'], ship['api_name']))
-        count += 1
-    db.session.commit()
-    print("Updated database, {} entries merged.".format(count))
+    dbpopulate.ships()
+    dbpopulate.equip()
+    dbpopulate.items()
+    setup()
 
 if __name__ == '__main__':
     manager.run()

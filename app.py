@@ -1,7 +1,6 @@
 import os
 
 from flask import Flask
-
 import init
 
 app = Flask(__name__)

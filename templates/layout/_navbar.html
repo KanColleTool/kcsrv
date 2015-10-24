@@ -18,7 +18,7 @@
 				<li {% if tab == 'play' %} class="active"{% endif %}><a href="{{ url_for('play.index') }}">Play</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
-				{% if not current_user.is_authenticated() %}
+				{% if not current_user.is_authenticated %}
 				<li><a href="{{ url_for_security('login') }}">Log in</a></li>
 				{% else %}
 				<li class="dropdown">
