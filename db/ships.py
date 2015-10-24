@@ -16,6 +16,10 @@ class Kanmusu(db.Model):
     locked = db.Column(db.Boolean, default=False)
     active = db.Column(db.Boolean, default=True, nullable=False)
 
+    # This isn't really a DB id, it's more of an identifier as to where the ship is relative to the Admiral's ships,
+    # and to what order the ships were obtained by the admiral.
+    local_admiral_ship_id = db.Column(db.Integer)
+
     admiral_id = db.Column(db.ForeignKey('admiral.id'))
     ship_id = db.Column(db.ForeignKey('ship.id'))
     fleet_id = db.Column(db.ForeignKey('fleet.id'))
@@ -25,7 +29,7 @@ class Kanmusu(db.Model):
     ship = db.relationship('Ship')
     stats = db.relationship('Stats')
 
-    def create(self, ship_id=None, ship_api_id=None):
+    def create(self, ship_id=None, ship_api_id=None, admiral=None):
         ship = Ship.get(ship_id=ship_id, ship_api_id=ship_api_id)
         self.ship = ship
         self.stats = ship.base_stats.copy()
@@ -35,6 +39,7 @@ class Kanmusu(db.Model):
         self.current_ammo = ship.base_stats.ammo
         self.current_fuel = ship.base_stats.fuel
         self.equipment = [KanmusuEquipment(slot=i) for i in range(ship.maxslots)]
+        self.local_admiral_ship_id = len(admiral.kanmusu) + 1
         return self
 
 
@@ -84,8 +89,9 @@ class Ship(db.Model):
     modern_resources_id = db.Column(db.ForeignKey('resources.id'), index=True)
     remodel_id = db.Column(db.ForeignKey('remodel.id'), unique=True)
 
-    # TODO: Distinction between base_stats/max_stats needs to be made more clear.
-    # If you're wondering, it's found in `offline/dbpopulate:ships()`.
+
+    # About Ship base/max hp: Max hp is HP when ship gets to level 100.
+    # So when you're loading "maxhp" in helpers.data.kanmusu, you have to set it to 'api_maxhp': ship.base_stats.hp (if level 100 is TO-DO).
 
     base_stats = db.relationship('Stats', primaryjoin='Ship.base_stats_id == Stats.id')
     dismantling = db.relationship('Resources', primaryjoin='Ship.broken_resources_id == Resources.id')
