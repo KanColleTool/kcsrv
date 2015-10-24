@@ -16,7 +16,6 @@ class Equipment(db.Model):
     dismantling = db.relationship('Resources')
     stats = db.relationship('Stats')
 
-
 class Furniture(db.Model):
     __tablename__ = 'furniture'
 
@@ -30,7 +29,6 @@ class Furniture(db.Model):
     price = db.Column(db.Integer)
     sale_flag = db.Column(db.Boolean)
 
-
 class Usable(db.Model):
     __tablename__ = 'usable'
 
@@ -38,10 +36,10 @@ class Usable(db.Model):
     api_id = db.Column(db.Integer)
     name = db.Column(db.String(100))
     description = db.Column(db.String)
-    description2 = db.Column(db.String) #Go figure.
+    description2 = db.Column(db.String) # Go figure.
     category = db.Column(db.Integer)
     type_ = db.Column(db.Integer)
     price = db.Column(db.Integer)
 
     def by_name(name):
-        return db.session.query(Usable).filter(Usable.name==name).first()
+        return db.session.query(Usable).filter(Usable.name == name).first()

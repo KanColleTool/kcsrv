@@ -3,10 +3,9 @@ import datetime
 from flask.ext.script import Manager, prompt_pass, prompt_bool
 from flask.ext.security.utils import encrypt_password
 
-from db import db,User,Role
+from db import db, User, Role
 
 manager = Manager(usage="Manage users")
-
 
 @manager.command
 def create(nickname, email):
@@ -21,7 +20,6 @@ def create(nickname, email):
 
     roles = input("Roles (separated by space): ").split(' ')
 
-
     if prompt_bool("Create this user?"):
         user = User(active=True,
                     email=email,
@@ -33,7 +31,6 @@ def create(nickname, email):
         db.session.add(user)
         db.session.commit()
 
-
 @manager.command
 def grant(nickname, role):
     '''Grant a role to a user'''
@@ -42,7 +39,6 @@ def grant(nickname, role):
     user.roles.append(role)
     db.session.add(user)
     db.session.commit()
-
 
 @manager.command
 def ungrant(nickname, role):

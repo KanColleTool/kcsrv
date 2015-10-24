@@ -3,7 +3,6 @@ import multiprocessing
 bind = "0.0.0.0:5000"
 workers = multiprocessing.cpu_count() * 2 + 1
 
-
 # Choose one as appropriate.
 worker_class = "sync"
 # worker_class = "eventlet"
@@ -12,6 +11,7 @@ worker_class = "sync"
 
 # Change to false to disable daemonising.
 daemon = True
+
 # daemon = False
 
 # Change to specify the user gunicorn will run as.

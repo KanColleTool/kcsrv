@@ -1,10 +1,9 @@
-import util,datetime,time,math
-#from db import db,User,Admiral,Dock,AdmiralQuest,Resource,AdmiralItem
+import util
+# from db import db,User,Admiral,Dock,AdmiralQuest,Resource,AdmiralItem
 from . import DockHelper
 from constants import *
 from db import db, Equipment, Kanmusu, KanmusuEquipment, AdmiralEquipment
 from flask import g
-
 
 """These are API version 1 functions only."""
 
@@ -31,7 +30,7 @@ def basic():
         'api_max_kagu': admiral.max_furniture,
         'api_playtime': 0,
         'api_tutorial': 0,
-        'api_furniture': [1,1,1,1,1,1], #TODO
+        'api_furniture': [1, 1, 1, 1, 1, 1], # TODO
         'api_count_deck': len(admiral.fleets),
         'api_count_kdock': len(admiral.docks_craft),
         'api_count_ndock': len(admiral.docks_repair),
@@ -45,7 +44,7 @@ def basic():
         'api_pt_challenged': 0,
         'api_pt_challenged_win': 0,
         # Disables the opening stuff, and skips straight to the game.
-        'api_firstflag': 1 if len(admiral.kanmusu)==0 else 0, #meh.
+        'api_firstflag': 1 if len(admiral.kanmusu) == 0 else 0, # meh.
         'api_tutorial_progress': 100,
         'api_pvp': [0, 0]
     }
@@ -53,24 +52,24 @@ def basic():
 def slot_info():
     admiral = g.admiral
     return [{
-        'api_id' : aequip.id,
-        'api_slotitem_id' : aequip.equipment.id,
-        'api_locked': aequip.locked,
-        'api_level': aequip.level
-    }for aequip in admiral.equipment.join(Equipment).order_by(Equipment.sortno)]
+                'api_id': aequip.id,
+                'api_slotitem_id': aequip.equipment.id,
+                'api_locked': aequip.locked,
+                'api_level': aequip.level
+            } for aequip in admiral.equipment.join(Equipment).order_by(Equipment.sortno)]
 
 def useitem():
     return [{
-        'api_member_id': g.admiral.id,
-        'api_id': ausable.id,
-        #'api_value': ausable.quantity,
-        'api_usetype': ausable.usables.type_,
-        'api_category': ausable.usables.category,
-        'api_name': ausable.usables.name,  # WHY
-        'api_description': [ausable.usables.description, ausable.usables.description2],
-        'api_price': ausable.usables.price,
-        'api_count': ausable.quantity
-    } for ausable in g.admiral.usables]
+                'api_member_id': g.admiral.id,
+                'api_id': ausable.id,
+                # 'api_value': ausable.quantity,
+                'api_usetype': ausable.usables.type_,
+                'api_category': ausable.usables.category,
+                'api_name': ausable.usables.name, # WHY
+                'api_description': [ausable.usables.description, ausable.usables.description2],
+                'api_price': ausable.usables.price,
+                'api_count': ausable.quantity
+            } for ausable in g.admiral.usables]
 
 def unsetslot():
     """
@@ -80,29 +79,28 @@ def unsetslot():
     """
     admiral = g.admiral
 
-    query_kanmusu = db.session.query(Kanmusu.id)\
-    .filter(Kanmusu.admiral_id==admiral.id)
+    query_kanmusu = db.session.query(Kanmusu.id) \
+        .filter(Kanmusu.admiral_id == admiral.id)
 
-    query_equipped = db.session.query(KanmusuEquipment.admiral_equipment_id)\
-    .filter(KanmusuEquipment.kanmusu_id.in_(query_kanmusu),\
-        KanmusuEquipment.admiral_equipment_id != None)
+    query_equipped = db.session.query(KanmusuEquipment.admiral_equipment_id) \
+        .filter(KanmusuEquipment.kanmusu_id.in_(query_kanmusu), \
+                KanmusuEquipment.admiral_equipment_id != None)
 
-    query = db.session.query(AdmiralEquipment)\
-    .filter(AdmiralEquipment.admiral_id==admiral.id,\
-        ~AdmiralEquipment.id.in_(query_equipped))\
-    .join(Equipment).order_by(Equipment.sortno)
+    query = db.session.query(AdmiralEquipment) \
+        .filter(AdmiralEquipment.admiral_id == admiral.id, \
+                ~AdmiralEquipment.id.in_(query_equipped)) \
+        .join(Equipment).order_by(Equipment.sortno)
     itemlist = query.all()
 
-    
     response = {}
     response["api_slottype1"] = []
-    for admiral_item, item in itemlist:        
+    for admiral_item, item in itemlist:
         response["api_slottype1"].append(admiral_item.id)
     return response
 
 def port():
     admiral = g.admiral
-    response = {"api_data":{}}
+    response = {"api_data": {}}
     # TODO: Log entry
     response["api_data"]['api_log'] = [
         {
@@ -121,14 +119,14 @@ def port():
     response["api_data"]["api_combined_flag"] = 0
     # API basic - a replica of api_get_member/basic
     response['api_data']['api_basic'] = util.merge_two_dicts(basic(),
-        {
-            'api_medals': 0,
-            'api_large_dock': 0
-        })
-    response['api_data']['api_deck_port'] = []    
+                                                             {
+                                                                 'api_medals': 0,
+                                                                 'api_large_dock': 0
+                                                             })
+    response['api_data']['api_deck_port'] = []
     # Fleets.
     for fleet in admiral.fleets:
-        fleet_members = [kanmusu.number+1 for kanmusu in fleet.kanmusu if kanmusu is not None]
+        fleet_members = [kanmusu.number + 1 for kanmusu in fleet.kanmusu if kanmusu is not None]
         temp_dict = {
             # Unknown value, always zero for some reason.
             'api_flagship': 0,
@@ -146,7 +144,7 @@ def port():
             "api_mission": [0, 0, 0, 0]
         }
         response['api_data']['api_deck_port'].append(temp_dict)
-    
+
     # Materials.
     materials = admiral.resources.to_list()
     materials.append(admiral.get_usables(NAME_BUCKET).quantity)
@@ -156,7 +154,7 @@ def port():
     response['api_data']['api_material'] = materials
 
     response['api_data']['api_ship'] = [ShipHelper.kanmusu_data(kanmusu)
-    for kanmusu in admiral.kanmusu if kanmusu.active]
+                                        for kanmusu in admiral.kanmusu if kanmusu.active]
 
     # Generate ndock.
     response['api_data']['api_ndock'] = DockHelper.rdock()

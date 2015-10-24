@@ -11,7 +11,6 @@ import util
 
 AdmiralAPIv2 = Blueprint("AdmiralAPIv2", __name__)
 
-
 @AdmiralAPIv2.route("/<token>")
 def base_token(token):
     admiral = util.get_admiral_v2_from_id_or_token(token)
@@ -19,8 +18,6 @@ def base_token(token):
         return "Invalid API token/ID", 404
     else:
         return admiral.user.nickname
-
-
 
 @AdmiralAPIv2.route("/<token>/userinfo")
 def get_userinfo(token):
@@ -36,12 +33,11 @@ def get_userinfo(token):
         "maxitems": admiral.max_equips,
         "tutorial_completed": admiral.setup,
         "fleets_available": admiral.available_fleets,
-        "maxquests": 5,  # Temporary
+        "maxquests": 5, # Temporary
         "cdocks_available": admiral.available_cdocks,
         "rdocks_available": admiral.available_rdocks
     }
     return json.dumps(tdict), 200, {"Content-Type": "application/json"}
-
 
 @AdmiralAPIv2.route("/<token>/material/<matid>")
 def material(token, matid):
@@ -59,4 +55,3 @@ def material(token, matid):
             return json.dumps(
                 {"materials": [{"id": matid, "count": int(resources[matid])}]}
             ), 200, {"Content-Type": "application/json"}
-

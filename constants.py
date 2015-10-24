@@ -7,11 +7,10 @@ QUEST_PROGRESS_0 = 0
 QUEST_PROGRESS_50 = 1
 QUEST_PROGRESS_80 = 2
 QUEST_PROGRESS_100 = 3
-#Actually, anything >1 will mark it as 80%. 3 is an arbitrary flag to mark the quest as Complete and set the progress 0
+# Actually, anything >1 will mark it as 80%. 3 is an arbitrary flag to mark the quest as Complete and set the progress 0
 
 QUEST_REWARD_ITEM = 1
 QUEST_REWARD_SHIP = 11
-
 
 DOCK_TYPE_CRAFT = 1
 DOCK_TYPE_REPAIR = 2

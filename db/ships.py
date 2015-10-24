@@ -6,14 +6,14 @@ class Kanmusu(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fleet_position = db.Column(db.Integer)
     number = db.Column(db.Integer, nullable=False)
-    level = db.Column(db.Integer,default=1)
-    experience = db.Column(db.Integer,default=0)
-    current_hp = db.Column(db.Integer,default=1)
-    current_fuel = db.Column(db.Integer,default=0)
-    current_ammo = db.Column(db.Integer,default=0)
-    fatigue = db.Column(db.Integer,default=49)
-    locked = db.Column(db.Boolean,default=False)
-    active = db.Column(db.Boolean,default=True,nullable=False)
+    level = db.Column(db.Integer, default=1)
+    experience = db.Column(db.Integer, default=0)
+    current_hp = db.Column(db.Integer, default=1)
+    current_fuel = db.Column(db.Integer, default=0)
+    current_ammo = db.Column(db.Integer, default=0)
+    fatigue = db.Column(db.Integer, default=49)
+    locked = db.Column(db.Boolean, default=False)
+    active = db.Column(db.Boolean, default=True, nullable=False)
 
     admiral_id = db.Column(db.ForeignKey('admiral.id'))
     ship_id = db.Column(db.ForeignKey('ship.id'))
@@ -24,14 +24,12 @@ class Kanmusu(db.Model):
     ship = db.relationship('Ship')
     stats = db.relationship('Stats')
 
-    def create(self,ship_id=None,ship_api_id=None):
-        ship = Ship().get(ship_id=ship_id,ship_api_id=ship_api_id)
+    def create(self, ship_id=None, ship_api_id=None):
+        ship = Ship().get(ship_id=ship_id, ship_api_id=ship_api_id)
         self.ship = ship
         self.stats = ship.base_stats.copy()
         self.equipment = [KanmusuEquipment(slot=i) for i in range(ship.maxslots)]
         return self
-
-
 
 class KanmusuEquipment(db.Model):
     __tablename__ = 'kanmusu_equipment'
@@ -44,8 +42,6 @@ class KanmusuEquipment(db.Model):
     admiral_equipment = db.relationship('AdmiralEquipment')
     kanmusu = db.relationship('Kanmusu')
 
-
-
 class Remodel(db.Model):
     __tablename__ = 'remodel'
 
@@ -55,7 +51,6 @@ class Remodel(db.Model):
     id_resources = db.Column(db.ForeignKey('resources.id'), index=True)
 
     cost = db.relationship('Resources')
-
 
 class Ship(db.Model):
     __tablename__ = 'ship'
@@ -86,15 +81,12 @@ class Ship(db.Model):
     modernization = db.relationship('Resources', primaryjoin='Ship.modern_resources_id == Resources.id')
     remodel = db.relationship('Remodel', uselist=False)
 
-    def get(self,ship_id=None,ship_api_id=None):
+    def get(self, ship_id=None, ship_api_id=None):
         print('sh.si ' + str(ship_id))
         print('sh.sai ' + str(ship_api_id))
         if ship_id:
             return Ship.query.get(ship_id)
         elif ship_api_id:
-            return Ship.query.filter(Ship.api_id==ship_api_id).first()
+            return Ship.query.filter(Ship.api_id == ship_api_id).first()
         else:
             return None
-
-
-

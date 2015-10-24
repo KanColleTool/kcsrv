@@ -3,7 +3,7 @@
 #
 
 # Fill in some long, random and utterly unguessable string here
-#SECRET_KEY = ''
+# SECRET_KEY = ''
 
 # Put your password salt here
 # SECURITY_PASSWORD_SALT = ""

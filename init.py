@@ -1,13 +1,11 @@
 from flask import render_template, send_from_directory, request, abort, g
+from flask.ext.login import user_logged_in
 from flask.ext.migrate import Migrate
 from flask.ext.security import Security, SQLAlchemyUserDatastore
-from flask.ext.login import user_logged_in
 
-
-
-from forms import *
 from admin import admin
-from db import db,User,Role, Admiral
+from db import User, Role, Admiral
+from forms import *
 from util import generate_api_token
 
 modules = {
@@ -47,20 +45,18 @@ def init(app):
     @api_user.before_request
     @api_actions.before_request
     def admiral_load():
-        #TODO learn how to do this properly
-        #g.admiral = Admiral.query.get(3)
+        # TODO learn how to do this properly
+        # g.admiral = Admiral.query.get(3)
         api_token = request.values.get('api_token', None)
         if api_token is None:
             abort(403)
-        user = db.session.query(User).filter(User.api_token==api_token).first()
+        user = db.session.query(User).filter(User.api_token == api_token).first()
         if user is None:
             return "Invalid api_token"
         g.admiral = user.admiral if user.admiral else Admiral().create(user)
 
     app.register_blueprint(api_user, url_prefix='/kcsapi')
     app.register_blueprint(api_actions, url_prefix='/kcsapi')
-
-
 
     """
     # Declare API v2 blueprints.

@@ -2,38 +2,38 @@
 {% set tab = "login" %}
 {% block modal_title %}<span class="pull-left">Create account</span>{% endblock %}
 {% block modal_content %}
-	<form class="login-form" action="{{ url_for_security('register') }}" method="POST">
-		{{ register_user_form.hidden_tag() }}
-		
-		<div class="form-group{% if register_user_form.nickname.errors %} has-error{% endif %}">
-			<div class="input-group">
-				<span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
-				{{ register_user_form.nickname(class='form-control', placeholder='Nickname', autofocus=True) }}
-			</div>
-		</div>
-		
-		<hr />
-		
-		<div class="form-group{% if register_user_form.email.errors %} has-error{% endif %}">
-			<div class="input-group">
-				<span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
-				{{ register_user_form.email(class='form-control', placeholder='Email Address') }}
-			</div>
-		</div>
-		<div class="form-group{% if register_user_form.password.errors %} has-error{% endif %}">
-			<div class="input-group">
-				<span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
-				{{ register_user_form.password(class='form-control', placeholder='Password') }}
-			</div>
-		</div>
+    <form class="login-form" action="{{ url_for_security('register') }}" method="POST">
+        {{ register_user_form.hidden_tag() }}
 
-		{{ register_user_form.next }}
-		{{ register_user_form.submit(value='Create account', class='btn btn-default pull-right btn-material-light-green') }}
+        <div class="form-group{% if register_user_form.nickname.errors %} has-error{% endif %}">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-user"></i></span>
+                {{ register_user_form.nickname(class='form-control', placeholder='Nickname', autofocus=True) }}
+            </div>
+        </div>
 
-		<hr />
+        <hr/>
 
-		<p>
-			Already have an account? <a href="{{ url_for_security('login') }}">Log in here</a>
-		</p>
-	</form>
+        <div class="form-group{% if register_user_form.email.errors %} has-error{% endif %}">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+                {{ register_user_form.email(class='form-control', placeholder='Email Address') }}
+            </div>
+        </div>
+        <div class="form-group{% if register_user_form.password.errors %} has-error{% endif %}">
+            <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-lock"></i></span>
+                {{ register_user_form.password(class='form-control', placeholder='Password') }}
+            </div>
+        </div>
+
+        {{ register_user_form.next }}
+        {{ register_user_form.submit(value='Create account', class='btn btn-default pull-right btn-material-light-green') }}
+
+        <hr/>
+
+        <p>
+            Already have an account? <a href="{{ url_for_security('login') }}">Log in here</a>
+        </p>
+    </form>
 {% endblock %}

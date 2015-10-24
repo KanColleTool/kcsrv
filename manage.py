@@ -1,14 +1,12 @@
 #!/usr/bin/env python3
 import os
 
-from flask.ext.script import Manager, Server
 from flask.ext.migrate import Migrate, MigrateCommand
-
-#from helpers import ShipHelper
+from flask.ext.script import Manager, Server
+# from helpers import ShipHelper
 from kcsrv import app
-from db import db,Ship,Role
+from db import db, Role
 from offline import dbpopulate, kccheat
-import util
 
 if not os.path.exists('./config.py'):
     print("Your config file does not exist. "
@@ -52,21 +50,18 @@ def cheat_addship(id, admiral_id):
     print("Added ship {}".format(ship.ship.name))
 
 @manager.command
-def cheat(where,id, admiral_id,action=None):
+def cheat(where, id, admiral_id, action=None):
     if where == "quest":
         if action == "add":
-            kccheat.quest_add(admiral_id,id)
+            kccheat.quest_add(admiral_id, id)
         elif action == "complete":
-            kccheat.quest_complete(admiral_id,id)
+            kccheat.quest_complete(admiral_id, id)
     elif where == "ship":
-        kccheat.ship_add(admiral_id,id)
+        kccheat.ship_add(admiral_id, id)
     elif where == "item":
-        kccheat.item_add(admiral_id,id)
+        kccheat.item_add(admiral_id, id)
     else:
         print("Unknown cheat")
-
-
-
 
 @manager.command
 def update_db():

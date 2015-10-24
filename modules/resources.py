@@ -14,7 +14,6 @@ def get_ship(ship):
 def resources_swf(path):
     return send_from_directory('kcs/resources/swf', path)
 
-
 @resources.route('/sound/titlecall/<path:path>')
 def sound(path):
     return send_from_directory('kcs/titlecall', path)
@@ -22,7 +21,6 @@ def sound(path):
 @resources.route('/sound/<path:path>')
 def shipsound(path):
     return send_from_directory('kcs/sound/ship', path)
-
 
 @resources.route('/<path:path>')
 def kcs(path):

@@ -23,4 +23,3 @@ SECURITY_REGISTER_URL = '/create'
 SECURITY_RESET_URL = '/forgot'
 
 SECURITY_PASSWORD_HASH = "bcrypt"
-

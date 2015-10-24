@@ -1,14 +1,14 @@
 from db import Resource
 
-def update_resource(target,source=None,resources=None,**kwargs):
+def update_resource(target, source=None, resources=None, **kwargs):
     """
     :return: the updated object.
     :params: either an object resource, a dict with named resources, named resources
     """
     if source is None:
         data = resources if resources else kwargs
-        for key,value in data.items():
-            setattr(target,key,getattr(target,key) + value)
+        for key, value in data.items():
+            setattr(target, key, getattr(target, key) + value)
     else:
         # Uhh...
         target.ammo = target.ammo + source.ammo if source.ammo is not None else target.ammo
@@ -22,7 +22,5 @@ def update_resource(target,source=None,resources=None,**kwargs):
     return target
 
 def get_resource_from_list(data):
-    resource = Resource(fuel=data[0],ammo=data[1],steel=data[2],baux=data[3])
+    resource = Resource(fuel=data[0], ammo=data[1], steel=data[2], baux=data[3])
     return resource
-            
-    

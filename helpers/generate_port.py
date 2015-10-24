@@ -1,11 +1,12 @@
-#from db import db,Admiral,AdmiralShip
+# from db import db,Admiral,AdmiralShip
 import util
-#from helpers import AdmiralHelper, ShipHelper, DockHelper,ResourceHelper
+
+# from helpers import AdmiralHelper, ShipHelper, DockHelper,ResourceHelper
 
 
 def generate_port(api_token):
     # First, get the admiral.
-    admiral = util.get_token_admiral_or_error(api_token)   
+    admiral = util.get_token_admiral_or_error(api_token)
     assert isinstance(admiral, Admiral)
     # Initial KanColle reply.
     port2 = {
@@ -30,19 +31,19 @@ def generate_port(api_token):
     # API basic - a replica of api_get_member/basic
     basic = AdmiralHelper.get_admiral_basic_info()
     port2['api_data']['api_basic'] = util.merge_two_dicts(basic,
-        {
-            'api_medals': 0,
-            'api_large_dock': 0
-        })
-    port2['api_data']['api_deck_port'] = [] #AdmiralHelper.get_admiral_deck_api_data(admiral)    
-    
+                                                          {
+                                                              'api_medals': 0,
+                                                              'api_large_dock': 0
+                                                          })
+    port2['api_data']['api_deck_port'] = [] # AdmiralHelper.get_admiral_deck_api_data(admiral)
+
     count = 0
     # Sort the admiral ships list. Not even sure if this is needed...    
 
     # Fleets.
     for fleet in admiral.fleets.all():
         count += 1
-        ships = [ship.local_ship_num+1 for ship in fleet.ships.all() if ship is not None]
+        ships = [ship.local_ship_num + 1 for ship in fleet.ships.all() if ship is not None]
         temp_dict = {
             # Unknown value, always zero for some reason.
             'api_flagship': 0,
@@ -61,7 +62,7 @@ def generate_port(api_token):
         }
 
         port2['api_data']['api_deck_port'].append(temp_dict)
-    
+
     # Materials.        
     port2['api_data']['api_material'] = AdmiralHelper.get_admiral_resources_api_data(admiral)
     port2['api_data']['api_ship'] = []

@@ -16,7 +16,6 @@ class Quest(db.Model):
 
     resources = db.relationship('Resources')
 
-
 class QuestBonus(db.Model):
     __tablename__ = 'quest_bonus'
 
@@ -30,7 +29,6 @@ class QuestBonus(db.Model):
     item = db.relationship('Equipment')
     quest = db.relationship('Quest')
     ship = db.relationship('Ship')
-
 
 class QuestRequirement(db.Model):
     __tablename__ = 'quest_requirement'

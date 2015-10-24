@@ -7,8 +7,8 @@ from db import db,Admiral,AdmiralShip,Recipe,Dock
 from . import ShipHelper
 import util
 """
-from flask import g
-#from db import db,Dock
+
+# from db import db,Dock
 
 
 """

@@ -10,7 +10,6 @@ import os.path
 
 import requests
 
-
 # Define some stuff for later use.
 # Thank you for KCT's uppfinnarn for this code snippet that I've adapted
 def load_datadump(filename) -> dict:
@@ -18,14 +17,12 @@ def load_datadump(filename) -> dict:
         o = json.loads(f.read(), 'utf-8')
         return o if not 'api_data' in o else o['api_data']
 
-
 def get_file(file):
     r = requests.get("http://203.104.209.39/" + file, stream=True)
     if r.status_code == 200:
         return r
     else:
         return None
-
 
 def get_standard_swf():
     print("NOTE: This may take a while, so grab a tea, coffee or a drink.")
@@ -70,7 +67,6 @@ def get_standard_swf():
             else:
                 print("... No such file " + file)
 
-
 def get_ship_girl_data(filename):
     dump = load_datadump(filename)
     ships = dump['api_mst_shipgraph']
@@ -100,7 +96,6 @@ def get_ship_girl_data(filename):
                 print("... No such file kc" + ship['api_filename'] + "/" + str(x) + ".mp3")
         count += 1
 
-
 def setup_directories():
     print("Prep work: Setting up directories, if they don't exist already...")
     if not os.path.exists("kcs"): os.makedirs("kcs")
@@ -114,7 +109,6 @@ def setup_directories():
 
     if not os.path.exists("kcs/sound/ship"): os.makedirs("kcs/sound/ship")
     print("Done prep work.")
-
 
 def run():
     print("Starting download of Kantai Collection assets. Please wait...")

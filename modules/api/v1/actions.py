@@ -1,12 +1,11 @@
+from flask import g
 from flask import request, Blueprint
 
 from db import db
 from util import get_token_admiral_or_error, svdata, prepare_api_blueprint
-from flask import g
 
 api_actions = Blueprint('api_actions', __name__)
 prepare_api_blueprint(api_actions)
-
 
 @api_actions.route('/api_req_hensei/lock', methods=['POST'])
 def lock():
@@ -21,7 +20,6 @@ def lock():
     db.session.commit()
     return svdata({"api_locked": int(locked)})
 
-
 @api_actions.route('/api_req_kousyou/createship', methods=['POST'])
 def build():
     admiral = get_token_admiral_or_error()
@@ -33,7 +31,6 @@ def build():
     DockHelper.craft_ship(fuel, ammo, steel, baux, admiral, dock)
     return svdata({})
 
-
 @api_actions.route('/api_req_kousyou/getship', methods=['POST'])
 def getship():
     dock = int(request.values.get("api_kdock_id"))
@@ -42,7 +39,6 @@ def getship():
     except (IndexError, AttributeError):
         return svdata({}, code=201, message='申し訳ありませんがブラウザを再起動し再ログインしてください。')
     return svdata(data)
-
 
 @api_actions.route('/api_req_hensei/change', methods=['GET', 'POST'])
 def change_position():
@@ -104,13 +100,12 @@ def change_position():
     db.session.commit()
     return svdata({})
 
-
 @api_actions.route('/api_req_init/firstship', methods=['GET', 'POST'])
 # Kancolle literally doesn't care, as long as it gets something back
 def firstship():
     shipid = request.values.get("api_ship_id")
     print('actions: ' + str(shipid))
-    g.admiral.add_kanmusu(ship_api_id=shipid,fleet_number=1,position=0)
+    g.admiral.add_kanmusu(ship_api_id=shipid, fleet_number=1, position=0)
     return svdata({'api_result_msg': 'shitty api is shitty', 'api_result': 1})
 
 @api_actions.route('/api_req_quest/start', methods=['GET', 'POST'])
@@ -118,8 +113,8 @@ def firstship():
 def queststart():
     admiral = get_token_admiral_or_error()
     quest_id = request.values.get("api_quest_id")
-    AdmiralHelper.activate_quest(quest_id,admiral)
-    QuestHelper.update_quest_progress(quest_id,admiral)
+    AdmiralHelper.activate_quest(quest_id, admiral)
+    QuestHelper.update_quest_progress(quest_id, admiral)
     return svdata({'api_result_msg': 'ok', 'api_result': 1})
 
 @api_actions.route('/api_req_quest/stop', methods=['GET', 'POST'])
@@ -127,7 +122,7 @@ def queststart():
 def queststop():
     admiral = get_token_admiral_or_error()
     quest_id = request.values.get("api_quest_id")
-    AdmiralHelper.deactivate_quest(quest_id,admiral)
+    AdmiralHelper.deactivate_quest(quest_id, admiral)
     return svdata({'api_result_msg': 'ok', 'api_result': 1})
 
 @api_actions.route('/api_req_quest/clearitemget', methods=['GET', 'POST'])
@@ -135,7 +130,7 @@ def queststop():
 def clearitemget():
     admiral = get_token_admiral_or_error()
     quest_id = request.values.get("api_quest_id")
-    data = QuestHelper.complete_quest(admiral,quest_id)
+    data = QuestHelper.complete_quest(admiral, quest_id)
     return svdata(data)
 
 @api_actions.route('/api_req_kaisou/slotset', methods=['GET', 'POST'])
@@ -144,6 +139,6 @@ def slotset():
     admiral = get_token_admiral_or_error()
     admiral_ship_id = request.values.get("api_id")
     admiral_item_id = request.values.get("api_item_id")
-    slot = request.values.get("api_slot_idx")    
-    ShipHelper.change_ship_item(admiral_ship_id,admiral_item_id,slot)
+    slot = request.values.get("api_slot_idx")
+    ShipHelper.change_ship_item(admiral_ship_id, admiral_item_id, slot)
     return svdata({'api_result_msg': 'ok', 'api_result': 1})

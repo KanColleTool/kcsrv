@@ -14,5 +14,5 @@ def get_exp_required(level, current_exp):
     :param level: The level to attain.
     :param current_exp: Your current exp.
     """
-    total = sum(levels[:level+1])
+    total = sum(levels[:level + 1])
     return total - current_exp

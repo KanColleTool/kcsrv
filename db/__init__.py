@@ -1,6 +1,5 @@
 from flask.ext.sqlalchemy import SQLAlchemy
 
-
 db = SQLAlchemy()
 
 """
@@ -16,5 +15,3 @@ from db.quests import *
 from db.items import *
 from db.admiral import *
 from db.ships import *
-
-
