@@ -1,21 +1,13 @@
-from flask import Blueprint, g
+from flask import Blueprint
 # from flask.ext.security import current_user
 from util import *
 # from db import AdmiralShip,Quest
 from helpers import AdmiralHelper, ItemHelper
 from helpers import game_start, data, QuestHelper, ShipHelper
 
-from db import Kanmusu
-
 
 api_user = Blueprint('api_user', __name__)
 prepare_api_blueprint(api_user)
-
-
-@api_user.route("/api_get_member/charge", methods=["GET", "POST"])
-def charge():
-    # Get the ship.
-    kanmusu = Kanmusu.query
 
 
 @api_user.route('/api_get_member/material', methods=['GET', 'POST'])
@@ -43,7 +35,7 @@ def furniture():
     """Available furniture."""
     # TODO: Implement this properly
     return svdata([{
-        'api_member_id': g.admiral.id, 'api_id': item.id, 'api_furniture_type': item.type, 'api_furniture_no': item.no, 'api_furniture_id': item.id
+        'api_member_id': admiral.id, 'api_id': item.id, 'api_furniture_type': item.type, 'api_furniture_no': item.no, 'api_furniture_id': item.id
     } for item in []])
 
 
@@ -121,11 +113,16 @@ def ship3():
     # spi_sort_order = request.values.get('api_sort_key')
     admiral_ship_id = request.values.get('api_shipid')
     data = {
-        "api_ship_data": [ShipHelper.get_admiral_ship_api_data(admiral_ship_id)],
-        "api_deck_data": AdmiralHelper.get_admiral_deck_api_data(admiral),
-        "api_slot_data": ItemHelper.get_slottype_list(admiral=admiral)
+        "api_ship_data": [ShipHelper.get_admiral_ship_api_data(
+            admiral_ship_id)], "api_deck_data": AdmiralHelper.get_admiral_deck_api_data(
+            admiral), "api_slot_data": ItemHelper.get_slottype_list(admiral=admiral)
     }
     return svdata(data)
+
+
+@api_user.route('/api_get_member/test', methods=['GET', 'POST'])
+def test():
+    return svdata({})
 
 
 # Generic routes for anything not implemented.

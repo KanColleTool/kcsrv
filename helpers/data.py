@@ -13,9 +13,8 @@ def kanmusu(kanmusu):
     equips = [equip.admiral_equipment.equipment_id if equip.admiral_equipment_id else -1 for equip in kanmusu.equipment]
 
     kanmusu_data = {
-        'api_id': kanmusu.local_admiral_ship_id,
+        'api_id': kanmusu.id, 'api_ship_id': ship.api_id,
         # This must match api_data2 or we get different Ships in the game and DB.
-        'api_ship_id': ship.api_id,
         'api_onslot': [0, 0, 0, 0, 0],  # ?
         'api_locked_equip': 0,
         'api_bull': kanmusu.current_ammo,
