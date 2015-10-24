@@ -1,8 +1,9 @@
 """
-Ok, there are 2 ways to do this.
-I can create a lot of functions and call them from a string or I can chain elifs.
-I hate elifs chains and I don't know how expensive calls from strings are in Python, so I'll just use that.
-We might have to refactor if efficiency becomes a problem.
+Oh god kill it with fire
+
+Turn back here it uses globals accesses
+
+If you are a young pythonista, just stop right now
 """
 import json
 

@@ -166,15 +166,7 @@ def get_admiral_v2_from_id_or_token(search: object):
         db.session.commit()
     return user.admiral
 
-def activate_quest(quest_id,admiral=None,admiral_id=None):
-    admiral = admiral if admiral else Admiral.query.get(admiral_id)
-    AdmiralQuest.query.filter_by(admiral_id=admiral.id,quest_id=quest_id).update({"state":2})
-    db.session.commit()
 
-def deactivate_quest(quest_id,admiral=None,admiral_id=None):
-    admiral = admiral if admiral else Admiral.query.get(admiral_id)
-    AdmiralQuest.query.filter_by(admiral_id=admiral.id,quest_id=quest_id).update({"state":1})
-    db.session.commit()
 
 def get_admiral_deck_api_data(admiral):
     count = 0
