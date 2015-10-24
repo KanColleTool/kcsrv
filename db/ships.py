@@ -103,13 +103,11 @@ class Ship(db.Model):
     def get(id=None, ship_api_id=None):
         """
         Gets a ship.
-        :param ship_id: The Ship internal ID to get.
+        :param id: The Ship internal ID to get.
         :param ship_api_id: The Ship API id to get.
         :rtype Ship
         :return: A new ship object.
         """
-        # print('sh.si ' + str(ship_id))
-        # print('sh.sai ' + str(ship_api_id))
         if id:
             return db.session.query(Ship).get(id)
         elif ship_api_id:
