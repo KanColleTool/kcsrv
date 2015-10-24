@@ -228,8 +228,8 @@ class AdmiralEquipment(db.Model):
     __tablename__ = 'admiral_equipment'
 
     id = db.Column(db.Integer, primary_key=True)
-    level = db.Column(db.Integer)
-    locked = db.Column(db.Integer)
+    level = db.Column(db.Integer, default=0)
+    locked = db.Column(db.Boolean, default=False)
     admiral_id = db.Column(db.ForeignKey('admiral.id'))
     equipment_id = db.Column(db.ForeignKey('equipment.id'))
 

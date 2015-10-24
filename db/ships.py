@@ -32,7 +32,7 @@ class Kanmusu(db.Model):
         self.current_ammo = self.stats.ammo
         self.current_fuel = self.stats.fuel
         self.current_hp = self.stats.hp
-        self.equipment = [KanmusuEquipment(slot=i) for i in range(ship.maxslots)]
+        self.equipments = [KanmusuEquipment(slot=i) for i in range(ship.maxslots)]
         return self
 
     @staticmethod
@@ -40,6 +40,8 @@ class Kanmusu(db.Model):
         return db.session.query(Kanmusu).get(id)
 
     def equip(self,slot,admiral_equip_id=None):
+        if int(admiral_equip_id) == -1:
+            admiral_equip_id = None
         self.equipments[int(slot)].admiral_equipment_id = admiral_equip_id
         db.session.add(self)
 
