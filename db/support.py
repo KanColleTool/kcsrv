@@ -1,6 +1,6 @@
-from . import db
 from sqlalchemy import inspect
 
+from . import db
 
 class Resources(db.Model):
     __tablename__ = 'resources'
@@ -43,13 +43,12 @@ class Stats(db.Model):
     ammo = db.Column(db.Integer)
     fuel = db.Column(db.Integer)
 
-    def copy(self,target=None):
+    def copy(self, target=None):
         target = target if target else Stats()
         mapper = inspect(self)
         for column in mapper.attrs:
-            if column.key != "id": setattr(target,column.key,getattr(self,column.key))
+            if column.key != "id": setattr(target, column.key, getattr(self, column.key))
         return target
-
 
 class Recipe(db.Model):
     __tablename__ = 'recipe'
