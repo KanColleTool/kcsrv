@@ -3,8 +3,8 @@ from flask import Blueprint, g
 from db import Kanmusu, Admiral
 from util import *
 # from db import AdmiralShip,Quest
-from helpers import AdmiralHelper, ItemHelper
-from helpers import gamestart, data, QuestHelper, ShipHelper
+# from helpers import _AdmiralHelper, _ItemHelper
+# from helpers import gamestart, data, _QuestHelper, _ShipHelper
 
 
 api_user = Blueprint('api_user', __name__)
@@ -26,16 +26,16 @@ def resupply():
 
 
 
-@api_user.route('/api_get_member/material', methods=['GET', 'POST'])
-def material():
-    """Resources such as fuel, ammo, etc..."""
-    admiral = get_token_admiral_or_error()
-    return svdata(gamestart.get_admiral_resources_api_data(admiral))
+#@api_user.route('/api_get_member/material', methods=['GET', 'POST'])
+#def material():
+#    """Resources such as fuel, ammo, etc..."""
+#    admiral = get_token_admiral_or_error()
+#    return svdata(gamestart.get_admiral_resources_api_data(admiral))
 
 
-@api_user.route('/api_get_member/mapinfo', methods=['GET', 'POST'])
-def mapinfo():
-    return svdata(AdmiralHelper.get_admiral_sorties())
+#api_user.route('/api_get_member/mapinfo', methods=['GET', 'POST'])
+#def mapinfo():
+#    return svdata(_AdmiralHelper.get_admiral_sorties())
 
 
 @api_user.route('/api_get_member/questlist', methods=['GET', 'POST'])
@@ -66,9 +66,9 @@ def ship3():
     # spi_sort_order = request.values.get('api_sort_key')
     admiral_ship_id = request.values.get('api_shipid')
     data = {
-        "api_ship_data": [ShipHelper.get_admiral_ship_api_data(
-            admiral_ship_id)], "api_deck_data": AdmiralHelper.get_admiral_deck_api_data(
-            admiral), "api_slot_data": ItemHelper.get_slottype_list(admiral=admiral)
+        "api_ship_data": [_ShipHelper.get_admiral_ship_api_data(
+            admiral_ship_id)], "api_deck_data": _AdmiralHelper.get_admiral_deck_api_data(
+            admiral), "api_slot_data": _ItemHelper.get_slottype_list(admiral=admiral)
     }
     return svdata(data)
 

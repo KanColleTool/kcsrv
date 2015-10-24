@@ -1,8 +1,7 @@
-from flask import g
 from flask import request, Blueprint
 
 from db import db
-from helpers import QuestHelper, AdmiralHelper, DockHelper
+from helpers import _QuestHelper, _AdmiralHelper, _DockHelper
 from util import get_token_admiral_or_error, svdata, prepare_api_blueprint
 
 api_actions = Blueprint('api_actions', __name__)
@@ -31,7 +30,7 @@ def build():
     steel = int(request.values.get("api_item3"))
     baux = int(request.values.get("api_item4"))
     dock = int(request.values.get("api_kdock_id")) # -1 # For some reason, it doesn't need minusing one. ¯\_(ツ)_/¯
-    DockHelper.craft_ship(fuel, ammo, steel, baux, admiral, dock)
+    _DockHelper.craft_ship(fuel, ammo, steel, baux, admiral, dock)
     return svdata({})
 
 
@@ -39,7 +38,7 @@ def build():
 def getship():
     dock = int(request.values.get("api_kdock_id"))
     try:
-        data = DockHelper.get_and_remove_ship(dockid=dock)
+        data = _DockHelper.get_and_remove_ship(dockid=dock)
     except (IndexError, AttributeError):
         return svdata({}, code=201, message='申し訳ありませんがブラウザを再起動し再ログインしてください。')
     return svdata(data)
@@ -111,8 +110,8 @@ def change_position():
 def queststart():
     admiral = get_token_admiral_or_error()
     quest_id = request.values.get("api_quest_id")
-    AdmiralHelper.activate_quest(quest_id, admiral)
-    QuestHelper.update_quest_progress(quest_id, admiral)
+    _AdmiralHelper.activate_quest(quest_id, admiral)
+    _QuestHelper.update_quest_progress(quest_id, admiral)
     return svdata({'api_result_msg': 'ok', 'api_result': 1})
 
 
@@ -121,7 +120,7 @@ def queststart():
 def queststop():
     admiral = get_token_admiral_or_error()
     quest_id = request.values.get("api_quest_id")
-    AdmiralHelper.deactivate_quest(quest_id, admiral)
+    _AdmiralHelper.deactivate_quest(quest_id, admiral)
     return svdata({'api_result_msg': 'ok', 'api_result': 1})
 
 
@@ -130,7 +129,7 @@ def queststop():
 def clearitemget():
     admiral = get_token_admiral_or_error()
     quest_id = request.values.get("api_quest_id")
-    data = QuestHelper.complete_quest(admiral, quest_id)
+    data = _QuestHelper.complete_quest(admiral, quest_id)
     return svdata(data)
 
 
@@ -141,5 +140,5 @@ def slotset():
     admiral_ship_id = request.values.get("api_id")
     admiral_item_id = request.values.get("api_item_id")
     slot = request.values.get("api_slot_idx")
-    ShipHelper.change_ship_item(admiral_ship_id, admiral_item_id, slot)
+    _ShipHelper.change_ship_item(admiral_ship_id, admiral_item_id, slot)
     return svdata({'api_result_msg': 'ok', 'api_result': 1})
