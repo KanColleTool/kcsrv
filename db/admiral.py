@@ -47,7 +47,7 @@ class Admiral(db.Model):
     kanmusu = db.relationship('Kanmusu', order_by='Kanmusu.number', backref='admiral')
     resources = db.relationship('Resources')
     fleets = db.relationship('Fleet', order_by='Fleet.number')
-    quests = db.relationship('Quest', lazy='dynamic')
+    quests = db.relationship('AdmiralQuest', lazy='dynamic')
 
     docks_craft = db.relationship("Dock",
         primaryjoin="and_(Admiral.id==Dock.admiral_id, Dock.type_== {})".format(DOCK_TYPE_CRAFT),
