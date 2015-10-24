@@ -5,7 +5,9 @@ from flask import Blueprint
 
 import util
 
+
 DockAPIv2 = Blueprint("DockAPIv2", __name__)
+
 
 @DockAPIv2.route("/<token>/cdock/<id>")
 def get_cdock(token, id):
@@ -23,32 +25,25 @@ def get_cdock(token, id):
         pass
     if id == "all":
         return json.dumps({
-                              "docks": [{
-                                            "id": dockid,
-                                            "shipbuiltid": dock.ship.ship.id if dock.ship is not None else 0,
-                                            "completetime": dock.complete,
-                                            "state": 0 if dock.complete is None
-                                            else 2 if dock.complete > time.time()
-                                            else 3 if dock.complete < time.time() else -1,
-                                            "resources": ','.join([str(x) for x in
-                                                                   [dock.fuel, dock.ammo, dock.steel, dock.baux,
-                                                                    dock.cmats]])
-                                        } for dock in admiral.docks.all()[0:4]]
-                              }), 200, {"Content-Type": "application/json"}
+            "docks": [{
+                "id": dockid, "shipbuiltid": dock.ship.ship.id if dock.ship is not None else 0, "completetime": dock.complete, "state": 0 if dock.complete is None
+                else 2 if dock.complete > time.time()
+                else 3 if dock.complete < time.time() else -1, "resources": ','.join(
+                    [str(x) for x in [dock.fuel, dock.ammo, dock.steel, dock.baux, dock.cmats]])
+            } for dock in admiral.docks.all()[0:4]]
+        }), 200, {"Content-Type": "application/json"}
     else:
         cdock = admiral.docks.all()[dockid]
         print(admiral.docks.all(), dockid, cdock)
         return json.dumps({
             "docks": [{
-                "id": dockid,
-                "shipbuiltid": cdock.ship.ship.id if cdock.ship is not None else 0,
-                "completetime": cdock.complete,
-                "state": 0 if cdock.complete is None
+                "id": dockid, "shipbuiltid": cdock.ship.ship.id if cdock.ship is not None else 0, "completetime": cdock.complete, "state": 0 if cdock.complete is None
                 else 2 if cdock.complete > time.time()
-                else 3 if cdock.complete < time.time() else -1,
-                "resources": ','.join([str(x) for x in [cdock.fuel, cdock.ammo, cdock.steel, cdock.baux, cdock.cmats]])
+                else 3 if cdock.complete < time.time() else -1, "resources": ','.join(
+                    [str(x) for x in [cdock.fuel, cdock.ammo, cdock.steel, cdock.baux, cdock.cmats]])
             }]
         }), 200, {"Content-Type": "application/json"}
+
 
 @DockAPIv2.route("/<token>/rdock/<id>")
 def get_rdock(token, id):
@@ -66,28 +61,20 @@ def get_rdock(token, id):
         pass
     if id == "all":
         return json.dumps({
-                              "docks": [{
-                                            "id": dockid,
-                                            "shipbuiltid": dock.ship.ship.id if dock.ship is not None else 0,
-                                            "completetime": dock.complete,
-                                            "state": 0 if dock.complete is None
-                                            else 2 if dock.complete > time.time()
-                                            else 3 if dock.complete < time.time() else -1,
-                                            "resources": ','.join([str(x) for x in
-                                                                   [dock.fuel, dock.ammo, dock.steel, dock.baux,
-                                                                    dock.cmats]])
-                                        } for dock in admiral.docks.all()[4:8]]
-                              }), 200, {"Content-Type": "application/json"}
+            "docks": [{
+                "id": dockid, "shipbuiltid": dock.ship.ship.id if dock.ship is not None else 0, "completetime": dock.complete, "state": 0 if dock.complete is None
+                else 2 if dock.complete > time.time()
+                else 3 if dock.complete < time.time() else -1, "resources": ','.join(
+                    [str(x) for x in [dock.fuel, dock.ammo, dock.steel, dock.baux, dock.cmats]])
+            } for dock in admiral.docks.all()[4:8]]
+        }), 200, {"Content-Type": "application/json"}
     else:
         cdock = admiral.docks.all()[dockid + 4]
         return json.dumps({
             "docks": [{
-                "id": dockid,
-                "shipbuiltid": cdock.ship.ship.id if cdock.ship is not None else 0,
-                "completetime": cdock.complete,
-                "state": 0 if cdock.complete is None
+                "id": dockid, "shipbuiltid": cdock.ship.ship.id if cdock.ship is not None else 0, "completetime": cdock.complete, "state": 0 if cdock.complete is None
                 else 2 if cdock.complete > time.time()
-                else 3 if cdock.complete < time.time() else -1,
-                "resources": ','.join([str(x) for x in [cdock.fuel, cdock.ammo, cdock.steel, cdock.baux, cdock.cmats]])
+                else 3 if cdock.complete < time.time() else -1, "resources": ','.join(
+                    [str(x) for x in [cdock.fuel, cdock.ammo, cdock.steel, cdock.baux, cdock.cmats]])
             }]
         }), 200, {"Content-Type": "application/json"}

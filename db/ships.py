@@ -1,5 +1,6 @@
 from . import db
 
+
 class Kanmusu(db.Model):
     __tablename__ = 'kanmusu'
 
@@ -24,12 +25,14 @@ class Kanmusu(db.Model):
     ship = db.relationship('Ship')
     stats = db.relationship('Stats')
 
+
     def create(self, ship_id=None, ship_api_id=None):
         ship = Ship().get(ship_id=ship_id, ship_api_id=ship_api_id)
         self.ship = ship
         self.stats = ship.base_stats.copy()
         self.equipment = [KanmusuEquipment(slot=i) for i in range(ship.maxslots)]
         return self
+
 
 class KanmusuEquipment(db.Model):
     __tablename__ = 'kanmusu_equipment'
@@ -42,6 +45,7 @@ class KanmusuEquipment(db.Model):
     admiral_equipment = db.relationship('AdmiralEquipment')
     kanmusu = db.relationship('Kanmusu')
 
+
 class Remodel(db.Model):
     __tablename__ = 'remodel'
 
@@ -51,6 +55,7 @@ class Remodel(db.Model):
     id_resources = db.Column(db.ForeignKey('resources.id'), index=True)
 
     cost = db.relationship('Resources')
+
 
 class Ship(db.Model):
     __tablename__ = 'ship'
@@ -80,6 +85,7 @@ class Ship(db.Model):
     max_stats = db.relationship('Stats', primaryjoin='Ship.max_stats_id == Stats.id')
     modernization = db.relationship('Resources', primaryjoin='Ship.modern_resources_id == Resources.id')
     remodel = db.relationship('Remodel', uselist=False)
+
 
     def get(self, ship_id=None, ship_api_id=None):
         print('sh.si ' + str(ship_id))

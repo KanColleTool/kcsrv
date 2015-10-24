@@ -10,4 +10,3 @@ So my idea is to have a column in the AdmiralQuest table that saves a JSON with 
 
 Please look forward for the chaos that ensues.
 """
-

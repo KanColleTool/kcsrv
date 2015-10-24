@@ -1,5 +1,6 @@
 from db import Resource
 
+
 def update_resource(target, source=None, resources=None, **kwargs):
     """
     :return: the updated object.
@@ -20,6 +21,7 @@ def update_resource(target, source=None, resources=None, **kwargs):
         target.bucket = target.bucket + source.bucket if source.bucket is not None else target.bucket
         target.material = target.material + source.material if source.material is not None else target.material
     return target
+
 
 def get_resource_from_list(data):
     resource = Resource(fuel=data[0], ammo=data[1], steel=data[2], baux=data[3])

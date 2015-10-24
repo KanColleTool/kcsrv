@@ -4,6 +4,7 @@ from constants import *
 from db.ships import Kanmusu
 from . import db, Resources, Usable
 
+
 class Admiral(db.Model):
     __tablename__ = 'admiral'
 
@@ -42,13 +43,12 @@ class Admiral(db.Model):
     fleets = db.relationship('Fleet', order_by='Fleet.number')
 
     docks_craft = db.relationship("Dock",
-                                  primaryjoin="and_(Admiral.id==Dock.admiral_id," + \
-                                              "Dock.type_==" + str(DOCK_TYPE_CRAFT) + ")",
-                                  order_by='Dock.number')
+        primaryjoin="and_(Admiral.id==Dock.admiral_id," + "Dock.type_==" + str(DOCK_TYPE_CRAFT) + ")",
+        order_by='Dock.number')
     docks_repair = db.relationship("Dock",
-                                   primaryjoin="and_(Admiral.id==Dock.admiral_id," + \
-                                               "Dock.type_==" + str(DOCK_TYPE_REPAIR) + ")",
-                                   order_by='Dock.number')
+        primaryjoin="and_(Admiral.id==Dock.admiral_id," + "Dock.type_==" + str(DOCK_TYPE_REPAIR) + ")",
+        order_by='Dock.number')
+
 
     def create(self, user):
         # db.session.add(self)
@@ -58,12 +58,10 @@ class Admiral(db.Model):
         self.fleets = [Fleet(number=1)]
 
         # hm...must do better than this.
-        initial_usables = [
-            AdmiralUsables(usable=Usable.by_name(NAME_BUCKET), quantity=3),
+        initial_usables = [AdmiralUsables(usable=Usable.by_name(NAME_BUCKET), quantity=3),
             AdmiralUsables(usable=Usable.by_name(NAME_FLAME), quantity=4),
             AdmiralUsables(usable=Usable.by_name(NAME_MATERIAL), quantity=5),
-            AdmiralUsables(usable=Usable.by_name(NAME_SCREW), quantity=1)
-        ]
+            AdmiralUsables(usable=Usable.by_name(NAME_SCREW), quantity=1)]
         self.usables = initial_usables
         """
         last = user.admiral.lastaction
@@ -91,6 +89,7 @@ class Admiral(db.Model):
         db.session.commit()
         return self
 
+
     # Not sure if this one is worth it.
     def add_item(self, item_id, item_type, quantity=1):
         if item_type == ITEM_TYPE_USABLE:
@@ -106,6 +105,7 @@ class Admiral(db.Model):
             for _ in range(quantity):
                 self.items.append(AdmiralEquipment(equipment_id=item_id))
 
+
     def get_usable(self, name):
         for u in self.usables:
             if u.usable.name == name:
@@ -118,6 +118,7 @@ class Admiral(db.Model):
             return ausable
         return None
 
+
     def add_kanmusu(self, ship_id=None, ship_api_id=None, fleet_number=None, position=None):
         kanmusu = Kanmusu().create(ship_id, ship_api_id)
         kanmusu.number = len(self.kanmusu) + 1
@@ -127,6 +128,7 @@ class Admiral(db.Model):
         self.kanmusu.append(kanmusu)
         db.session.add(self)
         db.session.commit()
+
 
 class AdmiralEquipment(db.Model):
     __tablename__ = 'admiral_equipment'
@@ -140,6 +142,7 @@ class AdmiralEquipment(db.Model):
     admiral = db.relationship('Admiral')
     equipment = db.relationship('Equipment')
 
+
 class AdmiralFurniture(db.Model):
     __tablename__ = 'admiral_furniture'
 
@@ -151,6 +154,7 @@ class AdmiralFurniture(db.Model):
     admiral = db.relationship('Admiral')
     furniture = db.relationship('Furniture')
 
+
 class AdmiralUsables(db.Model):
     __tablename__ = 'admiral_usables'
 
@@ -160,6 +164,7 @@ class AdmiralUsables(db.Model):
     usable_id = db.Column(db.ForeignKey('usable.id'), index=True)
 
     usable = db.relationship('Usable')
+
 
 class AdmiralQuest(db.Model):
     __tablename__ = 'admiral_quest'
@@ -173,6 +178,7 @@ class AdmiralQuest(db.Model):
 
     admiral = db.relationship('Admiral')
     quest = db.relationship('Quest')
+
 
 class Dock(db.Model):
     __tablename__ = 'dock'
@@ -189,10 +195,12 @@ class Dock(db.Model):
     resources = db.relationship('Resources', uselist=False)
     kanmusu = db.relationship('Kanmusu')
 
+
     @reconstructor
     def default_resources(self):
         if self.resources is None:
             self.resources = Resources(fuel=0, ammo=0, steel=0, baux=0)
+
 
 class Fleet(db.Model):
     __tablename__ = 'fleet'

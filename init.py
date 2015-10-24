@@ -8,13 +8,13 @@ from db import User, Role, Admiral
 from forms import *
 from util import generate_api_token
 
+
 modules = {
-    "migrate": None,
-    "security": None,
-    "user_datastore": None
+    "migrate": None, "security": None, "user_datastore": None
 }
 
 admiral = None
+
 
 def init(app):
     # --> Extension setup
@@ -32,15 +32,18 @@ def init(app):
     # --> Register blueprints
     from modules.play.play import play
 
+
     app.register_blueprint(play, url_prefix='/play')
 
     from modules.api.core import api_core
+
 
     app.register_blueprint(api_core, url_prefix='/kcsapi')
 
     # Declare API v1 blueprints.
     from modules.api.v1.user import api_user
     from modules.api.v1.actions import api_actions
+
 
     @api_user.before_request
     @api_actions.before_request
@@ -55,6 +58,7 @@ def init(app):
             return "Invalid api_token"
         g.admiral = user.admiral if user.admiral else Admiral().create(user)
 
+
     app.register_blueprint(api_user, url_prefix='/kcsapi')
     app.register_blueprint(api_actions, url_prefix='/kcsapi')
 
@@ -67,16 +71,20 @@ def init(app):
     """
     from modules.resources import resources
 
+
     app.register_blueprint(resources, url_prefix='/kcs')
+
 
     # --> Base application routes
     @app.route('/')
     def index():
         return render_template('index.html')
 
+
     @app.route('/kcs/<path:path>')
     def kcs(path):
         return send_from_directory('kcs', path)
+
 
     # --> Signals
     @user_logged_in.connect_via(app)

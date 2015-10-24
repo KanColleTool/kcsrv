@@ -2,6 +2,7 @@ from sqlalchemy import inspect
 
 from . import db
 
+
 class Resources(db.Model):
     __tablename__ = 'resources'
 
@@ -11,17 +12,24 @@ class Resources(db.Model):
     steel = db.Column(db.Integer)
     baux = db.Column(db.Integer)
 
+
     def to_list(self):
         data = []
-        if self.fuel is not None: data.append(self.fuel)
-        if self.ammo is not None: data.append(self.ammo)
-        if self.steel is not None: data.append(self.steel)
-        if self.baux is not None: data.append(self.baux)
+        if self.fuel is not None:
+            data.append(self.fuel)
+        if self.ammo is not None:
+            data.append(self.ammo)
+        if self.steel is not None:
+            data.append(self.steel)
+        if self.baux is not None:
+            data.append(self.baux)
         return data
+
 
     def none(self):
         self.ammo = self.fuel = self.steel = self.baux = None
         return self
+
 
 class Stats(db.Model):
     __tablename__ = 'stats'
@@ -43,12 +51,15 @@ class Stats(db.Model):
     ammo = db.Column(db.Integer)
     fuel = db.Column(db.Integer)
 
+
     def copy(self, target=None):
         target = target if target else Stats()
         mapper = inspect(self)
         for column in mapper.attrs:
-            if column.key != "id": setattr(target, column.key, getattr(self, column.key))
+            if column.key != "id":
+                setattr(target, column.key, getattr(self, column.key))
         return target
+
 
 class Recipe(db.Model):
     __tablename__ = 'recipe'

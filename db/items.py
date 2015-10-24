@@ -1,5 +1,6 @@
 from . import db
 
+
 class Equipment(db.Model):
     __tablename__ = 'equipment'
 
@@ -16,6 +17,7 @@ class Equipment(db.Model):
     dismantling = db.relationship('Resources')
     stats = db.relationship('Stats')
 
+
 class Furniture(db.Model):
     __tablename__ = 'furniture'
 
@@ -29,6 +31,7 @@ class Furniture(db.Model):
     price = db.Column(db.Integer)
     sale_flag = db.Column(db.Boolean)
 
+
 class Usable(db.Model):
     __tablename__ = 'usable'
 
@@ -40,6 +43,7 @@ class Usable(db.Model):
     category = db.Column(db.Integer)
     type_ = db.Column(db.Integer)
     price = db.Column(db.Integer)
+
 
     def by_name(name):
         return db.session.query(Usable).filter(Usable.name == name).first()

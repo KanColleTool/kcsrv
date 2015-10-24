@@ -6,10 +6,13 @@ from wtforms_alchemy import model_form_factory
 
 from db import db
 
+
 BaseModelForm = model_form_factory(Form)
+
 
 class MyRegisterForm(ConfirmRegisterForm):
     nickname = fields.StringField('Nickname', [validators.required()])
+
 
 class ModelForm(BaseModelForm):
     @classmethod

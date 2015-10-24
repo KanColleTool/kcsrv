@@ -1,10 +1,11 @@
 from db import db, AdmiralShip, AdmiralItem, Item, AdmiralShipItem
 
+
 def get_itemlist_ordered(admiral):
-    query = db.session.query(AdmiralItem, Item) \
-        .filter(AdmiralItem.item_id == Item.id, AdmiralItem.admiral_id == admiral.id) \
-        .order_by(Item.sortno)
+    query = db.session.query(AdmiralItem, Item).filter(AdmiralItem.item_id == Item.id,
+        AdmiralItem.admiral_id == admiral.id).order_by(Item.sortno)
     return query.all()
+
 
 def get_itemlist_not_equipped(admiral):
     """
@@ -18,18 +19,15 @@ def get_itemlist_not_equipped(admiral):
     Now we have the values of IDs of equipped items by all AdmiralShips. Now we simply list all AdmiralItems
     *excluding* these values. Easy.
     """
-    query_admiral_ships = db.session.query(AdmiralShip.id) \
-        .filter(AdmiralShip.admiral_id == admiral.id)
+    query_admiral_ships = db.session.query(AdmiralShip.id).filter(AdmiralShip.admiral_id == admiral.id)
 
-    query_equipped_items = db.session.query(AdmiralShipItem.admiral_item_id) \
-        .filter(AdmiralShipItem.admiral_ship_id.in_(query_admiral_ships), \
-                AdmiralShipItem.admiral_item_id != None)
+    query_equipped_items = db.session.query(AdmiralShipItem.admiral_item_id).filter(
+        AdmiralShipItem.admiral_ship_id.in_(query_admiral_ships), AdmiralShipItem.admiral_item_id != None)
 
-    query = db.session.query(AdmiralItem, Item) \
-        .filter(AdmiralItem.item_id == Item.id, AdmiralItem.admiral_id == admiral.id, \
-                ~AdmiralItem.id.in_(query_equipped_items)) \
-        .order_by(Item.sortno)
+    query = db.session.query(AdmiralItem, Item).filter(AdmiralItem.item_id == Item.id,
+        AdmiralItem.admiral_id == admiral.id, ~AdmiralItem.id.in_(query_equipped_items)).order_by(Item.sortno)
     return query.all()
+
 
 def get_slottype_list(itemlist=None, admiral=None):
     """

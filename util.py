@@ -8,7 +8,9 @@ import time
 
 from flask import request, abort
 
+
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
+
 
 def svdata(obj: object, code: int = 1, message: str = "成功", errormsg: str = "Invalid API request.") -> tuple:
     """
@@ -22,18 +24,15 @@ def svdata(obj: object, code: int = 1, message: str = "成功", errormsg: str = 
     """
     if obj is None:
         res = {
-            "api_result": 201,
-            "api_result_msg": errormsg,
-            "api_data": obj
+            "api_result": 201, "api_result_msg": errormsg, "api_data": obj
         }
     else:
         res = {
-            "api_result": code,
-            "api_result_msg": message,
-            "api_data": obj
+            "api_result": code, "api_result_msg": message, "api_data": obj
         }
     # Yay arbitary formats.
     return "svdata=" + json.dumps(res, separators=(',', ':')), 200, {"Content-Type": "text/plain"}
+
 
 def load_datadump(filename: str) -> dict:
     """
@@ -47,23 +46,30 @@ def load_datadump(filename: str) -> dict:
         o = json.load(f)
         return o if 'api_data' not in o else o['api_data']
 
+
 def prepare_api_blueprint(bp):
     @bp.errorhandler(403)
     def api_403(e):
         return svdata(None, 100, errormsg="Not authorized")
 
+
 def get_token_admiral_or_error(api_token: str = None):
     print("Dont use this anymore, dumbass! from init import admiral")
     from helpers.AdmiralHelper import get_admiral_from_token
+
+
     api_token = api_token if api_token is not None else request.values.get('api_token', None)
     admiral = get_admiral_from_token(api_token)
     return admiral if admiral else abort(403)
 
+
 def pack_resources(r: list) -> str:
     return ",".join([str(x) for x in r])
 
+
 def extract_resources(r: str) -> list:
     return list(map(int, (x for x in r.split(','))))
+
 
 def millisecond_timestamp(ts: datetime.datetime = datetime.datetime.now()) -> int:
     """
@@ -73,6 +79,7 @@ def millisecond_timestamp(ts: datetime.datetime = datetime.datetime.now()) -> in
     """
     # http://stackoverflow.com/a/8160307
     return math.floor(time.mktime(ts.timetuple()) * 1e3 + ts.microsecond / 1e3)
+
 
 def take_items(l, indices):
     """
@@ -87,6 +94,7 @@ def take_items(l, indices):
     """
     return (l[idx] for idx in indices)
 
+
 # http://stackoverflow.com/questions/3438756/some-built-in-to-pad-a-list-in-python
 def pad(iterable, padding='.', length=7):
     """
@@ -100,12 +108,14 @@ def pad(iterable, padding='.', length=7):
         count += 1
         yield padding
 
+
 # http://stackoverflow.com/questions/38987/how-can-i-merge-two-python-dictionaries-in-a-single-expression
 def merge_two_dicts(x, y):
     """Given two dicts, merge them into a new dict as a shallow copy."""
     z = x.copy()
     z.update(y)
     return z
+
 
 def generate_api_token():
     """

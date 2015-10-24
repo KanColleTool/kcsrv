@@ -2,6 +2,7 @@
 import json
 import os
 
+
 """
 This makes the json files human-readable, by 1) formatting them 2) allowing JP characters
 """

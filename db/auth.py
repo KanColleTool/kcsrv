@@ -3,6 +3,7 @@ from flask.ext.security import UserMixin, RoleMixin
 from util import generate_api_token
 from . import db
 
+
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
 
@@ -19,6 +20,7 @@ class User(db.Model, UserMixin):
 
     admiral = db.relationship("Admiral", backref='user', uselist=False)
 
+
 class Role(db.Model, RoleMixin):
     __tablename__ = 'role'
 
@@ -28,8 +30,6 @@ class Role(db.Model, RoleMixin):
 
     users = db.relationship('User', secondary='role__user')
 
-t_role__user = db.Table(
-    'role__user',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
-    db.Column('role_id', db.Integer, db.ForeignKey('role.id'))
-)
+
+t_role__user = db.Table('role__user', db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('role_id', db.Integer, db.ForeignKey('role.id')))
