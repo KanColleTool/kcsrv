@@ -16,6 +16,9 @@ admiral = None
 
 
 def init(app):
+    # --> Jinja2 Env Update
+    app.jinja_env.globals.update(__builtins__=__builtins__)
+
     # --> Extension setup
     db.init_app(app)
     admin.init_app(app)
