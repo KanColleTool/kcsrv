@@ -12,7 +12,6 @@ class Resources(db.Model):
     steel = db.Column(db.Integer)
     baux = db.Column(db.Integer)
 
-
     def to_list(self):
         data = []
         if self.fuel is not None:
@@ -24,7 +23,6 @@ class Resources(db.Model):
         if self.baux is not None:
             data.append(self.baux)
         return data
-
 
     def none(self):
         self.ammo = self.fuel = self.steel = self.baux = None
@@ -50,7 +48,6 @@ class Stats(db.Model):
     hp = db.Column(db.Integer)
     ammo = db.Column(db.Integer)
     fuel = db.Column(db.Integer)
-
 
     def copy(self, target=None):
         target = target if target else Stats()
