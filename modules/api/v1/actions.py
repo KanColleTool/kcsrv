@@ -2,8 +2,8 @@ from flask import g
 from flask import request, Blueprint
 
 from db import db
+from helpers import QuestHelper, AdmiralHelper, DockHelper
 from util import get_token_admiral_or_error, svdata, prepare_api_blueprint
-
 
 api_actions = Blueprint('api_actions', __name__)
 prepare_api_blueprint(api_actions)
@@ -107,7 +107,8 @@ def change_position():
 
 
 @api_actions.route('/api_req_init/firstship', methods=['GET', 'POST'])
-# Kancolle literally doesn't care, as long as it gets something back def firstship():
+# Kancolle literally doesn't care, as long as it gets something back
+def firstship():
     shipid = request.values.get("api_ship_id")
     print('actions: ' + str(shipid))
     g.admiral.add_kanmusu(ship_api_id=shipid, fleet_number=1, position=0)
@@ -115,7 +116,8 @@ def change_position():
 
 
 @api_actions.route('/api_req_quest/start', methods=['GET', 'POST'])
-# Start quest def queststart():
+# Start quest
+def queststart():
     admiral = get_token_admiral_or_error()
     quest_id = request.values.get("api_quest_id")
     AdmiralHelper.activate_quest(quest_id, admiral)
@@ -124,7 +126,8 @@ def change_position():
 
 
 @api_actions.route('/api_req_quest/stop', methods=['GET', 'POST'])
-# Stop quest def queststop():
+# Stop quest
+def queststop():
     admiral = get_token_admiral_or_error()
     quest_id = request.values.get("api_quest_id")
     AdmiralHelper.deactivate_quest(quest_id, admiral)
@@ -132,7 +135,8 @@ def change_position():
 
 
 @api_actions.route('/api_req_quest/clearitemget', methods=['GET', 'POST'])
-# Complete quest def clearitemget():
+# Complete quest
+def clearitemget():
     admiral = get_token_admiral_or_error()
     quest_id = request.values.get("api_quest_id")
     data = QuestHelper.complete_quest(admiral, quest_id)
@@ -140,7 +144,8 @@ def change_position():
 
 
 @api_actions.route('/api_req_kaisou/slotset', methods=['GET', 'POST'])
-# Change Item def slotset():
+# Change Item
+def slotset():
     admiral = get_token_admiral_or_error()
     admiral_ship_id = request.values.get("api_id")
     admiral_item_id = request.values.get("api_item_id")

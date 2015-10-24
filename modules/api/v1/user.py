@@ -2,8 +2,8 @@ from flask import Blueprint
 # from flask.ext.security import current_user
 from util import *
 # from db import AdmiralShip,Quest
-# from helpers import generate_port, AdmiralHelper, DockHelper, ShipHelper,QuestHelper,ItemHelper,ResourceHelper
-from helpers import game_start, data
+from helpers import AdmiralHelper, ItemHelper
+from helpers import game_start, data, QuestHelper, ShipHelper
 
 
 api_user = Blueprint('api_user', __name__)
@@ -86,10 +86,9 @@ def mapinfo():
 
 
 @api_user.route('/api_get_member/questlist', methods=['GET', 'POST'])
-# My god, he rebuilds the questlist every time you (de)activate a quest... def questlist():
+# My god, he rebuilds the questlist every time you (de)activate a quest...
+def questlist():
     import math
-
-
     page_number = request.values.get('api_page_no', None)
     data = {}
     admiral = get_token_admiral_or_error()
@@ -106,7 +105,8 @@ def mapinfo():
 
 
 @api_user.route('/api_get_member/ship3', methods=['GET', 'POST'])
-# Heh. def ship3():
+# Heh
+def ship3():
     admiral = get_token_admiral_or_error()
     # No idea.
     # spi_sort_order = request.values.get('spi_sort_order')
