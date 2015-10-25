@@ -1,8 +1,10 @@
-from flask import g,request
+from flask import request
+
 from util import svdata
 from helpers import refit
 from . import api_game
 from db import db,Kanmusu
+
 
 @api_game.route('/api_req_kaisou/slotset', methods=['GET', 'POST'])
 # Change Item

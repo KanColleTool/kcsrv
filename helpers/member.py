@@ -1,7 +1,9 @@
 import datetime
 import time
-from db import db, Equipment, Kanmusu, KanmusuEquipment, AdmiralEquipment
+
 from flask import g
+
+from db import db, Equipment, Kanmusu, KanmusuEquipment, AdmiralEquipment
 from constants import *
 from . import LevelHelper
 

@@ -2,8 +2,7 @@ from sqlalchemy.orm import reconstructor
 
 from constants import *
 from db.ships import Kanmusu
-from db.quests import Quest
-from . import db, Resources, Usable, QuestRequirement
+from . import db, Resources, Usable
 
 
 class Admiral(db.Model):

@@ -1,5 +1,7 @@
-from . import db,Stats,Resources
 from sqlalchemy import inspect
+
+from . import db,Stats
+
 
 class Kanmusu(db.Model):
     __tablename__ = 'kanmusu'

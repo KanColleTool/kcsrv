@@ -1,4 +1,5 @@
 from flask import Blueprint
+
 from util import prepare_api_blueprint
 
 api_game = Blueprint('api_game', __name__)

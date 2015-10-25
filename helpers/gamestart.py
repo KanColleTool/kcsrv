@@ -1,9 +1,7 @@
 from flask import g
+
 import util
 from . import member
-
-
-
 
 
 def port():
