@@ -71,7 +71,7 @@ class Kanmusu(db.Model):
         :return: Modernization success?
         """
         for id in id_list:
-            #TODO Modernization logic
+            # TODO Modernization logic
             food = Kanmusu.get(id)
             self.stats.add(food.ship.modernization)
             self.modernized_stats.add(food.ship.modernization)
@@ -100,7 +100,7 @@ class Kanmusu(db.Model):
 
     def remodel(self):
         self.admiral.resources.sub(self.ship.remodel.cost)
-        self.create(ship_api_id=self.ship.remodel.ship_api_id) #LITERALLY DAUGHTER OF HERSELF
+        self.create(ship_api_id=self.ship.remodel.ship_api_id)  # LITERALLY DAUGHTER OF HERSELF
         db.session.add(self.admiral)
         db.session.commit()
 
