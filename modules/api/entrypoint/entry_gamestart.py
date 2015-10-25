@@ -61,10 +61,3 @@ def unsetslot():
 def port():
     # return svdata(game_start.port())
     return svdata(gamestart.port())
-
-
-@api_game.route('/api_get_member/ship2', methods=['GET', 'POST'])
-def ship2():
-    """Fuck ship2."""
-    """Agreed."""
-    return svdata({})

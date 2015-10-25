@@ -1,4 +1,5 @@
-from . import db
+from . import db,Stats,Resources
+from sqlalchemy import inspect
 
 class Kanmusu(db.Model):
     __tablename__ = 'kanmusu'
@@ -19,10 +20,12 @@ class Kanmusu(db.Model):
     ship_id = db.Column(db.ForeignKey('ship.id'))
     fleet_id = db.Column(db.ForeignKey('fleet.id'))
     stats_id = db.Column(db.ForeignKey('stats.id'), index=True)
+    modern_stats_id = db.Column(db.ForeignKey('stats.id'), index=True)
 
-    equipments = db.relationship('KanmusuEquipment',order_by="KanmusuEquipment.slot")
+    equipments = db.relationship('KanmusuEquipment',cascade="all,delete", order_by="KanmusuEquipment.slot")
     ship = db.relationship('Ship')
-    stats = db.relationship('Stats')
+    stats = db.relationship('Stats', cascade="all,delete", foreign_keys="Kanmusu.stats_id")
+    modernized_stats = db.relationship('Stats', cascade="all,delete", foreign_keys="Kanmusu.modern_stats_id")
 
     def create(self, ship_id=None, ship_api_id=None):
         ship = Ship.get(id=ship_id, ship_api_id=ship_api_id)
@@ -32,6 +35,7 @@ class Kanmusu(db.Model):
         self.current_fuel = self.stats.fuel
         self.current_hp = self.stats.hp
         self.equipments = [KanmusuEquipment(slot=i) for i in range(ship.maxslots)]
+        self.modernized_stats = Stats(firepower=0,torpedo=0,antiair=0,armour=0,luck=0)
         return self
 
     @staticmethod
@@ -39,6 +43,11 @@ class Kanmusu(db.Model):
         return db.session.query(Kanmusu).get(id)
 
     def equip(self,slot,admiral_equip_id=None):
+        """
+        Replace a Kanmusu equipment
+        :param slot: The slot which make the operation
+        :param admiral_equip_id: The ID of an AdmiralEquipment entry.
+        """
         if int(admiral_equip_id) == -1:
             admiral_equip_id = None
         else:
@@ -51,6 +60,47 @@ class Kanmusu(db.Model):
 
         self.equipments[int(slot)].admiral_equipment_id = admiral_equip_id
         db.session.add(self)
+
+    def modernize(self,id_list):
+        """
+        Modernize a Kanmusu
+        :param id_list: A list of Kanmusu IDs
+        :rtype Boolean
+        :return: Modernization success?
+        """
+        for id in id_list:
+            #TODO Modernization logic
+            food = Kanmusu.get(id)
+            self.stats.add(food.ship.modernization)
+            self.modernized_stats.add(food.ship.modernization)
+            db.session.delete(food)
+        self.validate_stats()
+        db.session.add(self)
+        return True
+
+    def validate_stats(self):
+        """
+        Making sure all stats are within range.
+        Nevermind that we have modernized_stats!
+        If the modernized stat is bigger than the difference between max and base, we have to adjust.
+        """
+        diff = self.ship.max_stats.diff(self.ship.base_stats)
+
+        mapper = inspect(diff)
+        for column in mapper.attrs:
+            if column.key == "id": continue
+            modern_value = getattr(self.modernized_stats, column.key)
+            if modern_value is not None:
+                diff_value = getattr(diff, column.key)
+                if modern_value > diff_value:
+                    setattr(self.stats,column.key,getattr(self.ship.max_stats,column.key))
+                    setattr(self.modernized_stats,column.key,diff_value)
+
+    def remodel(self):
+        self.admiral.resources.sub(self.ship.remodel.cost)
+        self.create(ship_api_id=self.ship.remodel.ship_api_id) #LITERALLY DAUGHTER OF HERSELF
+        db.session.add(self.admiral)
+        db.session.commit()
 
 class KanmusuEquipment(db.Model):
     __tablename__ = 'kanmusu_equipment'
@@ -69,7 +119,7 @@ class Remodel(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     level = db.Column(db.Integer)
-    remodel_api_id = db.Column(db.Integer)
+    ship_api_id = db.Column(db.Integer)
     id_resources = db.Column(db.ForeignKey('resources.id'), index=True)
 
     cost = db.relationship('Resources')
@@ -95,7 +145,7 @@ class Ship(db.Model):
     max_stats_id = db.Column(db.ForeignKey('stats.id'), index=True)
     base_stats_id = db.Column(db.ForeignKey('stats.id'), index=True)
     broken_resources_id = db.Column(db.ForeignKey('resources.id'), index=True)
-    modern_resources_id = db.Column(db.ForeignKey('resources.id'), index=True)
+    modern_stats_id = db.Column(db.ForeignKey('stats.id'), index=True)
     remodel_id = db.Column(db.ForeignKey('remodel.id'), unique=True)
 
     # TODO: Distinction between base_stats/max_stats needs to be made more clear.
@@ -104,7 +154,7 @@ class Ship(db.Model):
     base_stats = db.relationship('Stats', primaryjoin='Ship.base_stats_id == Stats.id')
     dismantling = db.relationship('Resources', primaryjoin='Ship.broken_resources_id == Resources.id')
     max_stats = db.relationship('Stats', primaryjoin='Ship.max_stats_id == Stats.id')
-    modernization = db.relationship('Resources', primaryjoin='Ship.modern_resources_id == Resources.id')
+    modernization = db.relationship('Stats', primaryjoin='Ship.modern_stats_id == Stats.id')
     remodel = db.relationship('Remodel', uselist=False)
 
     @staticmethod

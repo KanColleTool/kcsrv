@@ -56,94 +56,6 @@ class Admiral(db.Model):
         primaryjoin="and_(Admiral.id==Dock.admiral_id, Dock.type_== {})".format(DOCK_TYPE_REPAIR),
         order_by='Dock.number')
 
-    def get_questlist_ordered(self, exclude_hidden=True):
-        """
-        Here we get the quest list ordered by category and then by no.
-        This is important to make sure we always show Composition->Sortie->Exercise etc
-        """
-        query = db.session.query(AdmiralQuest, Quest).order_by(Quest.category, Quest.no).filter(
-            AdmiralQuest.quest_id == Quest.id, AdmiralQuest.admiral_id == self.id)
-        if exclude_hidden:
-            query = query.filter(AdmiralQuest.state != QUEST_STATE_HIDDEN)
-
-        return query.all()
-
-    def unlock_quest(self, quest_id):
-        db.session.add(AdmiralQuest(admiral=self, quest_id=quest_id))
-        db.session.commit()
-
-    def complete_quest(self, quest_id=None, admiral_quest=None):
-        if not admiral_quest:
-            query = self.quests.filter(quest_id=quest_id)
-            admiral_quest = query.first_or_404()
-            quest = admiral_quest.quest
-        else:
-            quest = admiral_quest.quest
-
-        # TODO: Fix this
-        # AdmiralHelper.admiral_grant_resources(admiral, quest.reward)
-
-        api_response = {'api_material': quest.reward.to_list(),
-                        "api_bounus_count": quest.bonuses.count(),
-                        "api_bounus": []}
-        for bonus in quest.bonuses.all():
-            """
-            TODO unlock Fleet, LSC, etc.
-            Also, I still can't get the effect announcing bonus items. They are added to Admiral's inventory,
-            but the bonus reward announcent doesn't show up.
-            """
-            api_bonus = {
-                "api_type": bonus.kind, "api_count": bonus.quantity
-            }
-            if bonus.kind == QUEST_REWARD_SHIP:
-                ship = bonus.ship
-                api_bonus["api_item"] = {
-                    "api_ship_id": ship.id, "api_name": ship.name, "api_getmes": ship.getmsg
-                }
-                self.add_kanmusu(ship, bonus.quantity)
-            elif bonus.kind == QUEST_REWARD_ITEM:
-                api_bonus["api_item"] = {
-                    "api_id": bonus.item_id, "api_name": ""
-                }
-                # TODO: Fix this
-                # AdmiralHelper.admiral_grant_item(admiral, bonus.item_id, bonus.quantity)
-            api_response["api_bounus"].append(api_bonus)
-
-        db.session.query(AdmiralQuest).filter(AdmiralQuest.id == admiral_quest.id).update(
-            {"state": QUEST_STATE_HIDDEN, "progress": QUEST_PROGRESS_0})
-        db.session.commit()
-
-        """Unlocking new quests"""
-        list_maybe_unlocked = db.session.query(QuestRequirement).filter(QuestRequirement.required_id == quest.id).all()
-        for maybe_unlocked in list_maybe_unlocked:
-            """maybe_unlocked -> requires quest just completed, so it may be unlocked"""
-            id_quest_maybe = maybe_unlocked.quest_id
-            quests_required = db.session.query(QuestRequirement).filter(QuestRequirement.quest_id == id_quest_maybe).all()
-            """quests_required -> all quests required to unlock maybe_unlocked"""
-            number_required = len(quests_required)
-            if number_required == 1:
-                """We just completed the one needed, so might as well save one query"""
-                self.unlock_quest(id_quest_maybe)
-                break
-            ids_required = [quest.required_id for quest in quests_required]
-            """
-            This basically checks if all quests_required have the state QUEST_STATE_HIDDEN.
-            If the quest is missing from the list or is not marked as hidden, then the quest can't be unlocked.
-            """
-            quest_count = db.session.query(AdmiralQuest).filter(AdmiralQuest.state == QUEST_STATE_HIDDEN,
-                AdmiralQuest.quest_id.in_(ids_required)).count()
-            if number_required == quest_count:
-                self.unlock_quest(quest_id)
-
-        return api_response
-
-    def activate_quest(self, quest_id):
-        self.quests.filter_by(quest_id=quest_id).update({"state": 2})
-        db.session.commit()
-
-    def deactivate_quest(self, quest_id):
-        self.quests.filter_by(quest_id=quest_id).update({"state":1})
-        db.session.commit()
 
     def create(self, user):
         """
@@ -213,8 +125,8 @@ class Admiral(db.Model):
             return ausable
         return None
 
-    def add_kanmusu(self, ship_id=None, ship_api_id=None, fleet_number=None, position=None):
-        kanmusu = Kanmusu().create(ship_id, ship_api_id)
+    def add_kanmusu(self, ship_id=None, ship_api_id=None,kanmusu=None, fleet_number=None, position=None):
+        kanmusu = kanmusu if kanmusu else Kanmusu().create(ship_id, ship_api_id)
         kanmusu.number = len(self.kanmusu) + 1
         if fleet_number:
             self.fleets[fleet_number - 1].kanmusu.append(kanmusu)

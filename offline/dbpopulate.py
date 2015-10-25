@@ -71,15 +71,32 @@ def ships():
         if old:
             continue
         s = Ship(# Misc ship stats
-            api_id=ship['api_id'], rarity=ship['api_backs'], name=ship['api_name'], number=ship['api_sortno'],
-            type_=ship['api_stype'], voicef=ship['api_voicef'], getmsg=ship['api_getmes'],
-            buildtime=ship['api_buildtime'], kai='改' in ship['api_name'],
-            dismantling=Resources(fuel=ship["api_broken"][0], ammo=ship["api_broken"][1], steel=ship["api_broken"][2],
-                baux=ship["api_broken"][3], ),
-            modernization=Resources(fuel=ship['api_powup'][0], ammo=ship['api_powup'][1], steel=ship['api_powup'][2],
-                baux=ship['api_powup'][3], ), # Remodel
-            remodel=Remodel(level=ship['api_afterlv'], remodel_api_id=ship['api_aftershipid'],
-                cost=Resources(fuel=ship['api_afterfuel'], ammo=ship['api_afterbull'])), # Minimums
+            api_id=ship['api_id'],
+            rarity=ship['api_backs'],
+            name=ship['api_name'],
+            number=ship['api_sortno'],
+            type_=ship['api_stype'],
+            voicef=ship['api_voicef'],
+            getmsg=ship['api_getmes'],
+            buildtime=ship['api_buildtime'],
+            kai='改' in ship['api_name'],
+            dismantling=Resources(
+                fuel=ship["api_broken"][0],
+                ammo=ship["api_broken"][1],
+                steel=ship["api_broken"][2],
+                baux=ship["api_broken"][3]),
+            modernization=Stats(
+                firepower=ship['api_powup'][0],
+                torpedo=ship['api_powup'][1],
+                antiair=ship['api_powup'][2],
+                armour=ship['api_powup'][3]),
+            remodel=Remodel(
+                level=ship['api_afterlv'],
+                ship_api_id=ship['api_aftershipid'],
+                cost=Resources(
+                    fuel=ship['api_afterfuel'],
+                    ammo=ship['api_afterbull'])),
+            # Minimums
             base_stats=Stats(luck=ship['api_luck'][0], firepower=ship['api_houg'][0], armour=ship['api_souk'][0],
                 torpedo=ship['api_raig'][0], antiair=ship['api_tyku'][0], antisub=0, los=0, evasion=0,
                 hp=ship['api_taik'][0], ammo=ship['api_bull_max'], fuel=ship['api_fuel_max']), # Maximums
