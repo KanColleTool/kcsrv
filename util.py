@@ -6,7 +6,6 @@ import random
 import string
 import time
 
-from flask import request, abort
 import constants
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -97,6 +96,7 @@ def pad(iterable, padding='.', length=7):
         count += 1
         yield padding
 
+
 def get_exp_required(level, current_exp):
     """
     Gets the exp required for the next level.
@@ -105,7 +105,6 @@ def get_exp_required(level, current_exp):
     """
     total = sum(constants.EXP_LEVEL[:level + 1])
     return total - current_exp
-
 
 
 # http://stackoverflow.com/questions/38987/how-can-i-merge-two-python-dictionaries-in-a-single-expression

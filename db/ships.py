@@ -112,7 +112,7 @@ class Kanmusu(db.Model):
         :param level: The level to attain.
         :param current_exp: Your current exp.
         """
-        total = sum(EXP_LEVEL[:EXP_LEVEL + 1])
+        total = sum(EXP_LEVEL[:self.level + 1])
         return total - self.experience
 
 
