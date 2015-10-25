@@ -30,3 +30,15 @@ def powerup():
     result = Kanmusu.get(id).modernize(id_items)
     db.session.commit()
     return svdata(refit.powerup(id,result))
+
+@api_game.route('/api_req_kaisou/remodeling', methods=['GET', 'POST'])
+# Remodeling
+def remodeling():
+    id = request.values.get("api_id")
+    Kanmusu.get(id).remodel() # If it only were that easy...
+    return svdata({})
+
+@api_game.route('/api_get_member/material', methods=['GET', 'POST'])
+# Remodeling
+def material():
+    return svdata(refit.material())

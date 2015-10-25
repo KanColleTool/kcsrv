@@ -28,6 +28,15 @@ class Resources(db.Model):
         self.ammo = self.fuel = self.steel = self.baux = None
         return self
 
+    def sub(self,target):
+        mapper = inspect(self)
+        for column in mapper.attrs:
+            current = getattr(self, column.key)
+            mod = getattr(target, column.key)
+            if column.key != "id" and current is not None and mod is not None:
+                setattr(self, column.key, current - mod)
+        return self
+
 
 class Stats(db.Model):
     __tablename__ = 'stats'

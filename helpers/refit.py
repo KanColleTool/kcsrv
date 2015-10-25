@@ -18,3 +18,6 @@ def powerup(kanmusu_id,result):
         "api_ship": api_ship,
         "api_deck": fleet_data
     }
+
+def material():
+    return data.material()

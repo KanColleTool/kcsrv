@@ -90,8 +90,13 @@ def ships():
                 torpedo=ship['api_powup'][1],
                 antiair=ship['api_powup'][2],
                 armour=ship['api_powup'][3]),
-            remodel=Remodel(level=ship['api_afterlv'], remodel_api_id=ship['api_aftershipid'],
-                cost=Resources(fuel=ship['api_afterfuel'], ammo=ship['api_afterbull'])), # Minimums
+            remodel=Remodel(
+                level=ship['api_afterlv'],
+                ship_api_id=ship['api_aftershipid'],
+                cost=Resources(
+                    fuel=ship['api_afterfuel'],
+                    ammo=ship['api_afterbull'])),
+            # Minimums
             base_stats=Stats(luck=ship['api_luck'][0], firepower=ship['api_houg'][0], armour=ship['api_souk'][0],
                 torpedo=ship['api_raig'][0], antiair=ship['api_tyku'][0], antisub=0, los=0, evasion=0,
                 hp=ship['api_taik'][0], ammo=ship['api_bull_max'], fuel=ship['api_fuel_max']), # Maximums

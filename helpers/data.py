@@ -2,7 +2,7 @@ import datetime
 import time
 
 from flask import g
-
+from constants import *
 from . import LevelHelper
 
 
@@ -110,3 +110,21 @@ def kdock():
 
 def rdock():
     return dock_data(g.admiral.docks_repair)
+
+def material():
+    admiral = g.admiral
+    response = []
+    resc = admiral.resources.to_list()
+    usables = [NAME_BUCKET, NAME_FLAME, NAME_MATERIAL, NAME_SCREW]
+    count = 1
+    for value in resc:
+        response.append({
+            "api_id": count, "api_value": value, "api_member_id": admiral.id
+        })
+        count += 1
+    for usable in usables:
+        response.append({
+            "api_id": count, "api_value": admiral.get_usable(usable).quantity, "api_member_id": admiral.id
+        })
+        count += 1
+    return response

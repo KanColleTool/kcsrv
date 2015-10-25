@@ -115,21 +115,7 @@ def port():
     # Fleets.
     response['api_deck_port'] = [data.fleet(fleet) for fleet in admiral.fleets]
     # Materials.
-    materials = []
-    resc = admiral.resources.to_list()
-    usables = [NAME_BUCKET, NAME_FLAME, NAME_MATERIAL, NAME_SCREW]
-    count = 1
-    for value in resc:
-        materials.append({
-            "api_id": count, "api_value": value, "api_member_id": admiral.id
-        })
-        count += 1
-    for usable in usables:
-        materials.append({
-            "api_id": count, "api_value": admiral.get_usable(usable).quantity, "api_member_id": admiral.id
-        })
-        count += 1
-    response['api_material'] = materials
+    response['api_material'] = data.material()
 
     response['api_ship'] = [data.kanmusu(kanmusu) for kanmusu in admiral.kanmusu if kanmusu.active]
 
