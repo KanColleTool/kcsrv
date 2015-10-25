@@ -1,5 +1,4 @@
 from . import db
-from helpers import LevelHelper
 
 class Kanmusu(db.Model):
     __tablename__ = 'kanmusu'
@@ -34,46 +33,6 @@ class Kanmusu(db.Model):
         self.current_hp = self.stats.hp
         self.equipments = [KanmusuEquipment(slot=i) for i in range(ship.maxslots)]
         return self
-
-    def kanmusu_data(self):
-        ship = self.ship
-
-        # AdmiralShip *must have* entries in AdmiralShipItem table, or we catbomb.
-        equips = [equip.admiral_equipment.id if equip.admiral_equipment_id else -1 for equip in self.equipments]
-
-        kanmusu_data = {
-            # This must match api_data2 or we get different Ships in the game and DB.
-            'api_id': self.number,
-            'api_ship_id': ship.api_id,
-            'api_onslot': [0, 0, 0, 0, 0],  # ?
-            'api_locked_equip': 0,
-            'api_bull': self.current_ammo,
-            'api_soukou': [self.stats.armour, ship.max_stats.armour],
-            'api_locked': self.locked, 'api_nowhp': self.current_hp,
-            'api_raisou': [self.stats.torpedo, ship.max_stats.torpedo],
-            'api_lv': self.level,
-            'api_slotnum': ship.maxslots,
-            'api_srate': 1,  # TODO: Implement stars
-            'api_cond': self.fatigue,
-            'api_kaihi': [self.stats.evasion, ship.max_stats.evasion],
-            'api_sortno': ship.number,
-            'api_fuel': self.current_fuel,
-            'api_taiku': [self.stats.antiair, ship.max_stats.antiair],
-            'api_leng': ship.max_stats.range_,
-            'api_taisen': [self.stats.antisub, ship.max_stats.antisub],  # Guesswork on exp part.
-            'api_exp': [self.experience, LevelHelper.get_exp_required(self.level, self.experience), 0],
-            'api_slot': equips,
-            'api_backs': ship.rarity,
-            'api_sally_area': 0,  # dunno
-            'api_ndock_item': [0, 0],  # TODO
-            'api_karyoku': [self.stats.firepower, ship.max_stats.firepower],
-            'api_maxhp': ship.base_stats.hp, #Ship "maxhp" is level 100HP, otherwise base is used.
-            'api_lucky': [self.stats.luck, ship.max_stats.luck],
-            'api_ndock_time': 0,
-            'api_kyouka': [0, 0, 0, 0, 0],
-            'api_sakuteki': [ship.base_stats.los, ship.max_stats.los]
-        }
-        return kanmusu_data
 
     @staticmethod
     def get(id):
