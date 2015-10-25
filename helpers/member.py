@@ -152,7 +152,6 @@ def dock_data(dock_list):
 def kdock():
     return dock_data(g.admiral.docks_craft)
 
-
 def rdock():
     return dock_data(g.admiral.docks_repair)
 

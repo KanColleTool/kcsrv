@@ -26,6 +26,7 @@ def furniture():
         'api_member_id': g.admiral.id, 'api_id': item.id, 'api_furniture_type': item.type, 'api_furniture_no': item.no, 'api_furniture_id': item.id
     } for item in []])
 
+
 @api_game.route('/api_get_member/slot_item', methods=['GET', 'POST'])
 def slot_item():
     return svdata(member.slot_info())
@@ -41,6 +42,10 @@ def useitem():
 def kdock():
     """Krafting docks."""
     return svdata(member.kdock())
+
+@api_game.route('/api_get_member/ndock', methods=['GET', 'POST'])
+def ndock():
+    return svdata(member.rdock())
 
 
 @api_game.route('/api_get_member/unsetslot', methods=['GET', 'POST'])
