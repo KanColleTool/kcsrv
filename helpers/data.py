@@ -11,7 +11,7 @@ def kanmusu(kanmusu):
 
     # AdmiralShip *must have* entries in AdmiralShipItem table, or we catbomb.
     equips = [equip.admiral_equipment.id if equip.admiral_equipment_id else -1 for equip in kanmusu.equipments]
-
+    modern_stats = kanmusu.modernized_stats
     kanmusu_data = {
         # This must match api_data2 or we get different Ships in the game and DB.
         'api_id': kanmusu.id, 'api_ship_id': ship.api_id,
@@ -40,7 +40,7 @@ def kanmusu(kanmusu):
         'api_maxhp': ship.base_stats.hp, #Ship "maxhp" is level 100HP, otherwise base is used.
         'api_lucky': [kanmusu.stats.luck, ship.max_stats.luck],
         'api_ndock_time': 0,
-        'api_kyouka': [0, 0, 0, 0, 0],
+        'api_kyouka': [modern_stats.firepower,modern_stats.torpedo,modern_stats.antiair,modern_stats.armour,modern_stats.luck],
         'api_sakuteki': [ship.base_stats.los, ship.max_stats.los]
     }
     return kanmusu_data

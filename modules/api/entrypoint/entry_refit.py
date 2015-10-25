@@ -17,6 +17,16 @@ def slotset():
 
 
 @api_game.route('/api_get_member/ship3', methods=['GET', 'POST'])
+# After item change
 def ship3():
     kanmusu_id = request.values.get('api_shipid')
     return svdata(refit.ship3(kanmusu_id))
+
+@api_game.route('/api_req_kaisou/powerup', methods=['GET', 'POST'])
+# Modernization
+def powerup():
+    id = request.values.get("api_id")
+    id_items = request.values.get("api_id_items").split(',') #How mean girls aren't items
+    result = Kanmusu.get(id).modernize(id_items)
+    db.session.commit()
+    return svdata(refit.powerup(id,result))
