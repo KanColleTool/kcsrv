@@ -75,6 +75,25 @@ class Stats(db.Model):
                 setattr(self, column.key, current + mod)
         return self
 
+    def diff(self,target):
+        """
+        :param target: A Stats object.
+        :return: A new Stat object containing the difference between self and target.
+        If target has a None column, the result value will be self column.
+        If self has a None column, the result value will be None.
+        """
+        result = Stats()
+        mapper = inspect(self)
+        for column in mapper.attrs:
+            op1 = getattr(self, column.key)
+            op2 = getattr(target, column.key)
+            if column.key != "id" and  op1 is not None:
+                if op2 is not None:
+                    setattr(result, column.key, op1 - op2)
+                else:
+                    setattr(result, column.key, op1)
+        return result
+
 class Recipe(db.Model):
     __tablename__ = 'recipe'
 

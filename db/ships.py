@@ -82,25 +82,20 @@ class Kanmusu(db.Model):
     def validate_stats(self):
         """
         Making sure all stats are within range.
-        We'll remove all gear, verify if they are less than max, adjust if needed, add all gear again.
-        This almost convinced me to make a base_stats for Kanmusu.
-        Almost.
+        Nevermind that we have modernized_stats!
+        If the modernized stat is bigger than the difference between max and base, we have to adjust.
         """
-        temp_equip = []
-        for n in range(self.ship.maxslots):
-            temp_equip.append(self.equipments[n].admiral_equipment_id)
-            self.equip(n,-1)
-        mapper = inspect(self.stats)
+        diff = self.ship.max_stats.diff(self.ship.base_stats)
+
+        mapper = inspect(diff)
         for column in mapper.attrs:
-            current_value = getattr(self.stats, column.key)
-            max_value = getattr(self.ship.max_stats, column.key)
-            if column.key != "id" and current_value is not None and max_value is not None:
-                if current_value > max_value:
-                    setattr(self.stats,column,max_value)
-        for n in range(self.ship.maxslots):
-            aequip_id = temp_equip[n] if temp_equip[n] else -1
-            self.equip(n,aequip_id)
-        #This is exactly my idea of efficient method that doesn't look redundant at all!
+            if column.key == "id": continue
+            modern_value = getattr(self.modernized_stats, column.key)
+            if modern_value is not None:
+                diff_value = getattr(diff, column.key)
+                if modern_value > diff_value:
+                    setattr(self.stats,column.key,getattr(self.ship.max_stats,column.key))
+                    setattr(self.modernized_stats,column.key,diff_value)
 
 class KanmusuEquipment(db.Model):
     __tablename__ = 'kanmusu_equipment'
