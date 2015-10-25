@@ -14,3 +14,6 @@ MAIL_SERVER = "smtp.example.com"
 MAIL_USE_SSL = True
 MAIL_USERNAME = "yourusername"
 MAIL_PASSWORD = "yourpassword"
+
+# Email to send from?
+SECURITY_EMAIL_SENDER = "noreply@localhost.localdomain"
