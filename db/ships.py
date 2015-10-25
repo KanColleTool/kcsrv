@@ -1,5 +1,5 @@
 from sqlalchemy import inspect
-
+from constants import *
 from . import db,Stats
 
 
@@ -103,6 +103,15 @@ class Kanmusu(db.Model):
         self.create(ship_api_id=self.ship.remodel.ship_api_id) #LITERALLY DAUGHTER OF HERSELF
         db.session.add(self.admiral)
         db.session.commit()
+
+    def get_exp_to_level(self):
+        """
+        Gets the exp missing for the next level.
+        :param level: The level to attain.
+        :param current_exp: Your current exp.
+        """
+        total = sum(EXP_LEVEL[:EXP_LEVEL + 1])
+        return total - self.experience
 
 class KanmusuEquipment(db.Model):
     __tablename__ = 'kanmusu_equipment'

@@ -52,17 +52,6 @@ def prepare_api_blueprint(bp):
     def api_403(e):
         return svdata(None, 100, errormsg="Not authorized")
 
-
-def get_token_admiral_or_error(api_token: str = None):
-    print("Dont use this anymore, dumbass! from init import admiral")
-    from helpers.AdmiralHelper import get_admiral_from_token
-
-
-    api_token = api_token if api_token is not None else request.values.get('api_token', None)
-    admiral = get_admiral_from_token(api_token)
-    return admiral if admiral else abort(403)
-
-
 def pack_resources(r: list) -> str:
     return ",".join([str(x) for x in r])
 

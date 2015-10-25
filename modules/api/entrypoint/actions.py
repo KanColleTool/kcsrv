@@ -1,10 +1,26 @@
-from flask import request
-
+from flask import request, g
 from util import svdata
-from helpers import refit
-from . import api_game
 from db import db,Kanmusu
+from . import api_game
+from helpers import actionsHelper
 
+
+""""" Game Start Begin """""
+
+@api_game.route('/api_port/port', methods=['GET', 'POST'])
+def port():
+    return svdata(actionsHelper.port())
+
+@api_game.route('/api_req_init/firstship', methods=['GET', 'POST'])
+# Kancolle literally doesn't care, as long as it gets something back
+def firstship():
+    shipid = request.values.get("api_ship_id")
+    g.admiral.add_kanmusu(ship_api_id=shipid, fleet_number=1, position=0)
+    return svdata({'api_result_msg': 'shitty api is shitty', 'api_result': 1})
+
+""""" Game Start End """""
+
+""""" Refit Begin """""
 
 @api_game.route('/api_req_kaisou/slotset', methods=['GET', 'POST'])
 # Change Item
@@ -25,7 +41,7 @@ def powerup():
     id_items = request.values.get("api_id_items").split(',') #How mean girls aren't items
     result = Kanmusu.get(id).modernize(id_items)
     db.session.commit()
-    return svdata(refit.powerup(id,result))
+    return svdata(actionsHelper.powerup(id,result))
 
 @api_game.route('/api_req_kaisou/remodeling', methods=['GET', 'POST'])
 # Remodeling
@@ -33,3 +49,5 @@ def remodeling():
     id = request.values.get("api_id")
     Kanmusu.get(id).remodel() # If it only were that easy...
     return svdata({})
+
+""""" Refit End """""
