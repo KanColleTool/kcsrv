@@ -1,5 +1,7 @@
 from sqlalchemy import inspect
+
 from constants import *
+
 from . import db,Stats
 
 
@@ -112,6 +114,7 @@ class Kanmusu(db.Model):
         """
         total = sum(EXP_LEVEL[:EXP_LEVEL + 1])
         return total - self.experience
+
 
 class KanmusuEquipment(db.Model):
     __tablename__ = 'kanmusu_equipment'

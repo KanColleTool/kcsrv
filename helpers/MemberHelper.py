@@ -5,7 +5,6 @@ from flask import g
 
 from db import db, Equipment, Kanmusu, KanmusuEquipment, AdmiralEquipment
 from constants import *
-import util
 
 
 def kanmusu(kanmusu):
@@ -33,13 +32,13 @@ def kanmusu(kanmusu):
         'api_taiku': [kanmusu.stats.antiair, ship.max_stats.antiair],
         'api_leng': ship.max_stats.range_,
         'api_taisen': [kanmusu.stats.antisub, ship.max_stats.antisub],  # Guesswork on exp part.
-        'api_exp': [kanmusu.experience, util.get_exp_required(kanmusu.level, kanmusu.experience), 0],
+        'api_exp': [kanmusu.experience, kanmusu.get_exp_to_level(), 0],
         'api_slot': equips,
         'api_backs': ship.rarity,
         'api_sally_area': 0,  # dunno
         'api_ndock_item': [0, 0],  # TODO
         'api_karyoku': [kanmusu.stats.firepower, ship.max_stats.firepower],
-        'api_maxhp': ship.base_stats.hp, #Ship "maxhp" is level 100HP, otherwise base is used.
+        'api_maxhp': ship.base_stats.hp,  # Ship "maxhp" is level 100HP, otherwise base is used.
         'api_lucky': [kanmusu.stats.luck, ship.max_stats.luck],
         'api_ndock_time': 0,
         'api_kyouka': [modern_stats.firepower,modern_stats.torpedo,modern_stats.antiair,modern_stats.armour,modern_stats.luck],
