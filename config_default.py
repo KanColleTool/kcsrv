@@ -3,10 +3,7 @@
 # Everything in here is overridden by config.py
 #
 
-
-
-# Default to a peer connection to a postgres database called "kcsrv"
-SQLALCHEMY_DATABASE_URI = 'postgresql://@/kcsrv'
+# Default to a peer connection to a postgres database called "kcsrv'
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # Require new users to confirm their email address

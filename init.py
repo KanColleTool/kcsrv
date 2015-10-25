@@ -20,6 +20,11 @@ def init(app):
     # --> Jinja2 Env Update
     app.jinja_env.globals.update(__builtins__=__builtins__)
 
+    # --> URI setup
+    app.config["SQLALCHEMY_DATABASE_URI"] = \
+        "postgresql://{}:{}@{}:{}/{}".format(app.config["DB_USERNAME"], app.config["DB_PASSWORD"],
+                app.config["DB_HOSTNAME"], app.config["DB_PORT"], app.config["DB_DATABASE"])
+
     # --> Extension setup
     db.init_app(app)
     admin.init_app(app)

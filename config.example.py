@@ -17,3 +17,14 @@ MAIL_PASSWORD = "yourpassword"
 
 # Email to send from?
 SECURITY_EMAIL_SENDER = "noreply@localhost.localdomain"
+
+# Database username.
+DB_USERNAME = "kcsrv"
+# Database password.
+DB_PASSWORD = "hunter2"
+# Database hostname.
+DB_HOSTNAME = "127.0.0.1"
+# Database port.
+DB_PORT = 5432
+# Database to use.
+DB_DATABASE = "kcsrv"
