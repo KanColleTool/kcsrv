@@ -1,7 +1,7 @@
 from flask import request
 
 from . import api_game
-from helpers import member, gamestart
+from helpers import memberHelper, actionsHelper
 from util import svdata
 
 
@@ -15,7 +15,7 @@ def get_incentive():
 @api_game.route('/api_get_member/basic', methods=['GET', 'POST'])
 def basic():
     """Basic admiral data."""
-    return svdata(member.basic())
+    return svdata(memberHelper.basic())
 
 
 @api_game.route('/api_get_member/furniture', methods=['GET', 'POST'])
@@ -29,19 +29,19 @@ def furniture():
 
 @api_game.route('/api_get_member/slot_item', methods=['GET', 'POST'])
 def slot_item():
-    return svdata(member.slot_info())
+    return svdata(memberHelper.slot_info())
 
 
 @api_game.route('/api_get_member/useitem', methods=['GET', 'POST'])
 def useitem():
     # TODO: Implement this properly
-    return svdata(member.useitem())
+    return svdata(memberHelper.useitem())
 
 
 @api_game.route('/api_get_member/kdock', methods=['GET', 'POST'])
 def kdock():
     """Krafting docks."""
-    return svdata(member.kdock())
+    return svdata(memberHelper.kdock())
 
 @api_game.route('/api_get_member/ndock', methods=['GET', 'POST'])
 def ndock():
@@ -50,7 +50,7 @@ def ndock():
 
 @api_game.route('/api_get_member/unsetslot', methods=['GET', 'POST'])
 def unsetslot():
-    return svdata(member.unsetslot())
+    return svdata(memberHelper.unsetslot())
 
 
 @api_game.route('/api_get_member/ship2', methods=['GET', 'POST'])
@@ -62,16 +62,11 @@ def ship2():
 
 @api_game.route('/api_get_member/material', methods=['GET', 'POST'])
 def material():
-    return svdata(member.material())
+    return svdata(memberHelper.material())
 
 
 @api_game.route('/api_get_member/ship3', methods=['GET', 'POST'])
 # After item change
 def ship3():
     kanmusu_id = request.values.get('api_shipid')
-    return svdata(member.ship3(kanmusu_id))
-
-
-@api_game.route('/api_port/port', methods=['GET', 'POST'])
-def port():
-    return svdata(gamestart.port())
+    return svdata(memberHelper.ship3(kanmusu_id))

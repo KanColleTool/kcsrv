@@ -7,7 +7,7 @@ import string
 import time
 
 from flask import request, abort
-
+import constants
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -51,17 +51,6 @@ def prepare_api_blueprint(bp):
     @bp.errorhandler(403)
     def api_403(e):
         return svdata(None, 100, errormsg="Not authorized")
-
-
-def get_token_admiral_or_error(api_token: str = None):
-    print("Dont use this anymore, dumbass! from init import admiral")
-    from helpers.AdmiralHelper import get_admiral_from_token
-
-
-    api_token = api_token if api_token is not None else request.values.get('api_token', None)
-    admiral = get_admiral_from_token(api_token)
-    return admiral if admiral else abort(403)
-
 
 def pack_resources(r: list) -> str:
     return ",".join([str(x) for x in r])
@@ -107,6 +96,16 @@ def pad(iterable, padding='.', length=7):
     while count < length - 1:
         count += 1
         yield padding
+
+def get_exp_required(level, current_exp):
+    """
+    Gets the exp required for the next level.
+    :param level: The level to attain.
+    :param current_exp: Your current exp.
+    """
+    total = sum(constants.EXP_LEVEL[:level + 1])
+    return total - current_exp
+
 
 
 # http://stackoverflow.com/questions/38987/how-can-i-merge-two-python-dictionaries-in-a-single-expression
