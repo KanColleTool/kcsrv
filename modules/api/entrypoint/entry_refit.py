@@ -13,14 +13,8 @@ def slotset():
 
     Kanmusu.get(id).equip(admiral_equip_id=equip_id,slot=slot)
     db.session.commit()
-    return svdata({'api_result_msg': 'ok', 'api_result': 1})
+    return svdata({})
 
-
-@api_game.route('/api_get_member/ship3', methods=['GET', 'POST'])
-# After item change
-def ship3():
-    kanmusu_id = request.values.get('api_shipid')
-    return svdata(refit.ship3(kanmusu_id))
 
 @api_game.route('/api_req_kaisou/powerup', methods=['GET', 'POST'])
 # Modernization
@@ -37,8 +31,3 @@ def remodeling():
     id = request.values.get("api_id")
     Kanmusu.get(id).remodel() # If it only were that easy...
     return svdata({})
-
-@api_game.route('/api_get_member/material', methods=['GET', 'POST'])
-# Remodeling
-def material():
-    return svdata(refit.material())
