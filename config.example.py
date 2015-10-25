@@ -7,3 +7,10 @@
 
 # Put your password salt here
 # SECURITY_PASSWORD_SALT = ""
+
+# Fill in email server details here.
+MAIL_SERVER = "smtp.example.com"
+# MAIL_PORT = 465
+MAIL_USE_SSL = True
+MAIL_USERNAME = "yourusername"
+MAIL_PASSWORD = "yourpassword"

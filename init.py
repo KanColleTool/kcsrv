@@ -2,6 +2,7 @@ from flask import render_template, send_from_directory, request, abort, g
 from flask.ext.login import user_logged_in
 from flask.ext.migrate import Migrate
 from flask.ext.security import Security, SQLAlchemyUserDatastore
+from flask_mail import Mail
 
 from admin import admin
 from db import User, Role, Admiral
@@ -22,6 +23,10 @@ def init(app):
     # --> Extension setup
     db.init_app(app)
     admin.init_app(app)
+    mail = Mail()
+    mail.init_app(app)
+
+
 
     modules["migrate"] = Migrate(app, db)
 
@@ -40,9 +45,10 @@ def init(app):
     app.register_blueprint(api_core, url_prefix='/kcsapi')
 
     # Declare API v1 blueprints.
-    #from modules.api.v1.user import api_user
-    #from modules.api.v1.actions import api_actions
+    # from modules.api.v1.user import api_user
+    # from modules.api.v1.actions import api_actions
     from modules.api.entrypoint import api_game
+
     @api_game.before_request
     def admiral_load():
         # TODO learn how to do this properly
@@ -56,8 +62,8 @@ def init(app):
         g.admiral = user.admiral if user.admiral else Admiral().create(user)
 
     app.register_blueprint(api_game, url_prefix='/kcsapi')
-    #app.register_blueprint(api_user, url_prefix='/kcsapi')
-    #app.register_blueprint(api_actions, url_prefix='/kcsapi')
+    # app.register_blueprint(api_user, url_prefix='/kcsapi')
+    # app.register_blueprint(api_actions, url_prefix='/kcsapi')
 
     """
     # Declare API v2 blueprints.
@@ -70,8 +76,7 @@ def init(app):
 
     app.register_blueprint(resources, url_prefix='/kcs')
 
-
-    # --> Base application routes
+  # --> Base application routes
     @app.route('/')
     def index():
         return render_template('index.html')
