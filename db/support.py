@@ -28,7 +28,7 @@ class Resources(db.Model):
         self.ammo = self.fuel = self.steel = self.baux = None
         return self
 
-    def sub(self,target):
+    def sub(self, target):
         mapper = inspect(self)
         for column in mapper.attrs:
             current = getattr(self, column.key)
@@ -66,7 +66,7 @@ class Stats(db.Model):
                 setattr(target, column.key, getattr(self, column.key))
         return target
 
-    def sub(self,target):
+    def sub(self, target):
         mapper = inspect(self)
         for column in mapper.attrs:
             current = getattr(self, column.key)
@@ -75,16 +75,16 @@ class Stats(db.Model):
                 setattr(self, column.key, current - mod)
         return self
 
-    def add(self,target):
+    def add(self, target):
         mapper = inspect(self)
         for column in mapper.attrs:
             current = getattr(self, column.key)
             mod = getattr(target, column.key)
-            if column.key != "id" and  current is not None and mod is not None:
+            if column.key != "id" and current is not None and mod is not None:
                 setattr(self, column.key, current + mod)
         return self
 
-    def diff(self,target):
+    def diff(self, target):
         """
         :param target: A Stats object.
         :return: A new Stat object containing the difference between self and target.
@@ -96,12 +96,13 @@ class Stats(db.Model):
         for column in mapper.attrs:
             op1 = getattr(self, column.key)
             op2 = getattr(target, column.key)
-            if column.key != "id" and  op1 is not None:
+            if column.key != "id" and op1 is not None:
                 if op2 is not None:
                     setattr(result, column.key, op1 - op2)
                 else:
                     setattr(result, column.key, op1)
         return result
+
 
 class Recipe(db.Model):
     __tablename__ = 'recipe'
@@ -112,5 +113,7 @@ class Recipe(db.Model):
     min_resources_id = db.Column(db.ForeignKey('resources.id'), index=True)
     max_resources_id = db.Column(db.ForeignKey('resources.id'), index=True)
 
-    max_resources = db.relationship('Resources', primaryjoin='Recipe.max_resources_id == Resources.id')
-    min_resources = db.relationship('Resources', primaryjoin='Recipe.min_resources_id == Resources.id')
+    ship = db.relationship('Ship', lazy='dynamic')
+
+    max_resources = db.relationship('Resources', primaryjoin='Recipe.max_resources_id == Resources.id', lazy='dynamic')
+    min_resources = db.relationship('Resources', primaryjoin='Recipe.min_resources_id == Resources.id', lazy='dynamic')

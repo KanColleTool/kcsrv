@@ -55,7 +55,6 @@ class Admiral(db.Model):
         primaryjoin="and_(Admiral.id==Dock.admiral_id, Dock.type_== {})".format(DOCK_TYPE_REPAIR),
         order_by='Dock.number')
 
-
     def create(self, user):
         """
         Create a new Admiral.

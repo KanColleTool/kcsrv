@@ -7,7 +7,7 @@ from db import db, Equipment, Kanmusu, KanmusuEquipment, AdmiralEquipment
 from constants import *
 
 
-def kanmusu(kanmusu):
+def kanmusu(kanmusu: Kanmusu):
     ship = kanmusu.ship
 
     # AdmiralShip *must have* entries in AdmiralShipItem table, or we catbomb.
@@ -66,6 +66,7 @@ def fleet(fleet):
         "api_mission": [0, 0, 0, 0]
     }
 
+
 def basic():
     """
     Gets the basic info for the admiral.
@@ -110,11 +111,12 @@ def basic():
         'api_pvp': [0, 0]
     }
 
-def dock_data(dock_list):
+
+def dock_data(dock_list, fill=True):
     admiral = g.admiral
     response = []
     count = len(dock_list)
-    """ Append admiral dock data """
+    # Append admiral dock data
     for n in range(count):
         dock = dock_list[n]
         response.append({
@@ -132,27 +134,30 @@ def dock_data(dock_list):
             'api_item3': dock.resources.steel, 'api_item4': dock.resources.baux,
             'api_item5': None})
 
-    """ Fill the rest with empty dock data """
-    while count < 4:
-        response.append({
-            'api_member_id': admiral.id,
-            'api_id': count + 1,
-            'api_state': -1,
-            'api_created_ship_id': 0,
-            'api_complete_time': 0,
-            'api_complete_time_str': "",
-            'api_item1': 0, 'api_item2': 0, 'api_item3': 0,
-            'api_item4': 0, 'api_item5': 0
-        })
-        count += 1
+    # Fill the rest with empty dock data
+    if fill:
+        while count < 4:
+            response.append({
+                'api_member_id': admiral.id,
+                'api_id': count + 1,
+                'api_state': -1,
+                'api_created_ship_id': 0,
+                'api_complete_time': 0,
+                'api_complete_time_str': "",
+                'api_item1': 0, 'api_item2': 0, 'api_item3': 0,
+                'api_item4': 0, 'api_item5': 0
+            })
+            count += 1
     return response
 
 
 def kdock():
     return dock_data(g.admiral.docks_craft)
 
+
 def rdock():
     return dock_data(g.admiral.docks_repair)
+
 
 def material():
     admiral = g.admiral
@@ -189,6 +194,7 @@ def useitem():
             ausable.usable.description2], 'api_price': ausable.usable.price, 'api_count': ausable.quantity
     } for ausable in g.admiral.usables]
 
+
 def unsetslot():
     """
     Listing all not equipped Equips.
@@ -211,6 +217,7 @@ def unsetslot():
     for equip in equiplist:
         response["api_slottype1"].append(equip.id)
     return response
+
 
 def ship3(kanmusu_id):
     fleet_data = [fleet(f) for f in g.admiral.fleets]

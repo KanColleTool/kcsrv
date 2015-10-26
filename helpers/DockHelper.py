@@ -9,14 +9,21 @@ import util
 """
 
 # from db import db,Dock
+import datetime
+import random
+
+from flask import g
+
+import util
+from db import Recipe, Dock, Kanmusu, db
+from . import MemberHelper
 
 
-"""
 def get_ship_from_recipe(fuel: int=30, ammo: int=30, steel: int=30, baux: int=30) -> int:
-    ships = Recipe.query.filter((Recipe.minfuel >= fuel) & (Recipe.maxfuel <= fuel)) \
-        .filter((Recipe.minammo >= ammo) & (Recipe.maxammo <= ammo)) \
-        .filter((Recipe.minsteel >= steel) & (Recipe.maxsteel <= steel)) \
-        .filter((Recipe.minbaux >= baux) & (Recipe.maxsteel <= baux))
+    ships = Recipe.query.filter((Recipe.min_resources.fuel >= fuel) & (Recipe.max_resources.fuel <= fuel)) \
+        .filter((Recipe.min_resources.ammo >= ammo) & (Recipe.max_resources.ammo <= ammo)) \
+        .filter((Recipe.min_resources.steel >= steel) & (Recipe.max_resources.steel <= steel)) \
+        .filter((Recipe.min_resources.baux >= baux) & (Recipe.max_resources.baux <= baux))
 
     ship_choices = [[x.id] * x.chance for x in ships]
     ship_choices = [item for sublist in ship_choices for item in sublist]
@@ -24,7 +31,7 @@ def get_ship_from_recipe(fuel: int=30, ammo: int=30, steel: int=30, baux: int=30
 
 
 def update_dock(dock: Dock, fuel: int=None, ammo: int=None, steel: int=None, baux: int=None,
-                ship: AdmiralShip=None, build=True):
+                ship: Kanmusu=None, build=True):
     
     dock.fuel = fuel
     dock.ammo = ammo
@@ -50,48 +57,50 @@ def update_dock(dock: Dock, fuel: int=None, ammo: int=None, steel: int=None, bau
     return dock
 
 
-def get_and_remove_ship(dockid: int, build=True):    
-    admiral = util.get_token_admiral_or_error()
+def get_and_remove_ship_kdock(dockid: int):
+    admiral = g.admiral
     try:
-        dock = admiral.docks.all()[dockid]
+        dock = admiral.docks_craft.all()[dockid]
     except IndexError:
         return None
 
-    dock.fuel, dock.ammo, dock.steel, dock.baux, dock.cmats = 0, 0, 0, 0, 0
+    dock.resources.fuel, dock.resources.ammo, \
+    dock.resources.steel, dock.resources.baux = 0, 0, 0, 0
 
-    dock.ship.active = True
-    if not build:
-        dock.ship.current_hp = dock.ship.ship.hp_base if not dock.ship.ship.kai else dock.ship.ship.maxhp
-    db.db.session.add(dock.ship)
+    dock.kanmusu.active = True
+
+    db.session.add(dock.ship)
     api_data = {
         "api_ship_id": dock.ship.ship.id,
-        "api_kdock": generate_dock_data(admiral_obj=admiral)['cdock' if build else 'rdock'],
-        "api_id": dock.ship.local_ship_num,
-        "api_slotitem": [],
-        "api_ship": ShipHelper.generate_api_data(admiralid=admiral.id, original_ship=dock.ship)
+        "api_kdock": MemberHelper.dock_data([dock], False),
+        "api_id": dock.kanmusu.number,
+        "api_slotitem": [], # TODO: Equipment!
+        "api_ship": MemberHelper.kanmusu(kanmusu=dock.kanmusu)
     }
-    dock.ship = None
+    # Update dock data.
+    dock.kanmusu = None
     dock.complete = None
-    db.db.session.add(dock)
-    db.db.session.commit()
+    db.session.add(dock)
+    db.session.commit()
     return api_data
 
 
-def craft_ship(fuel: int, ammo: int, steel: int, baux: int, admiral: Admiral, dockid: int):   
+def craft_ship(fuel: int, ammo: int, steel: int, baux: int, dockid: int):
+    admiral = g.admiral
     ship = get_ship_from_recipe(fuel, ammo, steel, baux)
-    nship = ShipHelper.generate_new_ship(ship, active=False)
+    nship = Kanmusu().create(ship_api_id=ship)
     nship.local_ship_num = len(admiral.admiral_ships.all())
 
     # Change dock data.
-    dockid = admiral.docks.all()[dockid]
-    dockid = update_dock(dockid, fuel, ammo, steel, baux, nship)
+    dock = admiral.docks.all()[dockid]
+    dock = update_dock(dock, fuel, ammo, steel, baux, nship)
     db.db.session.add(dockid)
     db.db.session.commit()
     admiral.admiral_ships.append(nship)
     db.db.session.add(admiral)
     api_data = {
         "api_ship_id": ship,
-        "api_kdock": generate_dock_data(admiral_obj=admiral)['cdock'],
+        "api_kdock": MemberHelper.dock_data([dock], False),
         "api_id": nship.local_ship_num,
         "api_slotitem": [],
         "api_ship": ShipHelper.generate_api_data(admiralid=admiral.id, original_ship=nship)
@@ -99,7 +108,7 @@ def craft_ship(fuel: int, ammo: int, steel: int, baux: int, admiral: Admiral, do
     db.db.session.commit()
     return api_data
 
-
+"""
 def generate_dock_data(admiral_obj: Admiral=None, admiralid: int=None) -> dict:
 
     # TODO: Refactor and make this nicer.

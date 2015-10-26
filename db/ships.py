@@ -1,7 +1,6 @@
 from sqlalchemy import inspect
 
 from constants import *
-
 from . import db,Stats
 
 
@@ -155,6 +154,7 @@ class Ship(db.Model):
     buildtime = db.Column(db.Integer)
     maxslots = db.Column(db.Integer)
     maxplanes = db.Column(db.String)
+    repairtime = db.Column(db.Integer)
 
     max_stats_id = db.Column(db.ForeignKey('stats.id'), index=True)
     base_stats_id = db.Column(db.ForeignKey('stats.id'), index=True)

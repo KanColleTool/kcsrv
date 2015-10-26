@@ -1,4 +1,4 @@
-from flask import request
+from flask import request, g
 
 from . import api_game
 from helpers import MemberHelper
