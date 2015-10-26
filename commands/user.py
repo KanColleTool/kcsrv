@@ -3,7 +3,8 @@ import datetime
 from flask.ext.script import Manager, prompt_pass, prompt_bool
 from flask.ext.security.utils import encrypt_password
 
-from db import *
+from db import db, User, Role
+
 
 manager = Manager(usage="Manage users")
 
@@ -21,15 +22,9 @@ def create(nickname, email):
 
     roles = input("Roles (separated by space): ").split(' ')
 
-
     if prompt_bool("Create this user?"):
-        user = User(active=True,
-                    email=email,
-                    password=encrypt_password(password),
-                    confirmed_at=datetime.datetime.now(),
-                    nickname=nickname,
-                    roles=[Role.query.filter_by(name=role).first_or_404() for role in roles if role != '']
-                    )
+        user = User(active=True, email=email, password=encrypt_password(password), confirmed_at=datetime.datetime.now(),
+            nickname=nickname, roles=[Role.query.filter_by(name=role).first_or_404() for role in roles if role != ''])
         db.session.add(user)
         db.session.commit()
 

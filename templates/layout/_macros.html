@@ -1,25 +1,27 @@
 {% macro form_print_field(field) %}{{ form_print_fields([field], **kwargs) }}{% endmacro %}
 {% macro form_print_fields(fields) %}
-		{% for field in fields -%}
-		{% if field.errors %}<div class="has-error">{% endif %}
-		{{ field(class="form-control", **kwargs) }}
-		{%- if field.errors %}</div>{% endif -%}
-		{% endfor %}
+    {% for field in fields -%}
+        {% if field.errors %}
+            <div class="has-error">{% endif %}
+    {{ field(class="form-control", **kwargs) }}
+    {%- if field.errors %}</div>{% endif -%}
+    {% endfor %}
 {% endmacro %}
 {% macro hform_print_label(field) -%}
-		{{ field.label(class="col-sm-2 control-label", **kwargs) }}
+    {{ field.label(class="col-sm-2 control-label", **kwargs) }}
 {%- endmacro %}
 {% macro hform_print_field(field) %}{{ hform_print_fields([field], **kwargs) }}{% endmacro %}
 {% macro hform_print_fields(fields, helptext='') %}
-		<div class="col-sm-10">
-			{{ form_print_fields(fields, **kwargs) }}
-			{% if helptext %}<p class="help-block">{{ helptext }}</p>{% endif %}
-		</div>
+    <div class="col-sm-10">
+        {{ form_print_fields(fields, **kwargs) }}
+        {% if helptext %}<p class="help-block">{{ helptext }}</p>{% endif %}
+    </div>
 {% endmacro %}
-{% macro hform_group(label, field, helptext='') %}{{ hform_group_multi(label, [field], helptext, **kwargs) }}{% endmacro %}
+{% macro hform_group(label, field, helptext='') %}
+    {{ hform_group_multi(label, [field], helptext, **kwargs) }}{% endmacro %}
 {% macro hform_group_multi(label, fields, helptext='') %}
-	<div class="form-group">
-		{{ hform_print_label(fields[0], text=label) }}
-		{{ hform_print_fields(fields, helptext=helptext, **kwargs) }}
-	</div>
+    <div class="form-group">
+        {{ hform_print_label(fields[0], text=label) }}
+        {{ hform_print_fields(fields, helptext=helptext, **kwargs) }}
+    </div>
 {% endmacro %}

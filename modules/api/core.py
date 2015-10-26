@@ -1,5 +1,7 @@
 from flask import Blueprint, g
+
 from util import *
+
 
 api_core = Blueprint('api_core', __name__)
 prepare_api_blueprint(api_core)

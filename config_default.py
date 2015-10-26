@@ -3,10 +3,8 @@
 # Everything in here is overridden by config.py
 #
 
-
-
-# Default to a peer connection to a postgres database called "kcsrv"
-SQLALCHEMY_DATABASE_URI = 'postgresql://@/kcsrv'
+# Default to a peer connection to a postgres database called "kcsrv'
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 # Require new users to confirm their email address
 SECURITY_CONFIRMABLE = True
@@ -23,4 +21,3 @@ SECURITY_REGISTER_URL = '/create'
 SECURITY_RESET_URL = '/forgot'
 
 SECURITY_PASSWORD_HASH = "bcrypt"
-

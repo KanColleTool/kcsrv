@@ -4,6 +4,7 @@ from flask import Flask
 
 import init
 
+
 app = Flask(__name__)
 
 if not os.path.exists('./config.py'):

@@ -1,28 +1,17 @@
-import os
-import string
-import random
 import datetime
-import time
 import json
 import math
+import os
+import random
+import string
+import time
 
-from flask import request, abort
-
-from helpers import AdmiralGenerator
-import db
+import constants
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
-def generate_api_token() -> str:
-    """
-    Generate a random API token.
-    :return: A 40 character hexadecimal string.
-    """
-    return ''.join(random.choice(string.hexdigits) for _ in range(40)).lower()
-
-
-def svdata(obj: object, code: int=1, message: str="成功", errormsg: str="Invalid API request.") -> tuple:
+def svdata(obj: object, code: int = 1, message: str = "成功", errormsg: str = "Invalid API request.") -> tuple:
     """
     Converts a json-serializable object into the KanColle APIv1 format response.
     :param obj: The object to convert.
@@ -34,15 +23,11 @@ def svdata(obj: object, code: int=1, message: str="成功", errormsg: str="Inval
     """
     if obj is None:
         res = {
-            "api_result": 201,
-            "api_result_msg": errormsg,
-            "api_data": obj
+            "api_result": 201, "api_result_msg": errormsg, "api_data": obj
         }
     else:
         res = {
-            "api_result": code,
-            "api_result_msg": message,
-            "api_data": obj
+            "api_result": code, "api_result_msg": message, "api_data": obj
         }
     # Yay arbitary formats.
     return "svdata=" + json.dumps(res, separators=(',', ':')), 200, {"Content-Type": "text/plain"}
@@ -66,106 +51,15 @@ def prepare_api_blueprint(bp):
     def api_403(e):
         return svdata(None, 100, errormsg="Not authorized")
 
-
-def get_token_admiral_or_error(api_token: str=None):
-    """
-    Grabs an admiral object from the specified API token, or creates a new one if possible.
-    :param api_token: Optional: The API token to use. If this is not specified, it uses the token from the POST request.
-    :return: A valid admiral object.
-    """
-
-    # Get the API token.
-    if api_token is None:
-        api_token = request.values.get('api_token', None)
-    if api_token is None:
-        abort(403)
-
-    # TODO: Optimize out some querying here
-    user = db.User.query.filter_by(api_token=api_token).first()
-    if not user:
-        abort(403)
-    # Create a new admiral object if it doesn't exist.
-    if not user.admiral:
-        adm = AdmiralGenerator.new_admiral()
-        user.admiral = adm
-        db.db.session.add(user)
-        db.db.session.commit()
-
-    # Do resource creating here, rather than elsewhere.
-    last = user.admiral.lastaction
-
-    if last is None:
-        last = datetime.datetime.utcnow()
-
-    now = datetime.datetime.utcnow()
-
-    # convert to unix timestamp
-    d1_ts = time.mktime(now.timetuple())
-    d2_ts = time.mktime(last.timetuple())
-
-
-    minutes = math.floor(int(d1_ts-d2_ts) / 60)
-
-    resources = extract_resources(user.admiral.resources)
-
-    if minutes != 0:
-        for n, val in enumerate(resources):
-            if n >= 4:
-                break
-            resources[n] += (3 * minutes) if n != 3 else minutes
-
-        user.admiral.resources = pack_resources(resources)
-        user.admiral.lastaction = datetime.datetime.utcnow()
-
-        db.db.session.add(user)
-        db.db.session.commit()
-
-    return user.admiral
-
 def pack_resources(r: list) -> str:
     return ",".join([str(x) for x in r])
+
 
 def extract_resources(r: str) -> list:
     return list(map(int, (x for x in r.split(','))))
 
-def get_admiral_v2(api_token: str):
-    """
-    Grabs an admiral object from the specified API token, or creates a new one if possible, for APIv2.
-    :param api_token: The API token to use. Not optional.
-    :return: A valid admiral object, or None if the token is not valid.
-    """
-    user = db.User.query.filter_by(api_token=api_token).first()
-    if not user:
-        return None
-    if not user.admiral:
-        adm = db.Admiral()
-        user.admiral = adm
-        db.db.session.add(user)
-        db.db.session.commit()
-    return user.admiral
 
-def get_admiral_v2_from_id_or_token(search: object):
-    """
-    Grabs an admiral object from the specified API token or ID, or creates a new one if possible, for APIv2.
-    :param search: The id or token to search.
-    :return: A valid admiral object, or None if the token/id is not valid.
-    """
-    if len(search) == 40:
-        user = db.User.query.filter_by(api_token=search).first()
-    elif search:
-        user = db.User.query.filter_by(id=search).first()
-    else:
-        return None
-    if not user:
-        return None
-    if not user.admiral:
-        adm = db.Admiral()
-        user.admiral = adm
-        db.db.session.add(user)
-        db.db.session.commit()
-    return user.admiral
-
-def millisecond_timestamp(ts: datetime.datetime=datetime.datetime.now()) -> int:
+def millisecond_timestamp(ts: datetime.datetime = datetime.datetime.now()) -> int:
     """
     Converts a timestamp into a millisecond timestamp.
     :param ts: Optional: The timestamp to use. Defaults to the current timestamp.
@@ -202,9 +96,28 @@ def pad(iterable, padding='.', length=7):
         count += 1
         yield padding
 
+
+def get_exp_required(level, current_exp):
+    """
+    Gets the exp required for the next level.
+    :param level: The level to attain.
+    :param current_exp: Your current exp.
+    """
+    total = sum(constants.EXP_LEVEL[:level + 1])
+    return total - current_exp
+
+
 # http://stackoverflow.com/questions/38987/how-can-i-merge-two-python-dictionaries-in-a-single-expression
 def merge_two_dicts(x, y):
     """Given two dicts, merge them into a new dict as a shallow copy."""
     z = x.copy()
     z.update(y)
     return z
+
+
+def generate_api_token():
+    """
+    Generate a random API token.
+    :return: A 40 character hexadecimal string.
+    """
+    return ''.join(random.choice(string.hexdigits) for _ in range(40)).lower()

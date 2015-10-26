@@ -1,6 +1,7 @@
-from flask import Blueprint, request, url_for, render_template
+from flask import Blueprint, render_template
 from flask import redirect
-from flask.ext.security import current_user, AnonymousUser
+from flask.ext.security import current_user
+
 
 play = Blueprint('play', __name__, template_folder='templates')
 

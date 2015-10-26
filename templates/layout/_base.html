@@ -1,38 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="utf-8" />
-	<title>Kan'tColle</title>
-	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
-	<link href="//cdn.jsdelivr.net/bootstrap.material-design/0.3.0/css/material-fullpalette.min.css" rel="stylesheet">
-	<link href="//cdn.jsdelivr.net/bootstrap.material-design/0.3.0/css/ripples.min.css" rel="stylesheet">
-	<link href="//cdn.jsdelivr.net/bootstrap.material-design/0.3.0/css/roboto.min.css" rel="stylesheet">
-	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <meta charset="utf-8"/>
+    <title>Kan'tColle</title>
+    <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//cdn.jsdelivr.net/bootstrap.material-design/0.3.0/css/material-fullpalette.min.css" rel="stylesheet">
+    <link href="//cdn.jsdelivr.net/bootstrap.material-design/0.3.0/css/ripples.min.css" rel="stylesheet">
+    <link href="//cdn.jsdelivr.net/bootstrap.material-design/0.3.0/css/roboto.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}"/>
 </head>
 <body>
 
-	{% block navbar %}{% endblock %}
+{% block navbar %}{% endblock %}
 
-	<div class="container">
-		{% if page_title %}
-		<div class="page-header">
-			<h1>{{ page_title|safe }}</h1>
-		</div>
-		{% endif %}
-		{% block content %}
-		<h1>Oops!</h1>
-		<p>Looks like someone forgot to override the <code>content</code> block on this page.</p>
-		{% endblock %}
-	</div>
+<div class="container">
+    {% if page_title %}
+        <div class="page-header">
+            <h1>{{ page_title|safe }}</h1>
+        </div>
+    {% endif %}
+    {% block content %}
+        <h1>Oops!</h1>
+        <p>Looks like someone forgot to override the <code>content</code> block on this page.</p>
+    {% endblock %}
+</div>
 
-	<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-	<script src="//cdn.jsdelivr.net/bootstrap.material-design/0.3.0/js/material.min.js"></script>
-	<script src="//cdn.jsdelivr.net/bootstrap.material-design/0.3.0/js/ripples.min.js"></script>
-	<script>
-		  $.material.init();
-	</script>
-	<script type="text/javascript" src="{{ url_for('static', filename='script.js') }}"></script>
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="//cdn.jsdelivr.net/bootstrap.material-design/0.3.0/js/material.min.js"></script>
+<script src="//cdn.jsdelivr.net/bootstrap.material-design/0.3.0/js/ripples.min.js"></script>
+<script>
+    $.material.init();
+</script>
+<script type="text/javascript" src="{{ url_for('static', filename='script.js') }}"></script>
 
 </body>
 </html>

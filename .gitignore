@@ -4,12 +4,17 @@
 /local
 /.vagrant
 
+
 *.sublime-workspace
+*.sublime-project
 *.pyc
 *.db
 
 /config.py
 /data/_*.json
+/venv
+/.idea
+/temp
 
 # Don't include the static files from kcs directory.
 /kcs

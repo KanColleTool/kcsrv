@@ -31,11 +31,11 @@ def get_standard_swf():
     print("NOTE: This may take a while, so grab a tea, coffee or a drink.")
     # These arrays will need to be updated with extra SWF filenames.
     core_swf_files = ["Core.swf", "mainD2.swf", "PortMain.swf"]  # Core game files. Wrappers?
-    resource_swf_files = ["commonAssets.swf", "font.swf", "icons.swf", "sound_bgm.swf",
-                          "sound_se.swf", "itemicons.swf"]  # Core game resources
+    resource_swf_files = ["commonAssets.swf", "font.swf", "icons.swf", "sound_bgm.swf", "sound_se.swf",
+        "itemicons.swf"]  # Core game resources
     scene_swf_files = ["AlbumMain.swf", "ArsenalMain.swf", "DutyMain.swf", "InteriorMain.swf", "ItemlistMain.swf",
-                       "OrganizeMain.swf", "RecordMain.swf", "RemodelMain.swf", "RepairMain.swf", "SallyMain.swf",
-                       "SupplyMain.swf", "TitleMain.swf", "tutorial.swf"]  # All the scenes I can remember.
+        "OrganizeMain.swf", "RecordMain.swf", "RemodelMain.swf", "RepairMain.swf", "SallyMain.swf", "SupplyMain.swf",
+        "TitleMain.swf", "tutorial.swf"]  # All the scenes I can remember.
 
     print("Getting core files...")
     for file in core_swf_files:
@@ -80,7 +80,7 @@ def get_ship_girl_data(filename):
             os.makedirs("kcs/sound/ship/kc{}".format(ship['api_filename']))
         with open("kcs/resources/swf/ships/" + ship['api_filename'] + ".swf", 'wb') as out:
             print("Getting ship graphics. API ID: {}, file name: {}, shipgirl ID.".format(count, ship['api_filename'],
-                                                                                          ship['api_sortno']))
+                ship['api_sortno']))
             f = get_file("kcs/resources/swf/ships/" + ship['api_filename'] + '.swf')
             if f:
                 for chunk in f.iter_content(2048):
@@ -103,16 +103,24 @@ def get_ship_girl_data(filename):
 
 def setup_directories():
     print("Prep work: Setting up directories, if they don't exist already...")
-    if not os.path.exists("kcs"): os.makedirs("kcs")
-    if not os.path.exists("kcs/scenes"): os.makedirs("kcs/scenes")
-    if not os.path.exists("kcs/sound"): os.makedirs("kcs/sound")
+    if not os.path.exists("kcs"):
+        os.makedirs("kcs")
+    if not os.path.exists("kcs/scenes"):
+        os.makedirs("kcs/scenes")
+    if not os.path.exists("kcs/sound"):
+        os.makedirs("kcs/sound")
 
-    if not os.path.exists("kcs/resources"): os.makedirs("kcs/resources")
-    if not os.path.exists("kcs/resources/bgm_p"): os.makedirs("kcs/resources/bgm_p")
-    if not os.path.exists("kcs/resources/swf"): os.makedirs("kcs/resources/swf")
-    if not os.path.exists("kcs/resources/swf/ships"): os.makedirs("kcs/resources/swf/ships")
+    if not os.path.exists("kcs/resources"):
+        os.makedirs("kcs/resources")
+    if not os.path.exists("kcs/resources/bgm_p"):
+        os.makedirs("kcs/resources/bgm_p")
+    if not os.path.exists("kcs/resources/swf"):
+        os.makedirs("kcs/resources/swf")
+    if not os.path.exists("kcs/resources/swf/ships"):
+        os.makedirs("kcs/resources/swf/ships")
 
-    if not os.path.exists("kcs/sound/ship"): os.makedirs("kcs/sound/ship")
+    if not os.path.exists("kcs/sound/ship"):
+        os.makedirs("kcs/sound/ship")
     print("Done prep work.")
 
 

@@ -1,10 +1,11 @@
 # coding=utf-8
+from flask.ext.security.forms import ConfirmRegisterForm
+from flask.ext.wtf import Form
 from wtforms import fields, validators
 from wtforms_alchemy import model_form_factory
-from flask.ext.wtf import Form
-from flask.ext.security.forms import ConfirmRegisterForm
 
-from db import *
+from db import db
+
 
 BaseModelForm = model_form_factory(Form)
 
