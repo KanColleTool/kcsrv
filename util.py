@@ -32,7 +32,7 @@ def svdata(obj: object, code: int = 1, message: str = "成功", errormsg: str = 
             "api_result": code, "api_result_msg": message, "api_data": obj
         }
     # Yay arbitary formats.
-    return "svdata=" + json.dumps(res, separators=(',', ':')), 200, {"Content-Type": "text/plain"}
+    return "svdata=" + json.dumps(res, separators=(',', ':')), 200, {"Content-Type": "application/json"}
 
 
 def load_datadump(filename: str) -> dict:
