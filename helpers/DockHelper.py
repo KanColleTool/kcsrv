@@ -19,6 +19,12 @@ from db import Recipe, Dock, Kanmusu, db
 from . import MemberHelper
 
 
+def calculate_build_time(kanmusu: Kanmusu):
+    # {Total repair time} = {HP loss} * {base repair time} * {ship type} + {30 seconds}
+    # Our modified formula: Total = HP Loss * ((Build Time**0.6) + Level)
+    return (kanmusu.ship.max_stats.hp - kanmusu.current_hp) * ((kanmusu.ship.buildtime**0.6) + kanmusu.level)
+
+
 def get_ship_from_recipe(fuel: int=30, ammo: int=30, steel: int=30, baux: int=30) -> int:
     ships = Recipe.query.filter((Recipe.min_resources.fuel >= fuel) & (Recipe.max_resources.fuel <= fuel)) \
         .filter((Recipe.min_resources.ammo >= ammo) & (Recipe.max_resources.ammo <= ammo)) \
@@ -33,26 +39,24 @@ def get_ship_from_recipe(fuel: int=30, ammo: int=30, steel: int=30, baux: int=30
 def update_dock(dock: Dock, fuel: int=None, ammo: int=None, steel: int=None, baux: int=None,
                 ship: Kanmusu=None, build=True):
     
-    dock.fuel = fuel
-    dock.ammo = ammo
-    dock.steel = steel
-    dock.baux = baux
+    dock.resources.fuel = fuel
+    dock.resources.ammo = ammo
+    dock.resources.steel = steel
+    dock.resources.baux = baux
     if ship is not None:
-        dock.cmats = 1
         try:
             if build:
                 ntime = util.millisecond_timestamp(
                     datetime.datetime.now() + datetime.timedelta(minutes=ship.ship.buildtime))
             else:
                 ntime = util.millisecond_timestamp(
-                    datetime.datetime.now() + datetime.timedelta(minutes=ShipHelper.get_repair_time(ship)))
+                    datetime.datetime.now() + datetime.timedelta(minutes=ship.ship.repairtime))
         except TypeError:
             ntime = util.millisecond_timestamp(datetime.datetime.now() + datetime.timedelta(minutes=22))
         dock.complete = ntime
     else:
-        dock.cmats = 0
         dock.complete = 0
-    dock.ship = ship
+    dock.kanmusu = ship
 
     return dock
 
@@ -89,21 +93,19 @@ def craft_ship(fuel: int, ammo: int, steel: int, baux: int, dockid: int):
     admiral = g.admiral
     ship = get_ship_from_recipe(fuel, ammo, steel, baux)
     nship = Kanmusu().create(ship_api_id=ship)
-    nship.local_ship_num = len(admiral.admiral_ships.all())
 
     # Change dock data.
-    dock = admiral.docks.all()[dockid]
+    dock = admiral.docks_craft.all()[dockid]
     dock = update_dock(dock, fuel, ammo, steel, baux, nship)
-    db.db.session.add(dockid)
-    db.db.session.commit()
-    admiral.admiral_ships.append(nship)
+    db.db.session.add(dock)
+    admiral.add_kanmusu(nship)
     db.db.session.add(admiral)
     api_data = {
         "api_ship_id": ship,
         "api_kdock": MemberHelper.dock_data([dock], False),
         "api_id": nship.local_ship_num,
         "api_slotitem": [],
-        "api_ship": ShipHelper.generate_api_data(admiralid=admiral.id, original_ship=nship)
+        "api_ship": MemberHelper.kanmusu(kanmusu=dock.kanmusu)
     }
     db.db.session.commit()
     return api_data

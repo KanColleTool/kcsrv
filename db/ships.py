@@ -1,7 +1,8 @@
 from sqlalchemy import inspect
 
 from constants import *
-from . import db,Stats
+from . import db, Stats
+import util
 
 
 class Kanmusu(db.Model):
@@ -25,12 +26,13 @@ class Kanmusu(db.Model):
     stats_id = db.Column(db.ForeignKey('stats.id'), index=True)
     modern_stats_id = db.Column(db.ForeignKey('stats.id'), index=True)
 
-    equipments = db.relationship('KanmusuEquipment',cascade="all,delete", order_by="KanmusuEquipment.slot")
+    equipments = db.relationship('KanmusuEquipment', cascade="all,delete", order_by="KanmusuEquipment.slot")
     ship = db.relationship('Ship')
     stats = db.relationship('Stats', cascade="all,delete", foreign_keys="Kanmusu.stats_id")
     modernized_stats = db.relationship('Stats', cascade="all,delete", foreign_keys="Kanmusu.modern_stats_id")
 
-    def create(self, ship_id=None, ship_api_id=None):
+    def __init__(self, ship_id=None, ship_api_id=None):
+        super().__init__()
         ship = Ship.get(id=ship_id, ship_api_id=ship_api_id)
         self.ship = ship
         self.stats = ship.base_stats.copy()
@@ -38,14 +40,18 @@ class Kanmusu(db.Model):
         self.current_fuel = self.stats.fuel
         self.current_hp = self.stats.hp
         self.equipments = [KanmusuEquipment(slot=i) for i in range(ship.maxslots)]
-        self.modernized_stats = Stats(firepower=0,torpedo=0,antiair=0,armour=0,luck=0)
-        return self
+        self.modernized_stats = Stats(firepower=0, torpedo=0, antiair=0, armour=0, luck=0)
+        self.number = len(self.admiral.kanmusu)
+
+    @util.deprecated
+    def create(self, ship_id=None, ship_api_id=None):
+        return self.__init__(ship_id, ship_api_id)
 
     @staticmethod
     def get(id):
         return db.session.query(Kanmusu).get(id)
 
-    def equip(self,slot,admiral_equip_id=None):
+    def equip(self, slot, admiral_equip_id=None):
         """
         Replace a Kanmusu equipment
         :param slot: The slot which make the operation
@@ -64,7 +70,7 @@ class Kanmusu(db.Model):
         self.equipments[int(slot)].admiral_equipment_id = admiral_equip_id
         db.session.add(self)
 
-    def modernize(self,id_list):
+    def modernize(self, id_list):
         """
         Modernize a Kanmusu
         :param id_list: A list of Kanmusu IDs
@@ -96,8 +102,8 @@ class Kanmusu(db.Model):
             if modern_value is not None:
                 diff_value = getattr(diff, column.key)
                 if modern_value > diff_value:
-                    setattr(self.stats,column.key,getattr(self.ship.max_stats,column.key))
-                    setattr(self.modernized_stats,column.key,diff_value)
+                    setattr(self.stats, column.key, getattr(self.ship.max_stats, column.key))
+                    setattr(self.modernized_stats, column.key, diff_value)
 
     def remodel(self):
         self.admiral.resources.sub(self.ship.remodel.cost)

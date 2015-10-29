@@ -113,7 +113,7 @@ class Recipe(db.Model):
     min_resources_id = db.Column(db.ForeignKey('resources.id'), index=True)
     max_resources_id = db.Column(db.ForeignKey('resources.id'), index=True)
 
-    ship = db.relationship('Ship', lazy='dynamic')
+    ship = db.relationship('Ship')
 
-    max_resources = db.relationship('Resources', primaryjoin='Recipe.max_resources_id == Resources.id', lazy='dynamic')
-    min_resources = db.relationship('Resources', primaryjoin='Recipe.min_resources_id == Resources.id', lazy='dynamic')
+    max_resources = db.relationship('Resources', primaryjoin='Recipe.max_resources_id == Resources.id')
+    min_resources = db.relationship('Resources', primaryjoin='Recipe.min_resources_id == Resources.id')

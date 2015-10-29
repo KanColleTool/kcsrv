@@ -1,10 +1,12 @@
 import datetime
+import functools
 import json
 import math
 import os
 import random
 import string
 import time
+import warnings
 
 import constants
 
@@ -121,3 +123,20 @@ def generate_api_token():
     :return: A 40 character hexadecimal string.
     """
     return ''.join(random.choice(string.hexdigits) for _ in range(40)).lower()
+
+
+def deprecated(func):
+    '''This is a decorator which can be used to mark functions
+    as deprecated. It will result in a warning being emitted
+    when the function is used.'''
+
+    @functools.wraps(func)
+    def new_func(*args, **kwargs):
+        warnings.warn_explicit(
+            "Call to deprecated function {}.".format(func.__name__),
+            category=DeprecationWarning,
+            filename=func.func_code.co_filename,
+            lineno=func.func_code.co_firstlineno + 1
+        )
+        return func(*args, **kwargs)
+    return new_func

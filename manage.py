@@ -26,8 +26,6 @@ from commands.user import manager as user_manager
 
 manager.add_command('user', user_manager)
 
-import commands.kcdownloader2
-
 
 @manager.command
 def setup():
