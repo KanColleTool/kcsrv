@@ -23,15 +23,14 @@ def init(app):
     # --> URI setup
     app.config["SQLALCHEMY_DATABASE_URI"] = \
         "postgresql://{}:{}@{}:{}/{}".format(app.config["DB_USERNAME"], app.config["DB_PASSWORD"],
-                app.config["DB_HOSTNAME"], app.config["DB_PORT"], app.config["DB_DATABASE"])
+                                             app.config["DB_HOSTNAME"], app.config["DB_PORT"],
+                                             app.config["DB_DATABASE"])
 
     # --> Extension setup
     db.init_app(app)
     admin.init_app(app)
     mail = Mail()
     mail.init_app(app)
-
-
 
     modules["migrate"] = Migrate(app, db)
 
@@ -70,18 +69,7 @@ def init(app):
     # app.register_blueprint(api_user, url_prefix='/kcsapi')
     # app.register_blueprint(api_actions, url_prefix='/kcsapi')
 
-    """
-    # Declare API v2 blueprints.
-    from modules.api.v2.AdmiralAPI import AdmiralAPIv2
-    from modules.api.v2.DockAPI import DockAPIv2
-    app.register_blueprint(AdmiralAPIv2, url_prefix='/api/v2/admiral')
-    app.register_blueprint(DockAPIv2, url_prefix='/api/v2/docks')
-    """
-    from modules.resources import resources
-
-    app.register_blueprint(resources, url_prefix='/kcs')
-
-  # --> Base application routes
+    # --> Base application routes
     @app.route('/')
     def index():
         return render_template('index.html')
