@@ -41,7 +41,7 @@ def kanmusu(kanmusu: Kanmusu):
         'api_maxhp': ship.base_stats.hp,  # Ship "maxhp" is level 100HP, otherwise base is used.
         'api_lucky': [kanmusu.stats.luck, ship.max_stats.luck],
         'api_ndock_time': 0,
-        'api_kyouka': [modern_stats.firepower,modern_stats.torpedo,modern_stats.antiair,modern_stats.armour,modern_stats.luck],
+        'api_kyouka': [modern_stats.firepower, modern_stats.torpedo, modern_stats.antiair, modern_stats.armour, modern_stats.luck] if modern_stats else [0,0,0,0,0],
         'api_sakuteki': [ship.base_stats.los, ship.max_stats.los]
     }
     return kanmusu_data
