@@ -43,7 +43,7 @@ def load_datadump(filename: str) -> dict:
     """
     if not os.path.exists("data/" + filename):
         return {}
-    with open(os.path.join(ROOT_DIR, 'data', filename)) as f:
+    with open(os.path.join(ROOT_DIR, 'data', filename), encoding="UTF-8") as f:
         o = json.load(f)
         return o if 'api_data' not in o else o['api_data']
 
