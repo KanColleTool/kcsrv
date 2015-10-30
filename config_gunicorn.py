@@ -10,11 +10,8 @@ worker_class = "sync"
 # worker_class = "gevent"
 # worker_class = "tornado"
 
-# Change to false to disable daemonising.
-daemon = True
-
-
-# daemon = False
+# Change to true to enable daemonising.
+daemon = False
 
 # Change to specify the user gunicorn will run as.
 # user = "nobody"

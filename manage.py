@@ -36,10 +36,6 @@ def setup():
 
 
 @manager.command
-def dlassets():
-    commands.kcdownloader2.run()
-
-@manager.command
 def cheat(where, id, admiral_id, action=None):
     if where == "quest":
         if action == "add":
