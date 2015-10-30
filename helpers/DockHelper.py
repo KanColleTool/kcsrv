@@ -19,7 +19,7 @@ from db import Recipe, Dock, Kanmusu, db
 from . import MemberHelper
 
 
-def calculate_build_time(kanmusu: Kanmusu):
+def calculate_repair_time(kanmusu: Kanmusu):
     # {Total repair time} = {HP loss} * {base repair time} * {ship type} + {30 seconds}
     # Our modified formula: Total = HP Loss * ((Build Time**0.6) + Level)
     return (kanmusu.ship.max_stats.hp - kanmusu.current_hp) * ((kanmusu.ship.buildtime**0.6) + kanmusu.level)

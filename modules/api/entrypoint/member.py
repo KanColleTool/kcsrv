@@ -71,3 +71,8 @@ def material():
 def ship3():
     kanmusu_id = request.values.get('api_shipid')
     return svdata(MemberHelper.ship3(kanmusu_id))
+
+@api_game.route('/api_get_member/preset_deck', methods=['GET', 'POST'])
+def preset_deck():
+    # TODO: Find what this does.
+    return svdata({"api_max_num": len(g.admiral.fleets), "api_deck": {}})
