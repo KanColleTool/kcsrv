@@ -18,4 +18,10 @@ app.config.from_object('config')
 if not "SECURITY_PASSWORD_SALT" in app.config or app.config["SECURITY_PASSWORD_SALT"] == "":
     print("Security salt has not been set. Please edit config.py.")
 
+# Override encoding.
+import sys
+import codecs
+sys.stdout = codecs.getwriter('utf8')(sys.stdout)
+sys.stderr = codecs.getwriter('utf8')(sys.stderr)
+
 init.init(app)
