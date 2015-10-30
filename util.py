@@ -53,6 +53,7 @@ def prepare_api_blueprint(bp):
     def api_403(e):
         return svdata(None, 100, errormsg="Not authorized")
 
+
 def pack_resources(r: list) -> str:
     return ",".join([str(x) for x in r])
 
@@ -139,4 +140,5 @@ def deprecated(func):
             lineno=func.func_code.co_firstlineno + 1
         )
         return func(*args, **kwargs)
+
     return new_func

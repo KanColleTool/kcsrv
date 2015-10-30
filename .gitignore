@@ -16,5 +16,4 @@
 /.idea
 /temp
 
-# Don't include the static files from kcs directory.
-/kcs
+/provisioning/#playbook.yml#

@@ -21,7 +21,7 @@ SECURITY_EMAIL_SENDER = "noreply@localhost.localdomain"
 # Database username.
 DB_USERNAME = "kcsrv"
 # Database password.
-DB_PASSWORD = "hunter2"
+DB_PASSWORD = "kcsrvpw"
 # Database hostname.
 DB_HOSTNAME = "127.0.0.1"
 # Database port.
