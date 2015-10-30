@@ -1,0 +1,3 @@
+[submodule "KCProxy"]
+	path = KCProxy
+	url = https://github.com/SunDwarf/KCProxy.git
