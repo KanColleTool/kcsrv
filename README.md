@@ -24,7 +24,7 @@ The only downside is it will require your API key to import your ships2 data and
 It is recommended you start fresh on your copy of this server. 
 
 ### Q: What are the requirements?
-- For a dev environment, nothing more than Vagrant and Ansible are required. These will automatically fire up a 
+- For a dev environment, nothing more than Vagrant and Ansible are required. These will automatically fire up a toaster, a virtual machine, and a shipgirl ready to go to war at the local beach, ready for you to develop on.
 
 
 ### Q: Why is it built on Python?
