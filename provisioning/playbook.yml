@@ -18,16 +18,14 @@
             - nginx
             - git
             - build-essential
-            - python3-pip
             - redis-server
             - python-psycopg2
 
-        register: out
-
-      - debug: var=out.stdout_lines
-
       - name: disable nginx default config
         file: path=/etc/nginx/sites-enabled/default state=absent
+
+      - name: install pip
+        shell: "curl https://bootstrap.pypa.io/get-pip.py | python3.5"
 
       - name: install requirements
         pip: executable=pip3 requirements={{item}}
