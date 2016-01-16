@@ -16,7 +16,7 @@
                 <ul class="nav navbar-nav">
                     <li {% if tab == 'home' %} class="active"{% endif %}><a href="{{ url_for('index') }}">Home</a></li>
                     <li {% if tab == 'import' %} class="active"{% endif %}><a href="#">Import</a></li>
-                    <li {% if tab == 'play' %} class="active"{% endif %}><a href="{{ url_for('play.index') }}">Play</a>
+                    <li {% if tab == 'play' %} class="active"{% endif %}><a href="{{ url_for('.p_index') }}">Play</a>
                     </li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">

@@ -1,6 +1,6 @@
 import util
 # from db import db,User,Admiral,Dock,AdmiralQuest,Resource,AdmiralItem
-from . import _DockHelper
+from . import DockHelper
 from constants import *
 from db import db, Equipment, Kanmusu, KanmusuEquipment, AdmiralEquipment
 from flask import g

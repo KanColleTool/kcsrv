@@ -1,38 +1,22 @@
-from flask import request, g
-from flask import request, Blueprint
-
+from flask import request, g, Blueprint
 from db import db
-from helpers import _QuestHelper, _AdmiralHelper, DockHelper
+from helpers import _QuestHelper, AdmiralHelper, DockHelper
 from util import svdata, prepare_api_blueprint
-
 
 from util import svdata
 from db import db, Kanmusu
-from kancolle.api import api_game
 from helpers import ActionsHelper
 
-""""" Game Start Begin """""
+
+api_actions = Blueprint('api_actions', __name__)
 
 
-@api_game.route('/api_port/port', methods=['GET', 'POST'])
+@api_actions.route('/api_port/port', methods=['GET', 'POST'])
 def port():
     return svdata(ActionsHelper.port())
 
 
-@api_game.route('/api_req_init/firstship', methods=['GET', 'POST'])
-# Kancolle literally doesn't care, as long as it gets something back
-def firstship():
-    shipid = request.values.get("api_ship_id")
-    g.admiral.add_kanmusu(ship_api_id=shipid, fleet_number=1, position=0)
-    return svdata({'api_result_msg': 'shitty api is shitty', 'api_result': 1})
-
-
-""""" Game Start End """""
-
-""""" Refit Begin """""
-
-
-@api_game.route('/api_req_kaisou/slotset', methods=['GET', 'POST'])
+@api_actions.route('/api_req_kaisou/slotset', methods=['GET', 'POST'])
 # Change Item
 def slotset():
     id = request.values.get("api_id")
@@ -44,7 +28,7 @@ def slotset():
     return svdata({})
 
 
-@api_game.route('/api_req_kaisou/powerup', methods=['GET', 'POST'])
+@api_actions.route('/api_req_kaisou/powerup', methods=['GET', 'POST'])
 # Modernization
 def powerup():
     id = request.values.get("api_id")
@@ -54,7 +38,7 @@ def powerup():
     return svdata(ActionsHelper.powerup(id, result))
 
 
-@api_game.route('/api_req_kaisou/remodeling', methods=['GET', 'POST'])
+@api_actions.route('/api_req_kaisou/remodeling', methods=['GET', 'POST'])
 # Remodeling
 def remodeling():
     id = request.values.get("api_id")
@@ -64,15 +48,12 @@ def remodeling():
 
 """"" Refit End """""
 
-api_actions = Blueprint('api_actions', __name__)
-prepare_api_blueprint(api_actions)
-
 
 @api_actions.route('/api_req_hensei/lock', methods=['POST'])
 def lock():
     """Heartlock/unheartlock a ship."""
-    admiral = get_token_admiral_or_error()
-    admiralship = admiral.admiral_ships.filter_by(local_ship_num=int(request.values.get("api_ship_id")) - 1).first()
+    admiral = g.admiral
+    admiralship = admiral.kanmusu.filter_by(local_ship_num=int(request.values.get("api_ship_id")) - 1).first()
 
     locked = not admiralship.heartlocked
 
@@ -84,13 +65,12 @@ def lock():
 
 @api_actions.route('/api_req_kousyou/createship', methods=['POST'])
 def build():
-    admiral = get_token_admiral_or_error()
     fuel = int(request.values.get("api_item1"))
     ammo = int(request.values.get("api_item2"))
     steel = int(request.values.get("api_item3"))
     baux = int(request.values.get("api_item4"))
     dock = int(request.values.get("api_kdock_id")) # -1 # For some reason, it doesn't need minusing one. ¯\_(ツ)_/¯
-    _DockHelper.craft_ship(fuel, ammo, steel, baux, admiral, dock)
+    DockHelper.craft_ship(fuel, ammo, steel, baux, dock)
     return svdata({})
 
 
@@ -170,7 +150,7 @@ def change_position():
 def queststart():
     admiral = get_token_admiral_or_error()
     quest_id = request.values.get("api_quest_id")
-    _AdmiralHelper.activate_quest(quest_id, admiral)
+    AdmiralHelper.activate_quest(quest_id, admiral)
     _QuestHelper.update_quest_progress(quest_id, admiral)
     return svdata({'api_result_msg': 'ok', 'api_result': 1})
 
@@ -180,7 +160,7 @@ def queststart():
 def queststop():
     admiral = get_token_admiral_or_error()
     quest_id = request.values.get("api_quest_id")
-    _AdmiralHelper.deactivate_quest(quest_id, admiral)
+    AdmiralHelper.deactivate_quest(quest_id, admiral)
     return svdata({'api_result_msg': 'ok', 'api_result': 1})
 
 
@@ -191,18 +171,6 @@ def clearitemget():
     quest_id = request.values.get("api_quest_id")
     data = _QuestHelper.complete_quest(admiral, quest_id)
     return svdata(data)
-
-
-@api_actions.route('/api_req_kaisou/slotset', methods=['GET', 'POST'])
-# Change Item
-def slotset():
-    admiral = get_token_admiral_or_error()
-    admiral_ship_id = request.values.get("api_id")
-    admiral_item_id = request.values.get("api_item_id")
-    slot = request.values.get("api_slot_idx")
-    _ShipHelper.change_ship_item(admiral_ship_id, admiral_item_id, slot)
-    return svdata({'api_result_msg': 'ok', 'api_result': 1})
-
 
 api_user = Blueprint('api_user', __name__)
 prepare_api_blueprint(api_user)
@@ -264,7 +232,7 @@ def ship3():
     admiral_ship_id = request.values.get('api_shipid')
     data = {
         "api_ship_data": [_ShipHelper.get_admiral_ship_api_data(
-            admiral_ship_id)], "api_deck_data": _AdmiralHelper.get_admiral_deck_api_data(
+            admiral_ship_id)], "api_deck_data": AdmiralHelper.get_admiral_deck_api_data(
             admiral), "api_slot_data": _ItemHelper.get_slottype_list(admiral=admiral)
     }
     return svdata(data)

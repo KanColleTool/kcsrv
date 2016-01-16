@@ -37,17 +37,19 @@ def init(app):
     modules["security"] = Security(app, modules["user_datastore"], confirm_register_form=MyRegisterForm)
 
     # --> Set up blueprints
-    from kancolle.api import api_core
+    from kancolle.api import api_actions
 
-    app.register_blueprint(api_core, url_prefix='/kcsapi')
+    app.register_blueprint(api_actions, url_prefix='/kcsapi')
 
-    from kancolle.api import api_game
+    from kancolle.api import api_member
 
-    app.register_blueprint(api_game, url_prefix='/kcsapi')
+    app.register_blueprint(api_member, url_prefix='/kcsapi')
+
+    from kancolle.api import api_init
+
+    app.register_blueprint(api_init)
 
     # --> Admiral load on each request
-
-    @api_game.before_request
     def admiral_load():
         # TODO learn how to do this properly
         api_token = request.values.get('api_token', None)
@@ -57,6 +59,10 @@ def init(app):
         if user is None:
             abort(404)
         g.admiral = user.admiral if user.admiral else Admiral().create(user)
+
+    api_member.before_request(admiral_load)
+    api_actions.before_request(admiral_load)
+    api_init.before_request(admiral_load)
 
     @app.route('/play')
     def p_index():

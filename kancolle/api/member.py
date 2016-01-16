@@ -1,14 +1,8 @@
-from flask import request, g
-from kancolle.api import api_game
+from flask import request, g, Blueprint
 from helpers import MemberHelper
 from util import svdata
 
-
-@api_game.route('/api_req_member/get_incentive', methods=['GET', 'POST'])
-def get_incentive():
-    return svdata({
-        'api_count': 0
-    })  # What?
+api_game = Blueprint("api_game", __name__)
 
 
 @api_game.route('/api_get_member/basic', methods=['GET', 'POST'])
@@ -22,8 +16,9 @@ def furniture():
     """Available furniture."""
     # TODO: Implement this properly
     return svdata([{
-        'api_member_id': g.admiral.id, 'api_id': item.id, 'api_furniture_type': item.type, 'api_furniture_no': item.no, 'api_furniture_id': item.id
-    } for item in []])
+                       'api_member_id': g.admiral.id, 'api_id': item.id, 'api_furniture_type': item.type,
+                       'api_furniture_no': item.no, 'api_furniture_id': item.id
+                   } for item in []])
 
 
 @api_game.route('/api_get_member/slot_item', methods=['GET', 'POST'])
@@ -70,6 +65,7 @@ def material():
 def ship3():
     kanmusu_id = request.values.get('api_shipid')
     return svdata(MemberHelper.ship3(kanmusu_id))
+
 
 @api_game.route('/api_get_member/preset_deck', methods=['GET', 'POST'])
 def preset_deck():
