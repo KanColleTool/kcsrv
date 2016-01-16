@@ -1,9 +1,8 @@
-from flask import render_template, send_from_directory, request, abort, g
-from flask.ext.login import user_logged_in
+from flask import render_template, send_from_directory, request, abort, g, redirect
+from flask.ext.login import user_logged_in, current_user
 from flask.ext.migrate import Migrate
 from flask.ext.security import Security, SQLAlchemyUserDatastore
 from flask_mail import Mail
-
 from admin import admin
 from db import User, Role, Admiral
 from forms import *
@@ -37,21 +36,16 @@ def init(app):
     modules["user_datastore"] = SQLAlchemyUserDatastore(db, User, Role)
     modules["security"] = Security(app, modules["user_datastore"], confirm_register_form=MyRegisterForm)
 
-    # Admiral load on each request
-
-    # --> Register blueprints
-    from modules.play.play import play
-
-    app.register_blueprint(play, url_prefix='/play')
-
+    # --> Set up blueprints
     from kancolle.api import api_core
 
     app.register_blueprint(api_core, url_prefix='/kcsapi')
 
-    # Declare API v1 blueprints.
-    # from modules.api.v1.user import api_user
-    # from modules.api.v1.actions import api_actions
     from kancolle.api import api_game
+
+    app.register_blueprint(api_game, url_prefix='/kcsapi')
+
+    # --> Admiral load on each request
 
     @api_game.before_request
     def admiral_load():
@@ -64,9 +58,13 @@ def init(app):
             abort(404)
         g.admiral = user.admiral if user.admiral else Admiral().create(user)
 
-    app.register_blueprint(api_game, url_prefix='/kcsapi')
-    # app.register_blueprint(api_user, url_prefix='/kcsapi')
-    # app.register_blueprint(api_actions, url_prefix='/kcsapi')
+    @app.route('/play')
+    def p_index():
+        if hasattr(current_user, 'api_token'):
+            api_token = current_user.api_token
+            return render_template('play/index.html', api_token=api_token)
+        else:
+            return redirect('/account/login')
 
     # --> Base application routes
     @app.route('/')
