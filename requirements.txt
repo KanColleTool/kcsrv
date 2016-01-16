@@ -2,7 +2,7 @@ bcrypt
 requests 
 Flask 
 Flask-Admin 
-Flask-Login==0.2.11
+Flask-Login
 Flask-Mail 
 Flask-Migrate 
 Flask-Principal 

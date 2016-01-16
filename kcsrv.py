@@ -3,7 +3,6 @@ import logging
 
 from app import app
 
-logging.basicConfig(level=logging.DEBUG)
 logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 
