@@ -1,8 +1,68 @@
+from flask import request, g
 from flask import request, Blueprint
 
 from db import db
-from helpers import _QuestHelper, _AdmiralHelper, _DockHelper
-from util import get_token_admiral_or_error, svdata, prepare_api_blueprint
+from helpers import _QuestHelper, _AdmiralHelper, DockHelper
+from util import svdata, prepare_api_blueprint
+
+
+from util import svdata
+from db import db, Kanmusu
+from kancolle.api import api_game
+from helpers import ActionsHelper
+
+""""" Game Start Begin """""
+
+
+@api_game.route('/api_port/port', methods=['GET', 'POST'])
+def port():
+    return svdata(ActionsHelper.port())
+
+
+@api_game.route('/api_req_init/firstship', methods=['GET', 'POST'])
+# Kancolle literally doesn't care, as long as it gets something back
+def firstship():
+    shipid = request.values.get("api_ship_id")
+    g.admiral.add_kanmusu(ship_api_id=shipid, fleet_number=1, position=0)
+    return svdata({'api_result_msg': 'shitty api is shitty', 'api_result': 1})
+
+
+""""" Game Start End """""
+
+""""" Refit Begin """""
+
+
+@api_game.route('/api_req_kaisou/slotset', methods=['GET', 'POST'])
+# Change Item
+def slotset():
+    id = request.values.get("api_id")
+    equip_id = request.values.get("api_item_id")
+    slot = request.values.get("api_slot_idx")
+
+    Kanmusu.get(id).equip(admiral_equip_id=equip_id, slot=slot)
+    db.session.commit()
+    return svdata({})
+
+
+@api_game.route('/api_req_kaisou/powerup', methods=['GET', 'POST'])
+# Modernization
+def powerup():
+    id = request.values.get("api_id")
+    id_items = request.values.get("api_id_items").split(',')  # How mean girls aren't items
+    result = Kanmusu.get(id).modernize(id_items)
+    db.session.commit()
+    return svdata(ActionsHelper.powerup(id, result))
+
+
+@api_game.route('/api_req_kaisou/remodeling', methods=['GET', 'POST'])
+# Remodeling
+def remodeling():
+    id = request.values.get("api_id")
+    Kanmusu.get(id).remodel()  # If it only were that easy...
+    return svdata({})
+
+
+""""" Refit End """""
 
 api_actions = Blueprint('api_actions', __name__)
 prepare_api_blueprint(api_actions)
@@ -124,7 +184,7 @@ def queststop():
     return svdata({'api_result_msg': 'ok', 'api_result': 1})
 
 
-@api_actions.route('/api_req_quest/clearitemget', methods=['GET', 'POST'])
+@api_actions.route('/api_req_quest/agclearitemget', methods=['GET', 'POST'])
 # Complete quest
 def clearitemget():
     admiral = get_token_admiral_or_error()
@@ -142,3 +202,86 @@ def slotset():
     slot = request.values.get("api_slot_idx")
     _ShipHelper.change_ship_item(admiral_ship_id, admiral_item_id, slot)
     return svdata({'api_result_msg': 'ok', 'api_result': 1})
+
+
+api_user = Blueprint('api_user', __name__)
+prepare_api_blueprint(api_user)
+
+@api_user.route("/api_get_member/charge", methods=["GET", "POST"])
+def resupply():
+    # Get the ships. Misleading name of the year candidate.
+    ships = request.values.get("api_id_items")
+    ships = ships.split(',')
+    # New dict for api_ships
+    api_ships = {}
+    for ship_id in ships:
+        ship = Kanmusu.query.filter(Admiral.id == g.admiral.id, Kanmusu.number == ship_id).first_or_404()
+        # Assertion for autocompletion in pycharm
+        assert isinstance(ship, Kanmusu)
+        # Calculate requirements.
+        # Follows this formula: how many bars they use x 10% x their fuel/ammo cost
+
+
+
+#@api_user.route('/api_get_member/material', methods=['GET', 'POST'])
+#def material():
+#    """Resources such as fuel, ammo, etc..."""
+#    admiral = get_token_admiral_or_error()
+#    return svdata(gamestart.get_admiral_resources_api_data(admiral))
+
+
+#api_user.route('/api_get_member/mapinfo', methods=['GET', 'POST'])
+#def mapinfo():
+#    return svdata(_AdmiralHelper.get_admiral_sorties())
+
+
+@api_user.route('/api_get_member/questlist', methods=['GET', 'POST'])
+# My god, he rebuilds the questlist every time you (de)activate a quest...
+def questlist():
+    import math
+    page_number = request.values.get('api_page_no', None)
+    data = {}
+    admiral = get_token_admiral_or_error()
+    questlist = QuestHelper.get_questlist_ordered(admiral)
+    data['api_count'] = len(questlist)
+    data['api_page_count'] = int(math.ceil(data['api_count'] / 5))
+    data["api_disp_page"] = int(page_number)
+    data["api_list"] = []
+    for admiral_quest, quest in questlist:
+        data["api_list"].append({
+            "api_no": quest.id, "api_category": quest.category, "api_type": quest.frequency, "api_state": admiral_quest.state, "api_title": quest.title, "api_detail": quest.detail, "api_get_material": quest.reward.to_list(), "api_bonus_flag": quest.bonus_flag, "api_progress_flag": admiral_quest.progress, "api_invalid_flag": quest.invalid_flag
+        })
+    return svdata(data)
+
+
+@api_user.route('/api_get_member/ship3', methods=['GET', 'POST'])
+# Heh
+def ship3():
+    admiral = get_token_admiral_or_error()
+    # No idea.
+    # spi_sort_order = request.values.get('spi_sort_order')
+    # spi_sort_order = request.values.get('api_sort_key')
+    admiral_ship_id = request.values.get('api_shipid')
+    data = {
+        "api_ship_data": [_ShipHelper.get_admiral_ship_api_data(
+            admiral_ship_id)], "api_deck_data": _AdmiralHelper.get_admiral_deck_api_data(
+            admiral), "api_slot_data": _ItemHelper.get_slottype_list(admiral=admiral)
+    }
+    return svdata(data)
+
+
+@api_user.route('/api_get_member/test', methods=['GET', 'POST'])
+def test():
+    return svdata({})
+
+
+# Generic routes for anything not implemented.
+
+@api_user.route('/api_req_init/<path:path>', methods=['GET', 'POST'])
+def misc(path):
+    return svdata({'api_result_msg': '申し訳ありませんがブラウザを再起動し再ログインしてください。', 'api_result': 201})
+
+
+@api_user.route('/api_get_member/<path:path>', methods=['GET', 'POST'])
+def misc2(path):
+    return svdata({'api_result_msg': '申し訳ありませんがブラウザを再起動し再ログインしてください。', 'api_result': 201})

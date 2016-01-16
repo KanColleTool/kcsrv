@@ -1,11 +1,16 @@
+"""
+kancolle/api -> Core API stuff. Bleh.
+"""
+
 from flask import Blueprint, g
 
-from util import *
-
+from util import prepare_api_blueprint, load_datadump, svdata
 
 api_core = Blueprint('api_core', __name__)
-prepare_api_blueprint(api_core)
+api_game = Blueprint('api_game', __name__)
 
+prepare_api_blueprint(api_core)
+prepare_api_blueprint(api_game)
 
 @api_core.before_request
 def load_api_start2():

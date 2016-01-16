@@ -44,19 +44,18 @@ def init(app):
 
     app.register_blueprint(play, url_prefix='/play')
 
-    from modules.api.core import api_core
+    from kancolle.api import api_core
 
     app.register_blueprint(api_core, url_prefix='/kcsapi')
 
     # Declare API v1 blueprints.
     # from modules.api.v1.user import api_user
     # from modules.api.v1.actions import api_actions
-    from modules.api.entrypoint import api_game
+    from kancolle.api import api_game
 
     @api_game.before_request
     def admiral_load():
         # TODO learn how to do this properly
-        # g.admiral = Admiral.query.get(3)
         api_token = request.values.get('api_token', None)
         if api_token is None:
             abort(403)
