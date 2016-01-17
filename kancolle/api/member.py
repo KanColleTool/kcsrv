@@ -1,4 +1,4 @@
-from flask import request, g, Blueprint
+from flask import request, g, Blueprint, redirect, url_for
 from helpers import MemberHelper
 from util import svdata
 
@@ -52,7 +52,7 @@ def unsetslot():
 def ship2():
     """Fuck ship2."""
     """Agreed."""
-    return svdata({})
+    return redirect(url_for(".p_index"))
 
 
 @api_game.route('/api_get_member/material', methods=['GET', 'POST'])
