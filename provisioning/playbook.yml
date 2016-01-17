@@ -68,9 +68,9 @@
       - name: migrate database
         environment:
           PYTHONIOENCODING: UTF-8
-        command: chdir=/vagrant /usr/bin/python3.5 /vagrant/manage.py db upgrade
+        command: chdir=/vagrant /usr/bin/python3.4 /vagrant/manage.py db upgrade
 
       - name: init database
         environment:
           PYTHONIOENCODING: UTF-8
-        command: chdir=/vagrant /usr/bin/python3.5 /vagrant/manage.py update_db
+        command: chdir=/vagrant /usr/bin/python3.4 /vagrant/manage.py update_db

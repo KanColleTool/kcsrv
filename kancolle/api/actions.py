@@ -190,7 +190,6 @@ def resupply():
         # Follows this formula: how many bars they use x 10% x their fuel/ammo cost
 
 
-
 #@api_user.route('/api_get_member/material', methods=['GET', 'POST'])
 #def material():
 #    """Resources such as fuel, ammo, etc..."""

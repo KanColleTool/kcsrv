@@ -10,8 +10,12 @@ def port():
     response = {}
     # TODO: Log entry
     response['api_log'] = [{
-        "api_state": "0", "api_no": 0, "api_type": "1", "api_message": "ayy lmao"
-    }]
+        "api_state": "0", "api_no": num, "api_type": "1", "api_message": msg
+    } for (num, msg) in enumerate([
+        "It's a beautiful day outside.",
+        "Birds are singing. Flowers are blooming.",
+        "On days like these, kids like you...",
+    ])]
     # Background music?
     response["api_p_bgm_id"] = 100
     # This sets the parallel quest count. Don't know what higher values do, default is 5.

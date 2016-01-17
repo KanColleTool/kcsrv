@@ -41,7 +41,6 @@ class Kanmusu(db.Model):
         self.current_hp = self.stats.hp
         self.equipments = [KanmusuEquipment(slot=i) for i in range(ship.maxslots)]
         self.modernized_stats = Stats(firepower=0, torpedo=0, antiair=0, armour=0, luck=0)
-        self.number = len(self.admiral.kanmusu)
 
     @util.deprecated
     def create(self, ship_id=None, ship_api_id=None):
