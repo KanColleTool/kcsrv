@@ -1,5 +1,5 @@
 from flask import request, g, Blueprint
-from db import db
+from db import db, Admiral
 from helpers import _QuestHelper, AdmiralHelper, DockHelper
 from util import svdata, prepare_api_blueprint
 
@@ -44,9 +44,6 @@ def remodeling():
     id = request.values.get("api_id")
     Kanmusu.get(id).remodel()  # If it only were that easy...
     return svdata({})
-
-
-""""" Refit End """""
 
 
 @api_actions.route('/api_req_hensei/lock', methods=['POST'])
@@ -216,7 +213,10 @@ def questlist():
     data["api_list"] = []
     for admiral_quest, quest in questlist:
         data["api_list"].append({
-            "api_no": quest.id, "api_category": quest.category, "api_type": quest.frequency, "api_state": admiral_quest.state, "api_title": quest.title, "api_detail": quest.detail, "api_get_material": quest.reward.to_list(), "api_bonus_flag": quest.bonus_flag, "api_progress_flag": admiral_quest.progress, "api_invalid_flag": quest.invalid_flag
+            "api_no": quest.id, "api_category": quest.category, "api_type": quest.frequency,
+            "api_state": admiral_quest.state, "api_title": quest.title, "api_detail": quest.detail,
+            "api_get_material": quest.reward.to_list(), "api_bonus_flag": quest.bonus_flag,
+            "api_progress_flag": admiral_quest.progress, "api_invalid_flag": quest.invalid_flag
         })
     return svdata(data)
 
@@ -224,7 +224,7 @@ def questlist():
 @api_user.route('/api_get_member/ship3', methods=['GET', 'POST'])
 # Heh
 def ship3():
-    admiral = get_token_admiral_or_error()
+    admiral = g.admiral
     # No idea.
     # spi_sort_order = request.values.get('spi_sort_order')
     # spi_sort_order = request.values.get('api_sort_key')

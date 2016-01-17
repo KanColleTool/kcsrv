@@ -71,3 +71,63 @@ def ship3():
 def preset_deck():
     # TODO: Find what this does.
     return svdata({"api_max_num": len(g.admiral.fleets), "api_deck": {}})
+
+
+@api_game.route('/api_get_member/record', methods=['GET', 'POST'])
+def record():
+    data = {
+        "api_member_id": g.admiral.id,
+        "api_nickname": g.admiral.name,
+        "api_nickname_id": str(g.admiral.id),
+        "api_cmt": "",
+        "api_cmt_id": "",
+        "api_photo_url": "",
+        "api_rank": g.admiral.rank,
+        "api_level": g.admiral.level,
+        "api_experience": [
+            g.admiral.experience,
+            # Exp to next level
+            g.admiral.experience + 1
+        ],
+        # api_war -> sorties
+        "api_war": {
+            "api_win": str(g.admiral.sortie_successes),
+            "api_lose": str(g.admiral.sortie_total - g.admiral.sortie_successes),
+            "api_rate": str(round((g.admiral.sortie_successes / g.admiral.sortie_total)
+                                  if g.admiral.sortie_total else 0, 2))
+        },
+        # api_mission -> expeditions
+        "api_mission": {
+            "api_count": str(g.admiral.expedition_total),
+            "api_success": str(g.admiral.expedition_successes),
+            "api_rate": str(round(((g.admiral.expedition_total / g.admiral.expedition_successes) * 100)
+                                  if g.admiral.expedition_successes else 0, 2))
+            # Full percentage. Not rounded percentage. Stupid kc
+        },
+        "api_practice": {
+          "api_win": str(g.admiral.pvp_successes),
+          "api_lose": str(g.admiral.pvp_total - g.admiral.pvp_successes),
+          "api_rate": str(round((g.admiral.pvp_total / g.admiral.pvp_successes)
+                                if g.admiral.pvp_successes else 0, 2))
+        },
+        "api_friend": 0,  # No idea
+        "api_deck": len(g.admiral.fleets),
+        "api_kdoc": len(g.admiral.docks_craft),
+        "api_ndoc": len(g.admiral.docks_repair),
+        "api_ship": [ # Current amount, max
+          len(g.admiral.kanmusu),
+          999999
+        ],
+        "api_slotitem": [
+          len(g.admiral.equipment.all()),
+          9999999
+        ],
+        "api_furniture": 8, # Not sure
+        "api_complate": [
+          "0.0",
+          "0.0"
+        ], # Not sure
+        "api_large_dock": 1,
+        "api_material_max": 1000000  # Maximum materials
+    }
+    return svdata(data)
