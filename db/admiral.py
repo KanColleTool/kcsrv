@@ -217,4 +217,4 @@ class Fleet(db.Model):
     admiral_id = db.Column(db.ForeignKey('admiral.id'))
 
     admiral = db.relationship('Admiral')
-    kanmusu = db.relationship('Kanmusu')
+    kanmusu = db.relationship('Kanmusu', order_by='kanmusu.fleet_position')
