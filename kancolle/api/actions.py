@@ -1,12 +1,10 @@
-from flask import request, g, Blueprint
-from db import db, Admiral
+from flask import request, g, Blueprint, abort
+from db import db, Admiral, Fleet
 from helpers import _QuestHelper, AdmiralHelper, DockHelper
 from util import svdata, prepare_api_blueprint
-
 from util import svdata
 from db import db, Kanmusu
 from helpers import ActionsHelper
-
 
 api_actions = Blueprint('api_actions', __name__)
 
@@ -66,7 +64,7 @@ def build():
     ammo = int(request.values.get("api_item2"))
     steel = int(request.values.get("api_item3"))
     baux = int(request.values.get("api_item4"))
-    dock = int(request.values.get("api_kdock_id")) # -1 # For some reason, it doesn't need minusing one. ¯\_(ツ)_/¯
+    dock = int(request.values.get("api_kdock_id"))  # -1 # For some reason, it doesn't need minusing one. ¯\_(ツ)_/¯
     DockHelper.craft_ship(fuel, ammo, steel, baux, dock)
     return svdata({})
 
@@ -82,62 +80,92 @@ def getship():
 
 
 @api_actions.route('/api_req_hensei/change', methods=['GET', 'POST'])
-def change_position():
-    # TODO UNFUCK THIS CODE UP
-    admiral = get_token_admiral_or_error()
-    # Get request parameters
+def change_pos():
+    # This is a lot cleaner than before.
+    # Known bug: You cannot switch
+
+    # Get data from request.
     fleet_id = int(request.values.get("api_id")) - 1
     ship_id = int(request.values.get("api_ship_id")) - 1
     ship_pos = int(request.values.get("api_ship_idx"))
-    fleet = admiral.fleets.all()[fleet_id]
-    fships = fleet.ships.all()
 
-    print(ship_id, ship_pos)
-    if ship_id == -2:
-        # Delete ship.
-        oldship = fships[ship_pos]
-        oldship.local_fleet_num = None
-        fships.remove(oldship)
-        # Get the rest of the ships, and bump it down.
-        for n, ship in enumerate(fships):
-            if n > ship_id:
-                ship.local_fleet_num -= 1
-                fships[n] = ship
-        fleet.ships = fships
-    elif len(fships) == ship_pos:
-        # Append to the ships list
-        if admiral.admiral_ships.filter_by(local_ship_num=ship_id).first() in fships:
-            pass
+    if ship_pos > 5:
+        abort(400)
+    if fleet_id > 4:
+        abort(400)
+
+    # Get the fleet.
+    try:
+        fleet = g.admiral.fleets[fleet_id]
+    except IndexError:
+        abort(404)
+        return
+
+    # Find the ship with id `ship_id`.
+    try:
+        if ship_id != -2:
+            kmsu = g.admiral.kanmusu[ship_id]
         else:
-            # Get the first ship, update the local fleet num, and append it to the fleet.
-            nship = admiral.admiral_ships.filter_by(local_ship_num=ship_id).first()
-            nship.local_fleet_num = ship_pos
-            fships.append(nship)
-            fleet.ships = fships
-    else:
-        # Get the original ship.
-        original_ship = fships[ship_pos]
-        # Get the new ship.
-        new_ship = fleet.ships.filter_by(local_ship_num=ship_id).first()
-        if new_ship is None:
-            # BLEH
-            original_ship.local_fleet_num = None
-            original_ship.fleet_id = None
-            db.session.add(original_ship)
-            new_ship = admiral.admiral_ships.filter_by(local_ship_num=ship_id).first()
-            new_ship.local_fleet_num = ship_pos
-            fleet.ships.append(new_ship)
-            db.session.add(fleet)
-            db.session.commit()
-            return svdata({})
-        # Do the bullshit swap.
-        original_ship.local_fleet_num, new_ship.local_fleet_num = new_ship.local_fleet_num, original_ship.local_fleet_num
-        # Eww, merge ships back into the admiral_ships table
-        db.session.add(original_ship)
-        db.session.add(new_ship)
+            kmsu = None
+    except:
+        abort(404)
+        return
 
-    # Update the fleet.
-    db.session.add(fleet)
+    # Finally, get the ship at `ship_pos` of fleet.
+    try:
+        kmsu2 = fleet.kanmusu[ship_pos]
+    except IndexError:
+        kmsu2 = None
+
+    # Check if it's already in the fleet.
+    if kmsu and not kmsu in fleet.kanmusu:
+        kmsu.fleet_position = len(fleet.kanmusu)
+        fleet.kanmusu.append(kmsu)
+        db.session.add(kmsu)
+        db.session.commit()
+        return svdata({})
+
+    if kmsu:
+        current_ship_pos = kmsu.fleet_position
+    elif kmsu2:
+        current_ship_pos = kmsu2.fleet_position
+    else:
+        current_ship_pos = None
+
+    # Check if it's a removal.
+    if ship_id == -2:
+        # We cannot use the loaded `kmsu`. This was actually the root cause of #19 and #21, I believe.
+        # However, we already have it loaded, at `kmsu2`, because Kancolle is stupid.
+        kmsu = kmsu2
+        # Bump the other ship numbers down.
+        for kanmusu in fleet.kanmusu:
+            if kanmusu == kmsu:
+                pass
+            elif kanmusu.fleet_position is None:
+                print("Unknown error - fleet position is None, yet it's still in the fleet?!?")
+                print("ID - {}".format(kanmusu.id))
+                # Fix fleet position to be 5, at least temporarily.
+                kanmusu.fleet_position = 5
+            elif kanmusu.fleet_position > current_ship_pos:
+                kanmusu.fleet_position -= 1
+                db.session.add(kanmusu)
+        # Remove fleet position
+        kmsu.fleet_position = None
+        # Remove from fleet
+        fleet.kanmusu.remove(kmsu)
+        # Add to session
+        db.session.add(fleet)
+        db.session.add(kmsu)
+        db.session.commit()
+        return svdata({})
+
+    print(ship_pos, current_ship_pos)
+    # Change fleet position of kanmusu 1.
+    kmsu.fleet_position = ship_pos
+    # Change fleet position of kanmusu 2, if applicable.
+    if kmsu2:
+        kmsu2.fleet_position = current_ship_pos
+    db.session.add(kmsu, kmsu2)
     db.session.commit()
     return svdata({})
 
@@ -169,8 +197,10 @@ def clearitemget():
     data = _QuestHelper.complete_quest(admiral, quest_id)
     return svdata(data)
 
+
 api_user = Blueprint('api_user', __name__)
 prepare_api_blueprint(api_user)
+
 
 @api_user.route("/api_get_member/charge", methods=["GET", "POST"])
 def resupply():
@@ -187,15 +217,15 @@ def resupply():
         # Follows this formula: how many bars they use x 10% x their fuel/ammo cost
 
 
-#@api_user.route('/api_get_member/material', methods=['GET', 'POST'])
-#def material():
+# @api_user.route('/api_get_member/material', methods=['GET', 'POST'])
+# def material():
 #    """Resources such as fuel, ammo, etc..."""
 #    admiral = get_token_admiral_or_error()
 #    return svdata(gamestart.get_admiral_resources_api_data(admiral))
 
 
-#api_user.route('/api_get_member/mapinfo', methods=['GET', 'POST'])
-#def mapinfo():
+# api_user.route('/api_get_member/mapinfo', methods=['GET', 'POST'])
+# def mapinfo():
 #    return svdata(_AdmiralHelper.get_admiral_sorties())
 
 
