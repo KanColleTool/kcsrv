@@ -47,15 +47,13 @@ def remodeling():
 @api_actions.route('/api_req_hensei/lock', methods=['POST'])
 def lock():
     """Heartlock/unheartlock a ship."""
-    admiral = g.admiral
-    admiralship = admiral.kanmusu.filter_by(local_ship_num=int(request.values.get("api_ship_id")) - 1).first()
+    kanmusu = g.admiral.kanmusu.filter_by(number=int(request.values.get("api_ship_id")) - 1).first_or_404()
 
-    locked = not admiralship.heartlocked
+    kanmusu.locked = not kanmusu.locked
 
-    admiralship.heartlocked = locked
-    db.session.add(admiralship)
+    db.session.add(kanmusu)
     db.session.commit()
-    return svdata({"api_locked": int(locked)})
+    return svdata({"api_locked": int(kanmusu.locked)})
 
 
 @api_actions.route('/api_req_kousyou/createship', methods=['POST'])
