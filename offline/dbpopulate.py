@@ -1,5 +1,5 @@
 import util
-from db import db, Equipment, Ship, Stats, Resources, Remodel, Usable
+from db import db, Equipment, Ship, Stats, Resources, Remodel, Usable, RecipeResources
 
 
 # from helpers import ResourceHelper
@@ -69,8 +69,12 @@ def ships():
         old = db.session.query(Ship).filter(Ship.api_id == ship["api_id"]).first()
         # TODO - Update data if api_id already exists
         if old:
-            continue
-        s = Ship(# Misc ship stats
+            id = old.id
+        else:
+            id = None
+        s = Ship(
+            id=id,
+            # Misc ship stats
             api_id=ship['api_id'],
             rarity=ship['api_backs'],
             name=ship['api_name'],
@@ -113,70 +117,10 @@ def ships():
     print("Updated Ship database, {} entries merged.".format(count))
 
 
-"""
-def ships():
-    ships = data['api_mst_ship']
-    count = 0
-    for ship in ships:
-        if 'api_backs' not in ship:
-            print("Skipping ship ID {}".format(ship['api_id']))
-            continue
-        s = Ship(
-            # Misc ship stats
-            api_id = ship['api_id'],
-            rarity = ship['api_backs'],
-            broken = ResourceHelper.get_resource_from_list(ship['api_broken']),
-            name = ship['api_name'],
-            number = ship['api_sortno'],
-            stype = ship['api_stype'],
-            voicef = ship['api_voicef'],
-            getmsg = ship['api_getmes'],
-            buildtime = ship['api_buildtime'],
-            kai = '改' in ship['api_name'],
-            # Remodel
-            remodel_level = ship['api_afterlv'],
-            remodel = ship['api_aftershipid'],
-            remodel_cost = Resource(fuel=ship['api_afterfuel'],ammo=ship['api_afterbull']),
-            modernization = Stats(
-                firepower=ship['api_powup'][0],
-                torpedo=ship['api_powup'][1],
-                antiair=ship['api_powup'][2],
-                armour=ship['api_powup'][3],
-            ),
-            # Minimums
-            stats = Stats(
-                srange = ship['api_leng'],
-                luck = ship['api_luck'][0],
-                firepower = ship['api_houg'][0],
-                armour = ship['api_souk'][0],
-                torpedo = ship['api_raig'][0],
-                antiair = ship['api_tyku'][0],
-                antisub = 0,
-                los = 0,
-                evasion = 0,
-                hp = ship['api_taik'][0],
-            ),
-            # Maximums
-            stats_max = Stats(
-                luck = ship['api_luck'][1],
-                firepower = ship['api_houg'][1],
-                armour = ship['api_souk'][1],
-                torpedo = ship['api_raig'][1],
-                antiair = ship['api_tyku'][1],
-                antisub = 0,
-                los = 0,
-                evasion = 0,
-                hp = ship['api_taik'][1],            
-                ammo = ship['api_bull_max'],
-                fuel = ship['api_fuel_max'],
-            ),
-            maxslots = ship['api_slot_num'],
-            maxplanes = ','.join(str(x) for x in ship['api_maxeq'])
-        )
-        # ugh
-        db.session.add(s)
-        print("Added ship {} - {}".format(ship['api_id'], ship['api_name']))
-        count += 1
-    db.session.commit()
-    print("Updated database, {} entries merged.".format(count))
-"""
+def recipe_resources():
+    # Add resources.
+    with open("data/recipe/resources.sql") as f:
+        data = f.read()
+    db.session.execute(data)
+    res = RecipeResources.query.all()
+    print("Updated resources database from resources.sql -> {} entries now in database".format(len(res)))

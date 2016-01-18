@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 
+import sqlalchemy
 from flask.ext.migrate import Migrate, MigrateCommand
 from flask.ext.script import Manager, Server
 # from helpers import ShipHelper
@@ -49,14 +50,17 @@ def cheat(where, id, admiral_id, action=None):
     else:
         print("Unknown cheat")
 
-
 @manager.command
 def update_db():
     """Merge the ships DB from api_start.json into the DB"""
     dbpopulate.ships()
     dbpopulate.equip()
     dbpopulate.items()
-    setup()
+    dbpopulate.recipe_resources()
+    try:
+        setup()
+    except sqlalchemy.exc.IntegrityError:
+        pass
 
 
 if __name__ == '__main__':
