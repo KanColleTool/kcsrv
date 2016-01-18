@@ -1,5 +1,4 @@
 from sqlalchemy import inspect
-
 from . import db
 
 
@@ -110,10 +109,20 @@ class Recipe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     chance = db.Column(db.Integer)
     ship_id = db.Column(db.ForeignKey('ship.id'))
-    min_resources_id = db.Column(db.ForeignKey('resources.id'), index=True)
-    max_resources_id = db.Column(db.ForeignKey('resources.id'), index=True)
+    min_resources_id = db.Column(db.ForeignKey('recipe__resources.id'), index=True)
+    max_resources_id = db.Column(db.ForeignKey('recipe__resources.id'), index=True)
 
     ship = db.relationship('Ship')
 
-    max_resources = db.relationship('Resources', primaryjoin='Recipe.max_resources_id == Resources.id')
-    min_resources = db.relationship('Resources', primaryjoin='Recipe.min_resources_id == Resources.id')
+    max_resources = db.relationship('RecipeResources', primaryjoin='Recipe.max_resources_id == RecipeResources.id')
+    min_resources = db.relationship('RecipeResources', primaryjoin='Recipe.min_resources_id == RecipeResources.id')
+
+
+class RecipeResources(db.Model):
+    __tablename__ = 'recipe__resources'
+
+    id = db.Column(db.Integer, primary_key=True)
+    fuel = db.Column(db.Integer)
+    ammo = db.Column(db.Integer)
+    steel = db.Column(db.Integer)
+    baux = db.Column(db.Integer)
