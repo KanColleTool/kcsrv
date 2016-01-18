@@ -1,21 +1,12 @@
-"""
-import random
-import datetime
-import time
-
-from db import db,Admiral,AdmiralShip,Recipe,Dock
-from . import ShipHelper
-import util
-"""
-
 # from db import db,Dock
 import datetime
 import random
+from sqlalchemy import text
 
 from flask import g
 
 import util
-from db import Recipe, Dock, Kanmusu, db
+from db import Recipe, Dock, Kanmusu, db, Resources
 from . import MemberHelper
 
 
@@ -26,12 +17,23 @@ def calculate_repair_time(kanmusu: Kanmusu):
 
 
 def get_ship_from_recipe(fuel: int=30, ammo: int=30, steel: int=30, baux: int=30) -> int:
-    ships = Recipe.query.filter((Recipe.min_resources.fuel >= fuel) & (Recipe.max_resources.fuel <= fuel)) \
-        .filter((Recipe.min_resources.ammo >= ammo) & (Recipe.max_resources.ammo <= ammo)) \
-        .filter((Recipe.min_resources.steel >= steel) & (Recipe.max_resources.steel <= steel)) \
-        .filter((Recipe.min_resources.baux >= baux) & (Recipe.max_resources.baux <= baux))
 
-    ship_choices = [[x.id] * x.chance for x in ships]
+    ship_t = text("""select ship_id, chance from recipe
+      join resources min on recipe.min_resources_id = min.id
+      join resources max on recipe.max_resources_id = min.id
+      where
+      :fuel between min.fuel and max.fuel and
+      :ammo between min.ammo and max.ammo and
+      :steel between min.steel and max.steel and
+      :baux between min.baux and max.baux;
+    """)
+
+    ships = db.session.execute(ship_t, {"fuel": fuel, "ammo": ammo, "steel": steel, "baux": baux})
+
+    if not ships:
+        return None
+
+    ship_choices = [[x[0]] * x[1] for x in ships]
     ship_choices = [item for sublist in ship_choices for item in sublist]
     return random.choice(ship_choices)
 

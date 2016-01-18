@@ -71,7 +71,7 @@ def build():
 def getship():
     dock = int(request.values.get("api_kdock_id"))
     try:
-        data = _DockHelper.get_and_remove_ship(dockid=dock)
+        data = DockHelper.get_and_remove_ship(dockid=dock)
     except (IndexError, AttributeError):
         return svdata({}, code=201, message='申し訳ありませんがブラウザを再起動し再ログインしてください。')
     return svdata(data)
@@ -80,7 +80,7 @@ def getship():
 @api_actions.route('/api_req_hensei/change', methods=['GET', 'POST'])
 def change_pos():
     # This is a lot cleaner than before.
-    # Known bug: You cannot switch
+    # Known bug: You cannot switch sometimes properly, when changing ship with one in your library.
 
     # Get data from request.
     fleet_id = int(request.values.get("api_id")) - 1
