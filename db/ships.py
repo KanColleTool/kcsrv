@@ -1,8 +1,8 @@
 from sqlalchemy import inspect
 
+import util
 from constants import *
 from . import db, Stats
-import util
 
 
 class Kanmusu(db.Model):

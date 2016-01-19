@@ -1,13 +1,11 @@
 # from db import db,Dock
-import datetime
 import random
+
+from flask import abort
+from flask import g
 from sqlalchemy import text
 
-from flask import g
-from flask import abort
-
-import util
-from db import Recipe, Dock, Kanmusu, db, Resources
+from db import Kanmusu, db
 from . import MemberHelper
 
 
@@ -44,6 +42,7 @@ def get_and_remove_ship_kdock(dockid: int):
     try:
         dock = admiral.docks_craft.all()[dockid]
     except IndexError:
+        abort(404)
         return None
 
     dock.resources.fuel, dock.resources.ammo, \
@@ -84,7 +83,7 @@ def craft_ship(fuel: int, ammo: int, steel: int, baux: int, dockid: int):
         abort(404)
         return
 
-    dock = dock.update(dock, fuel, ammo, steel, baux, nship)
+    dock = dock.update(dock, fuel, ammo, steel, baux, nship, True)
     db.db.session.add(dock)
     admiral.add_kanmusu(nship)
     db.db.session.add(admiral)
@@ -97,88 +96,3 @@ def craft_ship(fuel: int, ammo: int, steel: int, baux: int, dockid: int):
     }
     db.db.session.commit()
     return api_data
-
-"""
-def generate_dock_data(admiral_obj: Admiral=None, admiralid: int=None) -> dict:
-
-    # TODO: Refactor and make this nicer.
-    if admiral_obj:
-        admiral = admiral_obj
-    elif admiralid:
-        admiral = Admiral.query.filter_by(id=admiralid)
-    else:
-        admiral = None
-    ob = {"rdock": [], "cdock": []}
-
-    if admiral is None:
-        return ob
-
-
-    #print(admiral.docks.all(), admiral.available_cdocks)
-
-    for x in range(0, 4):
-        if admiral.available_cdocks - 1 >= x:
-            dock = admiral.docks.all()[x]
-            ob['cdock'].append({'api_member_id': admiral.id,
-                                'api_id': x,
-                                'api_state': 0 if dock.complete is None
-                                else 2 if dock.complete > time.time()
-                                else 3 if dock.complete < time.time() else -1,
-                                'api_created_ship_id': dock.ship.ship.id if dock.ship is not None else 0,
-                                'api_complete_time': dock.complete,
-                                'api_complete_time_str': datetime.datetime.fromtimestamp(
-                                    dock.complete / 1000
-                                ).strftime('%Y-%m-%d %H:%M:%S') if dock.complete is not None else "",
-                                'api_item1': dock.fuel,
-                                'api_item2': dock.ammo,
-                                'api_item3': dock.steel,
-                                'api_item4': dock.baux,
-                                'api_item5': dock.cmats
-                                })
-        else:
-            ob['cdock'].append({'api_member_id': admiral.id,
-                                'api_id': x,
-                                'api_state': -1,
-                                'api_created_ship_id': 0,
-                                'api_complete_time': 0,
-                                'api_complete_time_str': "",
-                                'api_item1': 0,
-                                'api_item2': 0,
-                                'api_item3': 0,
-                                'api_item4': 0,
-                                'api_item5': 0
-                                })
-    for x in range(4, 8):
-        if admiral.available_rdocks - 1 >= x - 3:
-            dock = admiral.docks.all()[x]
-            ob['rdock'].append({'api_member_id': admiral.id,
-                                'api_id': x - 3,
-                                'api_state': 0 if dock.complete is None
-                                else 2 if dock.complete > time.time()
-                                else 3 if dock.complete < time.time() else -1,
-                                'api_created_ship_id': dock.ship.ship.id if dock.ship is not None else 0,
-                                'api_complete_time': dock.complete,
-                                'api_complete_time_str': datetime.datetime.fromtimestamp(
-                                    dock.complete / 1000
-                                ).strftime('%Y-%m-%d %H:%M:%S') if dock.complete is not None else "",
-                                'api_item1': dock.fuel,
-                                'api_item2': dock.ammo,
-                                'api_item3': dock.steel,
-                                'api_item4': dock.baux,
-                                'api_item5': dock.cmats
-                                })
-        else:
-            ob['rdock'].append({'api_member_id': admiral.id,
-                                'api_id': x - 3,
-                                'api_state': 0,
-                                'api_created_ship_id': 0,
-                                'api_complete_time': 0,
-                                'api_complete_time_str': "",
-                                'api_item1': 0,
-                                'api_item2': 0,
-                                'api_item3': 0,
-                                'api_item4': 0,
-                                'api_item5': 0
-                                })
-    return ob
-"""

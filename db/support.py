@@ -1,4 +1,5 @@
 from sqlalchemy import inspect
+
 from . import db
 
 

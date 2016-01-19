@@ -1,17 +1,18 @@
 from flask import request, g, Blueprint, abort
-from db import db, Admiral, Fleet
-from helpers import _QuestHelper, AdmiralHelper, DockHelper
-from util import svdata, prepare_api_blueprint
-from util import svdata
+
+import helpers.MemberHelper
+from db import Admiral
 from db import db, Kanmusu
-from helpers import ActionsHelper
+from helpers import _QuestHelper, AdmiralHelper, DockHelper, MemberHelper
+from util import prepare_api_blueprint
+from util import svdata
 
 api_actions = Blueprint('api_actions', __name__)
 
 
 @api_actions.route('/api_port/port', methods=['GET', 'POST'])
 def port():
-    return svdata(ActionsHelper.port())
+    return svdata(helpers.MemberHelper.port())
 
 
 @api_actions.route('/api_req_kaisou/slotset', methods=['GET', 'POST'])
@@ -33,7 +34,7 @@ def powerup():
     id_items = request.values.get("api_id_items").split(',')  # How mean girls aren't items
     result = Kanmusu.get(id).modernize(id_items)
     db.session.commit()
-    return svdata(ActionsHelper.powerup(id, result))
+    return svdata(MemberHelper.powerup(id, result))
 
 
 @api_actions.route('/api_req_kaisou/remodeling', methods=['GET', 'POST'])

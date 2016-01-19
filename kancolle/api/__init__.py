@@ -2,13 +2,12 @@
 kancolle/api -> Core API stuff. Bleh.
 """
 
-from flask import Blueprint, g
-from .actions import api_actions
-from .member import api_game as api_member
-from .init import api_init
+from flask import g
 
 from util import prepare_api_blueprint, load_datadump, svdata
-
+from .actions import api_actions
+from .init import api_init
+from .member import api_game as api_member
 
 prepare_api_blueprint(api_actions)
 prepare_api_blueprint(api_member)

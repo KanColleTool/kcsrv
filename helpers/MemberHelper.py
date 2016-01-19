@@ -3,8 +3,9 @@ import time
 
 from flask import g
 
-from db import db, Equipment, Kanmusu, KanmusuEquipment, AdmiralEquipment
+import util
 from constants import *
+from db import db, Equipment, Kanmusu, KanmusuEquipment, AdmiralEquipment
 
 
 def kanmusu(kanmusu: Kanmusu):
@@ -108,7 +109,9 @@ def basic():
         # Disables the opening stuff, and skips straight to the game.
         'api_firstflag': int(len(admiral.kanmusu) > 0),  # False means 0
         'api_tutorial_progress': 100,
-        'api_pvp': [0, 0]
+        'api_pvp': [0, 0],
+        'api_medals': 0,
+        'api_large_dock': 0
     }
 
 
@@ -207,9 +210,9 @@ def unsetslot():
 
     query_equipped = db.session.query(KanmusuEquipment.admiral_equipment_id)\
         .filter(KanmusuEquipment.kanmusu_id.in_(query_kanmusu),
-                KanmusuEquipment.admiral_equipment_id != None)
+                KanmusuEquipment.admiral_equipment_id is not None)
 
-    query = db.session.query(AdmiralEquipment).filter(AdmiralEquipment.admiral_id == admiral.id, \
+    query = db.session.query(AdmiralEquipment).filter(AdmiralEquipment.admiral_id == admiral.id,
         ~AdmiralEquipment.id.in_(query_equipped)).join(Equipment).order_by(Equipment.sortno)
     equiplist = query.all()
     response = {}
@@ -226,3 +229,46 @@ def ship3(kanmusu_id):
         "api_deck_data": fleet_data,
         "api_slot_data": unsetslot()
     }
+
+def powerup(kanmusu_id, result):
+    fleet_data = [fleet(fleet_) for fleet_ in g.admiral.fleets]
+    api_ship = kanmusu(Kanmusu.get(kanmusu_id))
+    return {
+        "api_powerup_flag": int(result),
+        "api_ship": api_ship,
+        "api_deck": fleet_data
+    }
+
+
+def port():
+    # Calls a bunch of other functions to get port responses.
+    admiral = g.admiral
+    response = {}
+    # TODO: Log entry
+    response['api_log'] = [
+    {
+        "api_state": "0", "api_no": num, "api_type": "1", "api_message": msg
+    } for (num, msg) in enumerate([
+        "It's a beautiful day outside.",
+        "Birds are singing. Flowers are blooming.",
+        "On days like these, kids like you...",
+        "Ｓｈｏｕｌｄ  ｂｅ  ｂｕｒｎｉｎｇ  ｉｎ  ｈｅｌｌ．"
+    ])]
+    # Background music?
+    response["api_p_bgm_id"] = 100
+    # This sets the parallel quest count. Don't know what higher values do, default is 5.
+    # I set it to ten because fuck the police
+    response["api_parallel_quest_count"] = 10
+    # Combined flag? Event data probably.
+    response["api_combined_flag"] = 0
+    # API basic - a replica of api_get_member/basic
+    response['api_basic'] = basic()
+    # Fleets.
+    response['api_deck_port'] = [fleet(fleet_) for fleet_ in admiral.fleets]
+    # Materials.
+    response['api_material'] = material()
+    # Shipgirls
+    response['api_ship'] = [kanmusu(kanmusu_) for kanmusu_ in admiral.kanmusu if kanmusu_.active]
+    # Generate ndock.
+    response['api_ndock'] = rdock()
+    return response
