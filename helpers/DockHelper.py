@@ -4,6 +4,7 @@ import random
 from sqlalchemy import text
 
 from flask import g
+from flask import abort
 
 import util
 from db import Recipe, Dock, Kanmusu, db, Resources
@@ -38,31 +39,6 @@ def get_ship_from_recipe(fuel: int=30, ammo: int=30, steel: int=30, baux: int=30
     return random.choice(ship_choices)
 
 
-def update_dock(dock: Dock, fuel: int=None, ammo: int=None, steel: int=None, baux: int=None,
-                ship: Kanmusu=None, build=True):
-    
-    dock.resources.fuel = fuel
-    dock.resources.ammo = ammo
-    dock.resources.steel = steel
-    dock.resources.baux = baux
-    if ship is not None:
-        try:
-            if build:
-                ntime = util.millisecond_timestamp(
-                    datetime.datetime.now() + datetime.timedelta(minutes=ship.ship.buildtime))
-            else:
-                ntime = util.millisecond_timestamp(
-                    datetime.datetime.now() + datetime.timedelta(minutes=ship.ship.repairtime))
-        except TypeError:
-            ntime = util.millisecond_timestamp(datetime.datetime.now() + datetime.timedelta(minutes=22))
-        dock.complete = ntime
-    else:
-        dock.complete = 0
-    dock.kanmusu = ship
-
-    return dock
-
-
 def get_and_remove_ship_kdock(dockid: int):
     admiral = g.admiral
     try:
@@ -94,11 +70,21 @@ def get_and_remove_ship_kdock(dockid: int):
 def craft_ship(fuel: int, ammo: int, steel: int, baux: int, dockid: int):
     admiral = g.admiral
     ship = get_ship_from_recipe(fuel, ammo, steel, baux)
-    nship = Kanmusu().create(ship_api_id=ship)
+    if ship:
+        nship = Kanmusu(ship)
+    else:
+        print("Something bad happened. Where are your recipes?")
+        abort(404)
+        return
 
     # Change dock data.
-    dock = admiral.docks_craft.all()[dockid]
-    dock = update_dock(dock, fuel, ammo, steel, baux, nship)
+    try:
+        dock = admiral.docks_craft.all()[dockid]
+    except IndexError:
+        abort(404)
+        return
+
+    dock = dock.update(dock, fuel, ammo, steel, baux, nship)
     db.db.session.add(dock)
     admiral.add_kanmusu(nship)
     db.db.session.add(admiral)

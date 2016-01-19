@@ -1,5 +1,8 @@
+import datetime
+
 from sqlalchemy.orm import reconstructor
 
+import util
 from constants import *
 from db.ships import Kanmusu
 from . import db, Resources, Usable
@@ -49,11 +52,13 @@ class Admiral(db.Model):
     quests = db.relationship('AdmiralQuest', lazy='dynamic')
 
     docks_craft = db.relationship("Dock",
-        primaryjoin="and_(Admiral.id==Dock.admiral_id, Dock.type_== {})".format(DOCK_TYPE_CRAFT),
-        order_by='Dock.number')
+                                  primaryjoin="and_(Admiral.id==Dock.admiral_id, Dock.type_== {})".format(
+                                      DOCK_TYPE_CRAFT),
+                                  order_by='Dock.number')
     docks_repair = db.relationship("Dock",
-        primaryjoin="and_(Admiral.id==Dock.admiral_id, Dock.type_== {})".format(DOCK_TYPE_REPAIR),
-        order_by='Dock.number')
+                                   primaryjoin="and_(Admiral.id==Dock.admiral_id, Dock.type_== {})".format(
+                                       DOCK_TYPE_REPAIR),
+                                   order_by='Dock.number')
 
     def create(self, user):
         """
@@ -123,7 +128,7 @@ class Admiral(db.Model):
             return ausable
         return None
 
-    def add_kanmusu(self, ship_id=None, ship_api_id=None,kanmusu=None, fleet_number=None, position=None):
+    def add_kanmusu(self, ship_id=None, ship_api_id=None, kanmusu=None, fleet_number=None, position=None):
         kanmusu = kanmusu if kanmusu else Kanmusu(ship_id, ship_api_id)
         kanmusu.number = len(self.kanmusu) + 1
         if fleet_number:
@@ -133,8 +138,8 @@ class Admiral(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def get_equipment(self,admiral_equip_id):
-        return self.equipment.filter(AdmiralEquipment.id==admiral_equip_id).first()
+    def get_equipment(self, admiral_equip_id):
+        return self.equipment.filter(AdmiralEquipment.id == admiral_equip_id).first()
 
 
 class AdmiralEquipment(db.Model):
@@ -206,6 +211,34 @@ class Dock(db.Model):
     def default_resources(self):
         if self.resources is None:
             self.resources = Resources(fuel=0, ammo=0, steel=0, baux=0)
+
+    def update(self, fuel: int, ammo: int, steel: int, baux: int, ship: Kanmusu, build: bool = True):
+        """
+        Update a dock.
+        :param ship: The ship to use.
+        :param build: Are we building?
+        :return: Ourselves, after we've updated.
+                Make sure to commit this new state.
+        """
+        self.resources.fuel = fuel
+        self.resources.ammo = ammo
+        self.resources.steel = steel
+        self.resources.baux = baux
+        if ship is not None:
+            try:
+                if build:
+                    ntime = util.millisecond_timestamp(
+                        datetime.datetime.now() + datetime.timedelta(minutes=ship.ship.buildtime))
+                else:
+                    ntime = util.millisecond_timestamp(
+                        datetime.datetime.now() + datetime.timedelta(minutes=ship.ship.repairtime))
+            except TypeError:
+                ntime = util.millisecond_timestamp(datetime.datetime.now() + datetime.timedelta(minutes=22))
+            self.complete = ntime
+        else:
+            self.complete = 0
+        self.kanmusu = ship
+        return self
 
 
 class Fleet(db.Model):
