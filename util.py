@@ -7,7 +7,6 @@ import random
 import string
 import time
 import warnings
-
 import constants
 
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
@@ -52,6 +51,11 @@ def prepare_api_blueprint(bp):
     @bp.errorhandler(403)
     def api_403(e):
         return svdata(None, 100, errormsg="Not authorized")
+
+    @bp.errorhandler(400)
+    def api_400(e):
+        return svdata({"en_api_error": "Invalid data recieved."}, 201,
+                      errormsg="申し訳ありませんがブラウザを再起動し再ログインしてください。")
 
 
 def pack_resources(r: list) -> str:

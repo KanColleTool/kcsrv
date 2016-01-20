@@ -1,3 +1,5 @@
+import traceback
+
 from flask import request, g, Blueprint, abort
 
 import helpers.MemberHelper
@@ -70,10 +72,12 @@ def build():
 
 @api_actions.route('/api_req_kousyou/getship', methods=['POST'])
 def getship():
-    dock = int(request.values.get("api_kdock_id"))
+    dock = int(request.values.get("api_kdock_id")) - 1
     try:
-        data = DockHelper.get_and_remove_ship(dockid=dock)
+        data = DockHelper.get_and_remove_ship_kdock(dockid=dock)
     except (IndexError, AttributeError):
+        print("Error happened on retrieving ship....")
+        traceback.print_exc()
         return svdata({}, code=201, message='申し訳ありませんがブラウザを再起動し再ログインしてください。')
     return svdata(data)
 
