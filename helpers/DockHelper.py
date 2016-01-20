@@ -69,30 +69,37 @@ def get_and_remove_ship_kdock(dockid: int):
 def craft_ship(fuel: int, ammo: int, steel: int, baux: int, dockid: int):
     admiral = g.admiral
     ship = get_ship_from_recipe(fuel, ammo, steel, baux)
+    print("ship is", ship)
     if ship:
         nship = Kanmusu(ship)
+        nship.number = len(g.admiral.kanmusu)
     else:
         print("Something bad happened. Where are your recipes?")
         abort(404)
         return
 
+    print("nship is", nship)
+
     # Change dock data.
     try:
-        dock = admiral.docks_craft.all()[dockid]
+        dock = admiral.docks_craft[dockid]
     except IndexError:
         abort(404)
         return
 
-    dock = dock.update(dock, fuel, ammo, steel, baux, nship, True)
-    db.db.session.add(dock)
+    dock = dock.update(fuel, ammo, steel, baux, nship, True)
+
+    admiral.resources.sub(fuel, ammo, steel, baux)
+
+    db.session.add(dock)
     admiral.add_kanmusu(nship)
-    db.db.session.add(admiral)
+    db.session.add(admiral)
     api_data = {
         "api_ship_id": ship,
         "api_kdock": MemberHelper.dock_data([dock], False),
-        "api_id": nship.local_ship_num,
+        "api_id": nship.number,
         "api_slotitem": [],
         "api_ship": MemberHelper.kanmusu(kanmusu=dock.kanmusu)
     }
-    db.db.session.commit()
+    db.session.commit()
     return api_data

@@ -119,6 +119,9 @@ class Kanmusu(db.Model):
         total = sum(EXP_LEVEL[:self.level + 1])
         return total - self.experience
 
+    def __repr__(self):
+        return "<Kanmusu {} (id: {}) on Admiral {}>".format(self.ship.name, self.id, self.admiral)
+
 
 class KanmusuEquipment(db.Model):
     __tablename__ = 'kanmusu_equipment'

@@ -28,7 +28,18 @@ class Resources(db.Model):
         self.ammo = self.fuel = self.steel = self.baux = None
         return self
 
-    def sub(self, target):
+    def update(self, fuel, ammo, steel, baux):
+        """Update resource amounts"""
+        self.fuel = fuel
+        self.ammo = ammo
+        self.steel = steel
+        self.baux = baux
+
+    def sub(self, fuel, ammo, steel, baux):
+        """Subtract resource amounts"""
+        self.update(self.fuel - fuel, self.ammo - ammo, self.steel - steel, self.baux - baux)
+
+    def __sub(self, target):
         mapper = inspect(self)
         for column in mapper.attrs:
             current = getattr(self, column.key)
