@@ -5,7 +5,7 @@ from flask import abort
 from flask import g
 from sqlalchemy import text
 
-from db import Kanmusu, db
+from db import Kanmusu, db, Ship
 from . import MemberHelper
 
 
@@ -69,7 +69,6 @@ def get_and_remove_ship_kdock(dockid: int):
 def craft_ship(fuel: int, ammo: int, steel: int, baux: int, dockid: int):
     admiral = g.admiral
     ship = get_ship_from_recipe(fuel, ammo, steel, baux)
-    print("ship is", ship)
     if ship:
         nship = Kanmusu(ship)
         nship.number = len(g.admiral.kanmusu)
@@ -78,13 +77,16 @@ def craft_ship(fuel: int, ammo: int, steel: int, baux: int, dockid: int):
         abort(404)
         return
 
-    print("nship is", nship)
-
     # Change dock data.
     try:
         dock = admiral.docks_craft[dockid]
     except IndexError:
         abort(404)
+        return
+
+    if dock.kanmusu is not None:
+        # wat
+        abort(400)
         return
 
     dock = dock.update(fuel, ammo, steel, baux, nship, True)
@@ -95,7 +97,7 @@ def craft_ship(fuel: int, ammo: int, steel: int, baux: int, dockid: int):
     admiral.add_kanmusu(nship)
     db.session.add(admiral)
     api_data = {
-        "api_ship_id": ship,
+        "api_ship_id": nship.ship.api_id,
         "api_kdock": MemberHelper.dock_data([dock], False),
         "api_id": nship.number,
         "api_slotitem": [],
