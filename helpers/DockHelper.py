@@ -18,8 +18,8 @@ def calculate_repair_time(kanmusu: Kanmusu):
 def get_ship_from_recipe(fuel: int=30, ammo: int=30, steel: int=30, baux: int=30) -> int:
 
     ship_t = text("""select ship_id, chance from recipe
-      join resources min on recipe.min_resources_id = min.id
-      join resources max on recipe.max_resources_id = min.id
+      join recipe__resources min on recipe.min_resources_id = min.id
+      join recipe__resources max on recipe.max_resources_id = max.id
       where
       :fuel between min.fuel and max.fuel and
       :ammo between min.ammo and max.ammo and
