@@ -128,7 +128,7 @@ def dock_data(dock_list, fill=True):
             'api_state': 0 if dock.complete is None
             else 2 if dock.complete > time.time()
             else 3 if dock.complete < time.time() else -1,
-            'api_created_ship_id': dock.kanmusu.ship.id if dock.kanmusu is not None else 0,
+            'api_created_ship_id': dock.kanmusu.ship.api_id if dock.kanmusu is not None else 0,
             'api_complete_time': dock.complete,
             'api_complete_time_str': datetime.datetime.fromtimestamp(dock.complete / 1000).strftime('%Y-%m-%d %H:%M:%S')
             if dock.complete is not None else "",
