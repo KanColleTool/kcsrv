@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 import logging
 
-from app import app
+from app import app, logger
 
-logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+root = logging.getLogger()
+root.setLevel(logging.DEBUG)
 
 
 if __name__ == '__main__':
-    print("Warning: This is a debugging configuration. Run with the gunicorn script to run in production.")
-
+    logger.warn("This is a debugging configuration. Run with the gunicorn script to run in production.")
     app.run(host='0.0.0.0', debug=True)
