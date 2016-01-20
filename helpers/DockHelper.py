@@ -40,27 +40,28 @@ def get_ship_from_recipe(fuel: int=30, ammo: int=30, steel: int=30, baux: int=30
 def get_and_remove_ship_kdock(dockid: int):
     admiral = g.admiral
     try:
-        dock = admiral.docks_craft.all()[dockid]
+        dock = admiral.docks_craft[dockid]
     except IndexError:
         abort(404)
         return None
 
-    dock.resources.fuel, dock.resources.ammo, \
-    dock.resources.steel, dock.resources.baux = 0, 0, 0, 0
+    if dock.kanmusu is None:
+        # ....
+        abort(400)
+        return
 
     dock.kanmusu.active = True
 
-    db.session.add(dock.ship)
     api_data = {
-        "api_ship_id": dock.ship.ship.id,
+        "api_ship_id": dock.kanmusu.ship.api_id,
         "api_kdock": MemberHelper.dock_data([dock], False),
         "api_id": dock.kanmusu.number,
         "api_slotitem": [], # TODO: Equipment!
         "api_ship": MemberHelper.kanmusu(kanmusu=dock.kanmusu)
     }
     # Update dock data.
-    dock.kanmusu = None
-    dock.complete = None
+    db.session.add(dock.kanmusu)
+    dock.update(None)
     db.session.add(dock)
     db.session.commit()
     return api_data
@@ -89,7 +90,7 @@ def craft_ship(fuel: int, ammo: int, steel: int, baux: int, dockid: int):
         abort(400)
         return
 
-    dock = dock.update(fuel, ammo, steel, baux, nship, True)
+    dock = dock.update(nship, fuel, ammo, steel, baux, True)
 
     admiral.resources.sub(fuel, ammo, steel, baux)
 

@@ -129,7 +129,7 @@ class Admiral(db.Model):
         return None
 
     def add_kanmusu(self, kanmusu, fleet_number=None, position=None):
-        kanmusu.number = len(self.kanmusu) + 1
+        kanmusu.number = len(self.kanmusu)
         if fleet_number:
             self.fleets[fleet_number - 1].kanmusu.append(kanmusu)
             kanmusu.fleet_position = position if position else 1
@@ -211,7 +211,8 @@ class Dock(db.Model):
         if self.resources is None:
             self.resources = Resources(fuel=0, ammo=0, steel=0, baux=0)
 
-    def update(self, fuel: int, ammo: int, steel: int, baux: int, ship: Kanmusu, build: bool = True):
+    def update(self, ship: Kanmusu, fuel: int=None, ammo: int=None, steel: int=None, baux: int=None,
+               build: bool=True):
         """
         Update a dock.
         :param ship: The ship to use.
@@ -235,9 +236,11 @@ class Dock(db.Model):
                 ntime = util.millisecond_timestamp(datetime.datetime.now() + datetime.timedelta(minutes=22))
             self.complete = ntime
         else:
-            self.complete = 0
+            self.complete = None
         self.kanmusu = ship
         return self
+
+
 
 
 class Fleet(db.Model):
