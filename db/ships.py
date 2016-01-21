@@ -194,3 +194,6 @@ class Ship(db.Model):
             return Ship.query.filter(Ship.api_id == ship_api_id).first()
         else:
             return None
+
+    def __repr__(self):
+        return "ID - {} / Name - {} / Number - {}".format(self.id, self.name, self.number)

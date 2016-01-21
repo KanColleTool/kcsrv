@@ -20,6 +20,9 @@ class User(db.Model, UserMixin):
 
     admiral = db.relationship("Admiral", backref='user', uselist=False)
 
+    def __repr__(self):
+        return "{} ({})".format(self.email, self.nickname)
+
 
 class Role(db.Model, RoleMixin):
     __tablename__ = 'role'

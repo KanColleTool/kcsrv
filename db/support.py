@@ -52,6 +52,9 @@ class Resources(db.Model):
                 setattr(self, column.key, current - mod)
         return self
 
+    def __repr__(self):
+        return "Fuel: {} / Ammo: {} / Steel: {} / Baux: {}".format(self.fuel, self.ammo, self.steel, self.baux)
+
 
 class Stats(db.Model):
     __tablename__ = 'stats'
@@ -118,6 +121,9 @@ class Stats(db.Model):
                     setattr(result, column.key, op1)
         return result
 
+    def __repr__(self):
+        return str(self.id)
+
 
 class Recipe(db.Model):
     __tablename__ = 'recipe'
@@ -133,6 +139,9 @@ class Recipe(db.Model):
     max_resources = db.relationship('RecipeResources', primaryjoin='Recipe.max_resources_id == RecipeResources.id')
     min_resources = db.relationship('RecipeResources', primaryjoin='Recipe.min_resources_id == RecipeResources.id')
 
+    def __repr__(self):
+        return "Recipe for {} (id: {})".format(self.ship.name, self.ship_id)
+
 
 class RecipeResources(db.Model):
     __tablename__ = 'recipe__resources'
@@ -142,3 +151,6 @@ class RecipeResources(db.Model):
     ammo = db.Column(db.Integer)
     steel = db.Column(db.Integer)
     baux = db.Column(db.Integer)
+
+    def __repr__(self):
+        return "Fuel: {} / Ammo: {} / Steel: {} / Baux: {}".format(self.fuel, self.ammo, self.steel, self.baux)

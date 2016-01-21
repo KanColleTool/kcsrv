@@ -60,6 +60,11 @@ class Admiral(db.Model):
 
     expeditions = db.relationship("Expedition", secondary=admiral_expedition_asoc)
 
+    @reconstructor
+    def rec(self):
+        if self.name is None:
+            self.name = self.user.nickname
+
     def create(self, user):
         """
         Create a new Admiral.
@@ -139,6 +144,9 @@ class Admiral(db.Model):
 
     def get_equipment(self, admiral_equip_id):
         return self.equipment.filter(AdmiralEquipment.id == admiral_equip_id).first()
+
+    def __repr__(self):
+        return "Admiral {} - ID {}".format(self.name, self.id)
 
 
 class AdmiralEquipment(db.Model):
@@ -251,3 +259,6 @@ class Fleet(db.Model):
 
     admiral = db.relationship('Admiral')
     kanmusu = db.relationship('Kanmusu', order_by='Kanmusu.fleet_position', backref='fleet')
+
+    def __repr__(self):
+        return "Fleet {} - {} ships".format(self.number, len(self.kanmusu))
