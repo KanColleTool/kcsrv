@@ -4,7 +4,7 @@ import util
 from constants import *
 from db.ships import Kanmusu
 from . import db, Resources, Usable
-
+from .expedition import admiral_expedition_asoc
 
 class Admiral(db.Model):
     """
@@ -57,6 +57,8 @@ class Admiral(db.Model):
                                    primaryjoin="and_(Admiral.id==Dock.admiral_id, Dock.type_== {})".format(
                                        DOCK_TYPE_REPAIR),
                                    order_by='Dock.number')
+
+    expeditions = db.relationship("Expedition", secondary=admiral_expedition_asoc)
 
     def create(self, user):
         """

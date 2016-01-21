@@ -15,3 +15,4 @@ from db.quests import *
 from db.items import *
 from db.admiral import *
 from db.ships import *
+from db.expedition import *
