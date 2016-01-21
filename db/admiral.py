@@ -1,7 +1,5 @@
 import datetime
-
 from sqlalchemy.orm import reconstructor
-
 import util
 from constants import *
 from db.ships import Kanmusu
@@ -211,8 +209,8 @@ class Dock(db.Model):
         if self.resources is None:
             self.resources = Resources(fuel=0, ammo=0, steel=0, baux=0)
 
-    def update(self, ship: Kanmusu, fuel: int=None, ammo: int=None, steel: int=None, baux: int=None,
-               build: bool=True):
+    def update(self, ship: Kanmusu, fuel: int = None, ammo: int = None, steel: int = None, baux: int = None,
+               build: bool = True):
         """
         Update a dock.
         :param ship: The ship to use.
@@ -239,8 +237,6 @@ class Dock(db.Model):
             self.complete = None
         self.kanmusu = ship
         return self
-
-
 
 
 class Fleet(db.Model):

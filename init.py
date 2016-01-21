@@ -7,12 +7,14 @@ from admin import admin
 from db import User, Role, Admiral
 from forms import *
 from util import generate_api_token
+import datetime
+import logging
 
 modules = {
     "migrate": None, "security": None, "user_datastore": None
 }
 
-admiral = None
+logger = logging.getLogger("kcsrv")
 
 
 def init(app):
@@ -45,6 +47,23 @@ def init(app):
         if user is None:
             abort(404)
         g.admiral = user.admiral if user.admiral else Admiral().create(user)
+        # Update resources.
+        curr_t = datetime.datetime.utcnow()
+        lastaction = g.admiral.last_action
+        if not lastaction:
+            lastaction = curr_t
+        delta = (curr_t - lastaction).total_seconds() / 60
+        if delta < 0:
+            # wat
+            logger.warn("Now - lastaction for admiral {} negative?".format(user.nickname))
+            return
+        delta = int(delta)
+        g.admiral.resources.add(*((delta * 3) for _ in range(3)), baux=delta)
+        # Update action time
+        g.admiral.last_action = curr_t
+        db.session.add(g.admiral)
+        db.session.commit()
+
 
     # --> Set up blueprints
     from kancolle.api import api_actions
