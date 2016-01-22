@@ -49,7 +49,7 @@ def kanmusu(kanmusu: Kanmusu):
 
 
 def fleet(fleet):
-    fleet_members = [kanmusu.id for kanmusu in fleet.kanmusu if kanmusu is not None]
+    fleet_members = [kanmusu.number for kanmusu in fleet.kanmusu if kanmusu is not None]
     return {
         # Unknown value, always zero for some reason.
         'api_flagship': 0,
