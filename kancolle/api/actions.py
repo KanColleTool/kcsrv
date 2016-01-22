@@ -1,7 +1,5 @@
 import traceback
-
 from flask import request, g, Blueprint, abort
-
 import helpers.MemberHelper
 from db import Admiral
 from db import db, Kanmusu
@@ -167,13 +165,19 @@ def change_pos():
     db.session.commit()
     return svdata({})
 
+
 api_user = Blueprint('api_user', __name__)
 prepare_api_blueprint(api_user)
+
 
 @api_user.route("/api_get_member/mission")
 def mission():
     # Gets list of expeditions.
+    # This is a simple query that lists all expeditions.
+    # If the admiral has completed them, it will respond with the appropriate state.
+    # Note that expedition details are stored in api_start2.
     pass
+
 
 @api_user.route("/api_get_member/charge", methods=["GET", "POST"])
 def resupply():
@@ -204,7 +208,6 @@ def ship3():
             admiral), "api_slot_data": _ItemHelper.get_slottype_list(admiral=admiral)
     }
     return svdata(data)
-
 
 
 # Generic routes for anything not implemented.

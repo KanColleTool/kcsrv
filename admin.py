@@ -42,7 +42,7 @@ class RecipeModelView(MyModelView):
     pass
 
 
-admin = Admin(index_view=MyAdminIndexView())
+admin = Admin(index_view=MyAdminIndexView(), template_mode='bootstrap3')
 admin.add_view(RoleModelView(Role, db.session, endpoint='role'))
 admin.add_view(UserModelView(User, db.session, endpoint='user'))
 admin.add_view(AdmiralModelView(Admiral, db.session, endpoint='admiral'))
