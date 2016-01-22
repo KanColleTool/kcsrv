@@ -18,7 +18,7 @@ class User(db.Model, UserMixin):
 
     roles = db.relationship('Role', secondary='role__user')
 
-    admiral = db.relationship("Admiral", backref='user', uselist=False)
+    admiral = db.relationship("Admiral", uselist=False)
 
     def __repr__(self):
         return "{} ({})".format(self.email, self.nickname)

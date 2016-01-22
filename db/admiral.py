@@ -49,6 +49,8 @@ class Admiral(db.Model):
     fleets = db.relationship('Fleet', order_by='Fleet.number')
     quests = db.relationship('AdmiralQuest', lazy='dynamic')
 
+    user = db.relationship('User', uselist=False)
+
     docks_craft = db.relationship("Dock",
                                   primaryjoin="and_(Admiral.id==Dock.admiral_id, Dock.type_== {})".format(
                                       DOCK_TYPE_CRAFT),
@@ -72,7 +74,7 @@ class Admiral(db.Model):
         self.resources = Resources(fuel=500, ammo=500, steel=500, baux=500)
         self.docks_craft = [Dock(type_=DOCK_TYPE_CRAFT, number=n + 1, resources=Resources().none()) for n in range(3)]
         self.docks_repair = [Dock(type_=DOCK_TYPE_REPAIR, number=n + 1, resources=Resources().none()) for n in range(3)]
-        self.fleets = [Fleet(number=1)]
+        self.fleets = [Fleet(number=1), Fleet(number=2)]
 
         # hm...must do better than this.
         initial_usables = [AdmiralUsables(usable=Usable.by_name(NAME_BUCKET), quantity=3),

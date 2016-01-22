@@ -42,9 +42,11 @@ def init(app):
     def admiral_load():
         api_token = request.values.get('api_token', None)
         if api_token is None:
+            logger.warning("No API Key -> Skipping request")
             abort(403)
         user = db.session.query(User).filter(User.api_token == api_token).first()
         if user is None:
+            logger.warning("Unknown API Key -> {}".format(api_token))
             abort(404)
         g.admiral = user.admiral if user.admiral else Admiral().create(user)
         # Update resources.
