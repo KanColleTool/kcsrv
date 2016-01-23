@@ -6,7 +6,8 @@ from flask import g
 from util import prepare_api_blueprint, load_datadump, svdata
 from .actions import api_actions, api_user
 from .init import api_init
-from .member import api_game as api_member
+from .member import api_member as api_member
+from .expedition import api_mission
 
 prepare_api_blueprint(api_actions)
 prepare_api_blueprint(api_member)

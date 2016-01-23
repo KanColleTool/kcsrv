@@ -77,7 +77,7 @@ def init(app):
 
     api_member.before_request(admiral_load)
 
-    app.register_blueprint(api_member, url_prefix='/kcsapi')
+    app.register_blueprint(api_member, url_prefix='/kcsapi/api_get_member')
 
     from kancolle.api import api_init
 
