@@ -18,6 +18,6 @@ def upgrade():
     conn.execute("ALTER TABLE admiral_equipment ALTER COLUMN locked TYPE BOOLEAN USING CASE WHEN locked=0 THEN false ELSE true END;")
 
 
-def downgrade():#
+def downgrade():
     conn = op.get_bind()
     conn.execute("ALTER TABLE admiral_equipment ALTER COLUMN locked TYPE INTEGER USING CASE WHEN false THEN 0 ELSE 1 END;")
