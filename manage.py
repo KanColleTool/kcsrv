@@ -57,6 +57,7 @@ def update_db():
     dbpopulate.equip()
     dbpopulate.items()
     dbpopulate.recipe_resources()
+    dbpopulate.expeditions()
     try:
         setup()
     except sqlalchemy.exc.IntegrityError:

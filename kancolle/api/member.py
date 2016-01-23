@@ -1,7 +1,10 @@
+from collections import OrderedDict
+
 from flask import request, g, Blueprint, redirect, url_for
 
 from db import Kanmusu, Admiral, Expedition
 from helpers import MemberHelper
+from helpers.MemberHelper import fleet
 from util import svdata
 
 api_member = Blueprint("api_game", __name__)
@@ -148,10 +151,10 @@ def mission():
             states[e.id] = 2
         else:
             states[e.id] = 0
-    return svdata([{"api_id": id, "api_state": state} for (id, state) in states.items()])
+    return svdata([OrderedDict(api_mission_id=id, api_state=state) for (id, state) in states.items()])
 
 
-@api_member.route("/harge", methods=["GET", "POST"])
+@api_member.route("/charge", methods=["GET", "POST"])
 def resupply():
     # Get the ships. Misleading name of the year candidate.
     ships = request.values.get("api_id_items")
@@ -164,3 +167,7 @@ def resupply():
         assert isinstance(ship, Kanmusu)
         # Calculate requirements.
         # Follows this formula: how many bars they use x 10% x their fuel/ammo cost
+
+@api_member.route("/deck", methods=["GET", "POST"])
+def fleets():
+    return svdata([fleet(fleet_) for fleet_ in g.admiral.fleets])

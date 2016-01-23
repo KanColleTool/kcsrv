@@ -50,16 +50,16 @@ def load_datadump(filename: str) -> dict:
 def prepare_api_blueprint(bp):
     @bp.errorhandler(403)
     def api_403(e):
-        return svdata(None, 100, errormsg="Not authorized")
+        return svdata(None, 100, errormsg="Not authorized"), 403
 
     @bp.errorhandler(400)
     def api_400(e):
         return svdata({"en_api_error": "Invalid data recieved."}, 201,
-                      errormsg="申し訳ありませんがブラウザを再起動し再ログインしてください。")
+                      errormsg="申し訳ありませんがブラウザを再起動し再ログインしてください。"), 400
 
     @bp.errorhandler(404)
     def api_404(e):
-        return svdata(None, 100, errormsg="Could not find the appropriate data for the request")
+        return svdata(None, 100, errormsg="Could not find the appropriate data for the request"), 404
 
 
 def pack_resources(r: list) -> str:

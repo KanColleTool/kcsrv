@@ -91,6 +91,12 @@ def init(app):
 
     app.register_blueprint(api_user, url_prefix='/kcsapi')
 
+    from kancolle.api import api_mission
+
+    api_mission.before_request(admiral_load)
+
+    app.register_blueprint(api_mission, url_prefix='/kcsapi/api_req_mission')
+
     @app.route('/play')
     def p_index():
         if hasattr(current_user, 'api_token'):

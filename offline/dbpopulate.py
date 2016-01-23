@@ -1,6 +1,5 @@
 import util
-from db import db, Equipment, Ship, Stats, Resources, Remodel, Usable, RecipeResources
-
+from db import db, Equipment, Ship, Stats, Resources, Remodel, Usable, RecipeResources, Expedition
 
 # from helpers import ResourceHelper
 data = util.load_datadump('api_start2.json')
@@ -15,8 +14,9 @@ def items():
         if old:
             continue
         i = Usable(api_id=item["api_id"], type_=item["api_usetype"], category=item["api_category"],
-            name=item["api_name"], description=item["api_description"][0], description2=item["api_description"][1],
-            price=item["api_price"])
+                   name=item["api_name"], description=item["api_description"][0],
+                   description2=item["api_description"][1],
+                   price=item["api_price"])
         db.session.add(i)
         print("Merged usables {} - {}".format(i.api_id, i.name))
         count += 1
@@ -38,11 +38,12 @@ def equip():
             info=equip["api_info"],
             name=equip["api_name"], rarity=equip["api_rare"], types=equip["api_type"],
             stats=Stats(hp=equip["api_taik"], armour=equip["api_souk"], firepower=equip["api_houg"],
-                torpedo=equip["api_raig"], speed=equip["api_soku"], dive_bomber=equip["api_baku"],
-                antiair=equip["api_tyku"], antisub=equip["api_tais"], accuracy=equip["api_houm"],
-                evasion=equip["api_houk"], los=equip["api_saku"], luck=equip["api_luck"], range_=equip["api_leng"], ),
+                        torpedo=equip["api_raig"], speed=equip["api_soku"], dive_bomber=equip["api_baku"],
+                        antiair=equip["api_tyku"], antisub=equip["api_tais"], accuracy=equip["api_houm"],
+                        evasion=equip["api_houk"], los=equip["api_saku"], luck=equip["api_luck"],
+                        range_=equip["api_leng"], ),
             dismantling=Resources(fuel=equip["api_broken"][0], ammo=equip["api_broken"][1],
-                steel=equip["api_broken"][2], baux=equip["api_broken"][3], ))
+                                  steel=equip["api_broken"][2], baux=equip["api_broken"][3], ))
         """
         Ignored fields:
         usebull = equip["api_usebull"],
@@ -70,8 +71,10 @@ def ships():
         # TODO - Update data if api_id already exists
         if old:
             id = old.id
+            cmd = db.session.merge
         else:
             id = None
+            cmd = db.session.add
         s = Ship(
             id=id,
             # Misc ship stats
@@ -102,15 +105,15 @@ def ships():
                     ammo=ship['api_afterbull'])),
             # Minimums
             base_stats=Stats(luck=ship['api_luck'][0], firepower=ship['api_houg'][0], armour=ship['api_souk'][0],
-                torpedo=ship['api_raig'][0], antiair=ship['api_tyku'][0], antisub=0, los=0, evasion=0,
-                hp=ship['api_taik'][0], ammo=ship['api_bull_max'], fuel=ship['api_fuel_max']), # Maximums
+                             torpedo=ship['api_raig'][0], antiair=ship['api_tyku'][0], antisub=0, los=0, evasion=0,
+                             hp=ship['api_taik'][0], ammo=ship['api_bull_max'], fuel=ship['api_fuel_max']),  # Maximums
             max_stats=Stats(luck=ship['api_luck'][1], firepower=ship['api_houg'][1], armour=ship['api_souk'][1],
-                torpedo=ship['api_raig'][1], antiair=ship['api_tyku'][1], antisub=0, los=0, evasion=0,
-                range_=ship['api_leng'], hp=ship['api_taik'][1],
+                            torpedo=ship['api_raig'][1], antiair=ship['api_tyku'][1], antisub=0, los=0, evasion=0,
+                            range_=ship['api_leng'], hp=ship['api_taik'][1],
 
-            ), maxslots=ship['api_slot_num'], maxplanes=','.join(str(x) for x in ship['api_maxeq']))
+                            ), maxslots=ship['api_slot_num'], maxplanes=','.join(str(x) for x in ship['api_maxeq']))
         # ugh
-        db.session.add(s)
+        cmd(s)
         print("Added ship {} - {}".format(ship['api_id'], ship['api_name']))
         count += 1
     db.session.commit()
@@ -119,8 +122,38 @@ def ships():
 
 def recipe_resources():
     # Add resources.
-    with open("data/recipe/resources.sql") as f:
+    with open("data/sql/resources.sql") as f:
         data = f.read()
     db.session.execute(data)
     res = RecipeResources.query.all()
     print("Updated resources database from resources.sql -> {} entries now in database".format(len(res)))
+
+
+def expeditions():
+    # Add expedition data
+    expedition = util.load_datadump("expeditions.json")
+    missions = expedition['api_mst_mission']
+    for n, mission in enumerate(missions):
+        assert isinstance(mission, dict)
+        if not 'resources' in mission.keys():
+            print("Mission {} has no resource data added -> Cannot import".format(mission.get('api_id', None)))
+            continue
+        old = db.session.query(Expedition).filter(Expedition.id == mission["api_id"]).first()
+        # TODO - Update data if api_id already exists
+        if old:
+            id = old.id
+            cmd = db.session.merge
+        else:
+            id = None
+            cmd = db.session.add
+
+        resources = Resources()
+        resources.update(*mission['resources'])
+        db.session.add(resources)
+        exped = Expedition(id=id, resources_granted=resources,
+                           constraints=mission.get("restrictions", {}),
+                           time_taken=mission['api_time'] * 60)
+        print("Added mission", mission['api_id'])
+        cmd(exped)
+    db.session.commit()
+    print("Added", n+1, "expeditions")

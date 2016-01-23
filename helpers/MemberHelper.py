@@ -5,7 +5,7 @@ from flask import g
 
 import util
 from constants import *
-from db import db, Equipment, Kanmusu, KanmusuEquipment, AdmiralEquipment
+from db import db, Equipment, Kanmusu, KanmusuEquipment, AdmiralEquipment, Fleet
 
 
 def kanmusu(kanmusu: Kanmusu):
@@ -49,6 +49,7 @@ def kanmusu(kanmusu: Kanmusu):
 
 
 def fleet(fleet):
+    assert isinstance(fleet, Fleet)
     fleet_members = [kanmusu.number for kanmusu in fleet.kanmusu if kanmusu is not None]
     return {
         # Unknown value, always zero for some reason.
@@ -64,7 +65,11 @@ def fleet(fleet):
         # List of ships.
         "api_ship": fleet_members + [-1] * (6 - len(fleet_members)),
         # Presumably expedition data.
-        "api_mission": [0, 0, 0, 0]
+        "api_mission":
+            [1 if fleet.expedition else 0,
+             fleet.expedition.id if fleet.expedition else 0,
+             fleet.expedition_completed if fleet.expedition else 0,
+             0]
     }
 
 

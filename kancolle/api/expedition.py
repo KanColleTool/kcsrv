@@ -6,7 +6,7 @@ from flask import request, abort
 import time
 
 import util
-from db import Expedition, Fleet, Admiral
+from db import Expedition, Fleet, Admiral, db
 from util import prepare_api_blueprint, svdata
 
 api_mission = Blueprint("api_mission", __name__)
@@ -20,7 +20,7 @@ def start_mission():
 
     # First, get the required data from the request.
     fleet_id = int(request.values.get("api_deck_id")) - 1
-    expedition_id = int(request.values.get("api_mission"))
+    expedition_id = int(request.values.get("api_mission_id"))
     # There's an extra value, api_mission.
     # No idea what it does.
 
@@ -48,6 +48,9 @@ def start_mission():
     # Set the expedition && time.
     fleet.expedition = expedition
     fleet.expedition_completed = time.time() + expedition.time_taken
+
+    db.session.add(fleet)
+    db.session.commit()
 
     # Internal state updated, now to reflect this state on the rest of the app.
     return svdata(
