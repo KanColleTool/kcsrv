@@ -57,6 +57,10 @@ def prepare_api_blueprint(bp):
         return svdata({"en_api_error": "Invalid data recieved."}, 201,
                       errormsg="申し訳ありませんがブラウザを再起動し再ログインしてください。")
 
+    @bp.errorhandler(404)
+    def api_404(e):
+        return svdata(None, 100, errormsg="Could not find the appropriate data for the request")
+
 
 def pack_resources(r: list) -> str:
     return ",".join([str(x) for x in r])
