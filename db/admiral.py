@@ -257,10 +257,15 @@ class Fleet(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, default="Unnamed")
     number = db.Column(db.Integer)
+
     admiral_id = db.Column(db.ForeignKey('admiral.id'))
+    expedition_id = db.Column(db.ForeignKey("expedition.id"))
 
     admiral = db.relationship('Admiral')
     kanmusu = db.relationship('Kanmusu', order_by='Kanmusu.fleet_position', backref='fleet')
+    expedition = db.relationship('Expedition')
+
+    expedition_completed = db.Column(db.BigInteger)
 
     def __repr__(self):
         return "Fleet {} - {} ships".format(self.number, len(self.kanmusu))

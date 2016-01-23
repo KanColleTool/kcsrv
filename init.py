@@ -66,7 +66,6 @@ def init(app):
         db.session.add(g.admiral)
         db.session.commit()
 
-
     # --> Set up blueprints
     from kancolle.api import api_actions
 
@@ -91,7 +90,6 @@ def init(app):
     api_user.before_request(admiral_load)
 
     app.register_blueprint(api_user, url_prefix='/kcsapi')
-
 
     @app.route('/play')
     def p_index():

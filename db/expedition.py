@@ -16,3 +16,6 @@ class Expedition(db.Model):
 
     # Constraints on what ships there can be, resources, etc
     constraints = db.Column(JSONB)
+
+    # Time taken
+    time_taken = db.Column(db.BigInteger)
