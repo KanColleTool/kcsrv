@@ -16,7 +16,7 @@ def kanmusu(kanmusu: Kanmusu):
     modern_stats = kanmusu.modernized_stats
     kanmusu_data = {
         # This must match api_data2 or we get different Ships in the game and DB.
-        'api_id': kanmusu.id, 'api_ship_id': ship.api_id,
+        'api_id': kanmusu.number, 'api_ship_id': ship.api_id,
         'api_onslot': [0, 0, 0, 0, 0],  # ?
         'api_locked_equip': 0,
         'api_bull': kanmusu.current_ammo,

@@ -86,6 +86,12 @@ def init(app):
 
     app.register_blueprint(api_init, url_prefix='/kcsapi')
 
+    from kancolle.api import api_user
+
+    api_user.before_request(admiral_load)
+
+    app.register_blueprint(api_user, url_prefix='/kcsapi')
+
 
     @app.route('/play')
     def p_index():

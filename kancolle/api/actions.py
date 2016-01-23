@@ -1,13 +1,16 @@
 import traceback
 from flask import request, g, Blueprint, abort
 import helpers.MemberHelper
-from db import Admiral
+from db import Admiral, Expedition
 from db import db, Kanmusu
 from helpers import _QuestHelper, AdmiralHelper, DockHelper, MemberHelper
 from util import prepare_api_blueprint
 from util import svdata
 
 api_actions = Blueprint('api_actions', __name__)
+
+import logging
+logger = logging.getLogger("kcsrv")
 
 
 @api_actions.route('/api_port/port', methods=['GET', 'POST'])
@@ -79,7 +82,6 @@ def getship():
 def change_pos():
     # This is a lot cleaner than before.
     # Known bug: You cannot switch sometimes properly, when changing ship with one in your library.
-
     # Get data from request.
     fleet_id = int(request.values.get("api_id")) - 1
     ship_id = int(request.values.get("api_ship_id")) - 1
@@ -94,6 +96,7 @@ def change_pos():
     try:
         fleet = g.admiral.fleets[fleet_id]
     except IndexError:
+        logger.warn("Admiral -> {} / Fleet ID -> {} / IndexError".format(g.admiral, fleet_id))
         abort(404)
         return
 
@@ -104,6 +107,7 @@ def change_pos():
         else:
             kmsu = None
     except:
+        logger.warn("Admiral -> `{}` / Ship ID -> `{}` / IndexError".format(g.admiral, ship_id))
         abort(404)
         return
 
@@ -170,13 +174,20 @@ api_user = Blueprint('api_user', __name__)
 prepare_api_blueprint(api_user)
 
 
-@api_user.route("/api_get_member/mission")
+@api_user.route("/api_get_member/mission", methods=["GET", "POST"])
 def mission():
     # Gets list of expeditions.
     # This is a simple query that lists all expeditions.
     # If the admiral has completed them, it will respond with the appropriate state.
     # Note that expedition details are stored in api_start2.
-    pass
+    expd = Expedition.query.all()
+    states = {}
+    for e in expd:
+        if e in g.admiral.expeditions:
+            states[e.id] = 2
+        else:
+            states[e.id] = 0
+    return svdata([{"api_id": id, "api_state": state} for (id, state) in states.items()])
 
 
 @api_user.route("/api_get_member/charge", methods=["GET", "POST"])
@@ -214,9 +225,9 @@ def ship3():
 
 @api_user.route('/api_req_init/<path:path>', methods=['GET', 'POST'])
 def misc(path):
-    return svdata({'api_result_msg': '申し訳ありませんがブラウザを再起動し再ログインしてください。', 'api_result': 201})
+    return svdata({'api_result_msg': '申し訳ありませんがブラウザを再起動し再ログインしてください。', 'api_result': 201}), 404
 
 
 @api_user.route('/api_get_member/<path:path>', methods=['GET', 'POST'])
 def misc2(path):
-    return svdata({'api_result_msg': '申し訳ありませんがブラウザを再起動し再ログインしてください。', 'api_result': 201})
+    return svdata({'api_result_msg': '申し訳ありませんがブラウザを再起動し再ログインしてください。', 'api_result': 201}), 404
