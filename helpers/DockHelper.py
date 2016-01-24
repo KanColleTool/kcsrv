@@ -1,4 +1,4 @@
-# ID 1 -> 海防艦 -> Costal Defence Ship (?)
+# ID 1 -> 海防艦 -> Coastal Defence Ship (?)
 # ID 2 -> 駆逐艦 -> Destroyer
 # ID 3 -> 軽巡洋艦 -> Light Cruiser
 # ID 4 -> 重雷装巡洋艦 -> Torpedo Cruiser
@@ -16,7 +16,7 @@
 # ID 16 -> 水上機母艦 -> Seaplane Carrier
 # ID 17 -> 揚陸艦 -> amphibious assault ship
 # ID 18 -> 装甲空母 -> Armored aircraft carrier
-# ID 19 -> 工作艦 -> Work Ship
+# ID 19 -> 工作艦 -> Repair Ship
 # ID 20 -> 潜水母艦 -> Submarine Tender
 # ID 21 -> 練習巡洋艦 -> Practice Cruiser
 # from db import db,Dock
