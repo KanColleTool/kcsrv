@@ -9,6 +9,7 @@ from sqlalchemy_utils import InstrumentedList
 import util
 from app import logger
 from db import Expedition, Fleet, Admiral, db
+from helpers import MemberHelper
 from util import prepare_api_blueprint, svdata
 
 api_mission = Blueprint("api_mission", __name__)
@@ -85,7 +86,7 @@ def expd_result():
     # method is called and it's all calculated.
 
     # Check the timings.
-    if fleet.expedition_completed >= time.time():
+    if fleet.expedition_completed >= time.time() and not fleet.expedition_cancelled:
         logger.warn("Expedition_Completed ({}) >= Current Time ({})".format(fleet.expedition_completed, time.time()))
         # Don't cheat.
         abort(400)
@@ -123,7 +124,10 @@ def expd_result():
                     return False
         return True
 
-    met_requirements = check_requirements()
+    if not fleet.expedition_cancelled:
+        met_requirements = check_requirements()
+    else:
+        met_requirements = False
 
     # Update internal state.
     g.admiral.expedition_total += 1
@@ -154,7 +158,7 @@ def expd_result():
     data = {
         "api_ship_id": [-1] + [kanmusu.number for kanmusu in fleet.kanmusu],
         "api_clear_result": int(met_requirements),
-        "api_get_exp": 30 if met_requirements else 5,
+        "api_get_exp": 30 if met_requirements else 5 if not fleet.expedition_cancelled else 0,
         "api_member_lv": g.admiral.level,
         "api_member_exp": g.admiral.experience,
         "api_get_ship_exp": api_exp_get,
@@ -164,15 +168,35 @@ def expd_result():
         "api_detail": "???",
         "api_quest_name": "Expedition {}".format(fleet.expedition.id),
         "api_quest_level": 1,
-        "api_get_material": fleet.expedition.resources_granted.to_list(),
+        "api_get_material": fleet.expedition.resources_granted.to_list() if met_requirements else -1,
         "api_useitem_flag": [
             0,
             0
         ]
     }
     fleet.expedition = None
+    fleet.expedition_completed = None
+    fleet.expedition_cancelled = None
     db.session.add(fleet)
     db.session.add(g.admiral)
     db.session.commit()
     sv = svdata(data)
     return sv
+
+
+@api_mission.route("/return_instruction", methods=["GET", "POST"])
+def cancel():
+    """Cancels a mission"""
+    fleet_id = int(request.values.get("api_deck_id")) - 1
+
+    try:
+        fleet = g.admiral.fleets[fleet_id]
+    except IndexError:
+        logger.warn("Fleet does not exist -> {}".format(fleet_id))
+        abort(404)
+        return
+
+    fleet.expedition_cancelled = True
+    db.session.add(fleet)
+    db.session.commit()
+    return svdata(MemberHelper.expedition(fleet, cancelled=True))

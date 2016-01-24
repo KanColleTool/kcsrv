@@ -47,10 +47,14 @@ def kanmusu(kanmusu: Kanmusu):
     return kanmusu_data
 
 
-def expedition(fleet):
+def expedition(fleet, cancelled=False):
     """Generate expedition data"""
     if fleet.expedition:
-        if fleet.expedition_completed <= time.time():
+        # Cancelled means the cancel request has just come through.
+        # We then perform an expedition_cancelled check to respond to a /port re-request after cancellation.
+        if cancelled:
+            state = 3
+        elif fleet.expedition_cancelled or fleet.expedition_completed <= time.time():
             state = 2
         else:
             state = 1

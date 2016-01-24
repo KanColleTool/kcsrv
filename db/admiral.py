@@ -263,5 +263,7 @@ class Fleet(db.Model):
 
     expedition_completed = db.Column(db.BigInteger)
 
+    expedition_cancelled = db.Column(db.Boolean)
+
     def __repr__(self):
         return "Fleet {} - {} ships".format(self.number, len(self.kanmusu))
