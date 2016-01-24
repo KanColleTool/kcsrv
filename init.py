@@ -60,7 +60,7 @@ def init(app):
             logger.warn("Now - lastaction for admiral {} negative?".format(user.nickname))
             return
         delta = int(delta)
-        g.admiral.resources.add(*((delta * 3) for _ in range(3)), baux=delta)
+        g.admiral.resources.add(*((delta * 3) for _ in range(3)), baux=delta * 2)
         # Update action time
         g.admiral.last_action = curr_t
         db.session.add(g.admiral)
