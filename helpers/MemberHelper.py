@@ -1,8 +1,6 @@
 import datetime
 import time
-
 from flask import g
-
 import util
 from constants import *
 from db import db, Equipment, Kanmusu, KanmusuEquipment, AdmiralEquipment, Fleet
@@ -42,10 +40,23 @@ def kanmusu(kanmusu: Kanmusu):
         'api_maxhp': ship.base_stats.hp,  # Ship "maxhp" is level 100HP, otherwise base is used.
         'api_lucky': [kanmusu.stats.luck, ship.max_stats.luck],
         'api_ndock_time': 0,
-        'api_kyouka': [modern_stats.firepower, modern_stats.torpedo, modern_stats.antiair, modern_stats.armour, modern_stats.luck] if modern_stats else [0,0,0,0,0],
+        'api_kyouka': [modern_stats.firepower, modern_stats.torpedo, modern_stats.antiair, modern_stats.armour,
+                       modern_stats.luck] if modern_stats else [0, 0, 0, 0, 0],
         'api_sakuteki': [ship.base_stats.los, ship.max_stats.los]
     }
     return kanmusu_data
+
+
+def expedition(fleet):
+    """Generate expedition data"""
+    if fleet.expedition:
+        if fleet.expedition_completed <= time.time():
+            state = 2
+        else:
+            state = 1
+        return [state, fleet.expedition.id, util.millisecond_timestamp(fleet.expedition_completed), 0]
+    else:
+        return [0, 0, 0, 0]
 
 
 def fleet(fleet):
@@ -66,10 +77,7 @@ def fleet(fleet):
         "api_ship": fleet_members + [-1] * (6 - len(fleet_members)),
         # Presumably expedition data.
         "api_mission":
-            [1 if fleet.expedition else 0,
-             fleet.expedition.id if fleet.expedition else 0,
-             fleet.expedition_completed if fleet.expedition else 0,
-             0]
+            expedition(fleet)
     }
 
 
@@ -189,18 +197,21 @@ def material():
 def slot_info():
     admiral = g.admiral
     return [{
-        'api_id': aequip.id, 'api_slotitem_id': aequip.equipment.id, 'api_locked': aequip.locked, 'api_level': aequip.level
-    } for aequip in admiral.equipment.join(Equipment).order_by(Equipment.sortno)]
+                'api_id': aequip.id, 'api_slotitem_id': aequip.equipment.id, 'api_locked': aequip.locked,
+                'api_level': aequip.level
+            } for aequip in admiral.equipment.join(Equipment).order_by(Equipment.sortno)]
 
 
 def useitem():
     return [{
-        'api_member_id': g.admiral.id, 'api_id': ausable.id, # 'api_value': ausable.quantity,
-        'api_usetype': ausable.usable.type_, 'api_category': ausable.usable.category, 'api_name': ausable.usable.name,
-    # WHY
-        'api_description': [ausable.usable.description,
-            ausable.usable.description2], 'api_price': ausable.usable.price, 'api_count': ausable.quantity
-    } for ausable in g.admiral.usables]
+                'api_member_id': g.admiral.id, 'api_id': ausable.id,  # 'api_value': ausable.quantity,
+                'api_usetype': ausable.usable.type_, 'api_category': ausable.usable.category,
+                'api_name': ausable.usable.name,
+                # WHY
+                'api_description': [ausable.usable.description,
+                                    ausable.usable.description2], 'api_price': ausable.usable.price,
+                'api_count': ausable.quantity
+            } for ausable in g.admiral.usables]
 
 
 def unsetslot():
@@ -213,12 +224,13 @@ def unsetslot():
 
     query_kanmusu = db.session.query(Kanmusu.id).filter(Kanmusu.admiral_id == admiral.id)
 
-    query_equipped = db.session.query(KanmusuEquipment.admiral_equipment_id)\
+    query_equipped = db.session.query(KanmusuEquipment.admiral_equipment_id) \
         .filter(KanmusuEquipment.kanmusu_id.in_(query_kanmusu),
                 KanmusuEquipment.admiral_equipment_id is not None)
 
     query = db.session.query(AdmiralEquipment).filter(AdmiralEquipment.admiral_id == admiral.id,
-        ~AdmiralEquipment.id.in_(query_equipped)).join(Equipment).order_by(Equipment.sortno)
+                                                      ~AdmiralEquipment.id.in_(query_equipped)).join(
+        Equipment).order_by(Equipment.sortno)
     equiplist = query.all()
     response = {}
     response["api_slottype1"] = []
@@ -234,6 +246,7 @@ def ship3(kanmusu_id):
         "api_deck_data": fleet_data,
         "api_slot_data": unsetslot()
     }
+
 
 def powerup(kanmusu_id, result):
     fleet_data = [fleet(fleet_) for fleet_ in g.admiral.fleets]
@@ -251,14 +264,14 @@ def port():
     response = {}
     # TODO: Log entry
     response['api_log'] = [
-    {
-        "api_state": "0", "api_no": num, "api_type": "1", "api_message": msg
-    } for (num, msg) in enumerate([
-        "It's a beautiful day outside.",
-        "Birds are singing. Flowers are blooming.",
-        "On days like these, kids like you...",
-        "Ｓｈｏｕｌｄ  ｂｅ  ｂｕｒｎｉｎｇ  ｉｎ  ｈｅｌｌ．"
-    ])]
+        {
+            "api_state": "0", "api_no": num, "api_type": "1", "api_message": msg
+        } for (num, msg) in enumerate([
+            "It's a beautiful day outside.",
+            "Birds are singing. Flowers are blooming.",
+            "On days like these, kids like you...",
+            "Ｓｈｏｕｌｄ  ｂｅ  ｂｕｒｎｉｎｇ  ｉｎ  ｈｅｌｌ．"
+        ])]
     # Background music?
     response["api_p_bgm_id"] = 100
     # This sets the parallel quest count. Don't know what higher values do, default is 5.
