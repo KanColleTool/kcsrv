@@ -76,6 +76,8 @@ def millisecond_timestamp(ts: datetime.datetime = datetime.datetime.now()) -> in
     :param ts: Optional: The timestamp to use. Defaults to the current timestamp.
     :return: The unix timestamp in UTC for the specified timestamp.
     """
+    if isinstance(ts, int):
+        ts = datetime.datetime.fromtimestamp(ts)
     # http://stackoverflow.com/a/8160307
     return math.floor(time.mktime(ts.timetuple()) * 1e3 + ts.microsecond / 1e3)
 
