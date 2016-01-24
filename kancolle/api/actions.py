@@ -10,6 +10,7 @@ from util import svdata
 api_actions = Blueprint('api_actions', __name__)
 
 import logging
+
 logger = logging.getLogger("kcsrv")
 
 
@@ -172,7 +173,6 @@ def change_pos():
 
 api_user = Blueprint('api_user', __name__)
 prepare_api_blueprint(api_user)
-
 
 
 @api_user.route('/api_get_member/ship3', methods=['GET', 'POST'])

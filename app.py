@@ -5,7 +5,7 @@ from flask import Flask
 
 import init
 
-__version__ = "0.2.0 Ship Building Simulator 2016 Edition"
+__version__ = "0.3.0 "
 
 app = Flask(__name__)
 

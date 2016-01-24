@@ -1,11 +1,13 @@
 """Expedition blueprint."""
 import datetime
-
 from flask import Blueprint, g
 from flask import request, abort
 import time
 
+from sqlalchemy_utils import InstrumentedList
+
 import util
+from app import logger
 from db import Expedition, Fleet, Admiral, db
 from util import prepare_api_blueprint, svdata
 
@@ -59,3 +61,118 @@ def start_mission():
          "api_complatetime_str": datetime.datetime.fromtimestamp(fleet.expedition_completed / 1000)
             .strftime('%Y-%m-%d %H:%M:%S')
          })
+
+
+@api_mission.route('/result', methods=["GET", "POST"])
+def expd_result():
+    # Horrible bastard code to get the result of the expedition.
+    fleet_id = int(request.values.get("api_deck_id")) - 1
+
+    try:
+        fleet = g.admiral.fleets[fleet_id]
+    except IndexError:
+        logger.warn("Fleet does not exist -> {}".format(fleet_id))
+        abort(404)
+        return
+
+    if not fleet.expedition:
+        logger.warn("Fleet not on expedition -> {}".format(fleet))
+        abort(400)
+        return
+
+    # Similar to the official servers, we calculate everything in expd_result
+    # instead of calculating everything in mission. Meaning nobody knows the result of the expedition until this
+    # method is called and it's all calculated.
+
+    # Check the timings.
+    if fleet.expedition_completed >= time.time():
+        logger.warn("Expedition_Completed ({}) >= Current Time ({})".format(fleet.expedition_completed, time.time()))
+        # Don't cheat.
+        abort(400)
+        return
+
+    # What did the fleet look like again?
+    res = fleet.expedition.constraints
+    assert isinstance(res, dict)
+
+    # Check in order.
+    hq_level_min = res.get("hq_level_min", 0)
+    required_ships = res.get("required_ships", {})
+
+    # Enter the world's hackiest solution.
+    def check_requirements():
+        # This inline-function allows us to check the requirements then exit if needed.
+
+        # First, check HQ level.
+        if hq_level_min > g.admiral.level:
+            return False
+        # Next, check ships.
+        else:
+            min_ships_total = required_ships.get("min_ships_total", 1)
+            if len(fleet.kanmusu) < min_ships_total:
+                return False
+            ship_types = {}
+            for kanmusu in fleet.kanmusu:
+                if kanmusu.ship.type_ not in ship_types:
+                    ship_types[kanmusu.ship.type_] = 0
+                ship_types[kanmusu.ship.type_] += 1
+            # Check expedition restrictions
+            types = required_ships.get("ship_types", {})
+            for t, amount in types.items():
+                if ship_types.get(t, 0) < amount:
+                    return False
+        return True
+
+    met_requirements = check_requirements()
+
+    # Update internal state.
+    g.admiral.expedition_total += 1
+    g.admiral.expeditions.append(fleet.expedition)
+    if met_requirements:
+        g.admiral.expedition_successes += 1
+        g.admiral.experience += 30
+        g.admiral.fix_level()
+
+        api_exp_get = []
+
+        # Level up the kanmusus.
+        for kanmusu in fleet.kanmusu:
+            # Expeditions are not a good way of levelling up
+            kanmusu.experience += (kanmusu.level * 3)
+            api_exp_get.append(kanmusu.level * 3)
+            kanmusu.fix_level()
+            db.session.add(kanmusu)
+
+        # Update resources.
+        g.admiral.resources.add(*fleet.expedition.resources_granted.to_list())
+    else:
+        g.admiral.experience += 5
+        g.admiral.fix_level()
+
+        api_exp_get = [0 for _ in fleet.kanmusu]
+
+    data = {
+        "api_ship_id": [-1] + [kanmusu.number for kanmusu in fleet.kanmusu],
+        "api_clear_result": int(met_requirements),
+        "api_get_exp": 30 if met_requirements else 5,
+        "api_member_lv": g.admiral.level,
+        "api_member_exp": g.admiral.experience,
+        "api_get_ship_exp": api_exp_get,
+        "api_get_exp_lvup": [[kanmusu.experience, kanmusu.experience + kanmusu.get_exp_to_level()] for kanmusu in
+                             fleet.kanmusu],
+        "api_maparea_name": "???",
+        "api_detail": "???",
+        "api_quest_name": "Expedition {}".format(fleet.expedition.id),
+        "api_quest_level": 1,
+        "api_get_material": fleet.expedition.resources_granted.to_list(),
+        "api_useitem_flag": [
+            0,
+            0
+        ]
+    }
+    fleet.expedition = None
+    db.session.add(fleet)
+    db.session.add(g.admiral)
+    db.session.commit()
+    sv = svdata(data)
+    return sv

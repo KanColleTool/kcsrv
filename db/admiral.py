@@ -82,27 +82,8 @@ class Admiral(db.Model):
                            AdmiralUsables(usable=Usable.by_name(NAME_MATERIAL), quantity=5),
                            AdmiralUsables(usable=Usable.by_name(NAME_SCREW), quantity=1)]
         self.usables = initial_usables
-        """
-        last = user.admiral.lastaction
-        if last is None:
-            last = datetime.datetime.utcnow()
-        now = datetime.datetime.utcnow()
-
-        # convert to unix timestamp
-        d1_ts = time.mktime(now.timetuple())
-        d2_ts = time.mktime(last.timetuple())
-
-        minutes = math.floor(int(d1_ts-d2_ts) / 60)
-
-        resources = user.admiral.resources.to_list()
-        if minutes != 0:
-            for n, val in enumerate(resources):
-                if n >= 4:
-                    break
-                resources[n] += (3 * minutes) if n != 3 else minutes
-            user.admiral.resources = pack_resources(resources)
-            user.admiral.lastaction = datetime.datetime.utcnow()
-        """
+        self.experience = 200
+        self.level = 3
         user.admiral = self
         db.session.add(user)
         db.session.commit()
@@ -146,6 +127,21 @@ class Admiral(db.Model):
 
     def get_equipment(self, admiral_equip_id):
         return self.equipment.filter(AdmiralEquipment.id == admiral_equip_id).first()
+
+    def get_exp_to_level(self):
+        """
+        Gets the exp missing for the next level.
+        :param level: The level to attain.
+        :param current_exp: Your current exp.
+        """
+        total = sum(HQ_LEVEL[:self.level + 1])
+        return total - self.experience
+
+    def fix_level(self):
+        exp = self.get_exp_to_level()
+        if exp < 0:
+            self.level += 1
+
 
     def __repr__(self):
         return "Admiral {} - ID {}".format(self.name, self.id)

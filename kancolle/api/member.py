@@ -6,6 +6,7 @@ from db import Kanmusu, Admiral, Expedition
 from helpers import MemberHelper
 from helpers.MemberHelper import fleet
 from util import svdata
+from constants import HQ_LEVEL
 
 api_member = Blueprint("api_game", __name__)
 
@@ -92,7 +93,7 @@ def record():
         "api_experience": [
             g.admiral.experience,
             # Exp to next level
-            g.admiral.experience + 1
+            sum(HQ_LEVEL[:g.admiral.level + 1])
         ],
         # api_war -> sorties
         "api_war": {

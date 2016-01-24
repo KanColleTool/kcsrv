@@ -1,5 +1,4 @@
 from sqlalchemy import inspect
-
 import util
 from constants import *
 from . import db, Stats
@@ -118,6 +117,11 @@ class Kanmusu(db.Model):
         """
         total = sum(EXP_LEVEL[:self.level + 1])
         return total - self.experience
+
+    def fix_level(self):
+        exp = self.get_exp_to_level()
+        if exp < 0:
+            self.level += 1
 
     def __repr__(self):
         return "<Kanmusu {} (id: {}) on Admiral {}>".format(self.ship.name, self.id, self.admiral)

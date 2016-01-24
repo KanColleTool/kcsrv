@@ -54,8 +54,8 @@ def prepare_api_blueprint(bp):
 
     @bp.errorhandler(400)
     def api_400(e):
-        return svdata({"en_api_error": "Invalid data recieved."}, 201,
-                      errormsg="申し訳ありませんがブラウザを再起動し再ログインしてください。"), 400
+        return svdata({"en_api_error": "Invalid data recieved."},
+                      201, errormsg="申し訳ありませんがブラウザを再起動し再ログインしてください。"), 400
 
     @bp.errorhandler(404)
     def api_404(e):
