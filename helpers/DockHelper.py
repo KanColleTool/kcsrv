@@ -1,3 +1,24 @@
+# ID 1 -> 海防艦 -> Costal Defence Ship (?)
+# ID 2 -> 駆逐艦 -> Destroyer
+# ID 3 -> 軽巡洋艦 -> Light Cruiser
+# ID 4 -> 重雷装巡洋艦 -> Torpedo Cruiser
+# ID 5 -> 重巡洋艦 -> Heavy Cruiser
+# ID 6 -> 航空巡洋艦 -> Aviation Cruiser
+# ID 7 -> 軽空母 -> Light Aircraft Carrier
+# ID 8 -> 戦艦 -> Battleship
+# ID 9 -> Also battleship
+# ID 10 -> 航空戦艦 -> Aviation battleship
+# ID 11 -> 正規空母 -> Aircraft carrier
+# ID 12 -> 超弩級戦艦 -> Super Dreadnought
+# ID 13 -> 潜水艦 -> Submarine
+# ID 14 -> 潜水空母 -> Submarine Aircraft Carrier
+# ID 15 -> 補給艦 -> Supply Vessel/Replenishment Oiler?
+# ID 16 -> 水上機母艦 -> Seaplane Carrier
+# ID 17 -> 揚陸艦 -> amphibious assault ship
+# ID 18 -> 装甲空母 -> Armored aircraft carrier
+# ID 19 -> 工作艦 -> Work Ship
+# ID 20 -> 潜水母艦 -> Submarine Tender
+# ID 21 -> 練習巡洋艦 -> Practice Cruiser
 # from db import db,Dock
 import random
 
