@@ -1,5 +1,6 @@
 from flask import request, g, Blueprint
 
+from db import Kanmusu
 from util import svdata
 
 api_init = Blueprint('api_init', __name__)
@@ -11,7 +12,8 @@ api_init = Blueprint('api_init', __name__)
 def firstship():
     shipid = request.values.get("api_ship_id")
     # TODO: Validation
-    g.admiral.add_kanmusu(ship_api_id=shipid, fleet_number=1, position=0)
+    k = Kanmusu(ship_api_id=shipid)
+    g.admiral.add_kanmusu(k, fleet_number=1, position=0)
     return svdata({'api_result_msg': 'shitty api is shitty', 'api_result': 1})
 
 
