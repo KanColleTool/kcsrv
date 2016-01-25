@@ -49,7 +49,7 @@ insert into recipe__resources (id, fuel, ammo, steel, baux)
   );
 
 insert into recipe__resources (id, fuel, ammo, steel, baux)
-  select 8, 500, 30, 600, 30
+  select 8, 500, 100, 600, 30
   where not exists(
     select id from recipe__resources where id = 8
   );
@@ -57,13 +57,13 @@ insert into recipe__resources (id, fuel, ammo, steel, baux)
 /* CV */
 
 insert into recipe__resources (id, fuel, ammo, steel, baux)
-  select 9, 300, 30, 400, 300
+  select 9, 300, 100, 400, 300
   where not exists(
     select id from recipe__resources where id = 9
   );
 
 insert into recipe__resources (id, fuel, ammo, steel, baux)
-    select 10, 300, 30, 400, 330
+    select 10, 300, 100, 400, 330
   where not exists(
     select id from recipe__resources where id = 10
   );
