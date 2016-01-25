@@ -5,7 +5,7 @@ from flask import Flask
 
 import init
 
-__version__ = "0.3.1 Expedition Edition"
+__version__ = "0.3.2 Expedition Edition"
 
 app = Flask(__name__)
 
