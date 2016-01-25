@@ -12,7 +12,8 @@ import constants
 ROOT_DIR = os.path.abspath(os.path.dirname(__file__))
 
 
-def svdata(obj: object, code: int = 1, message: str = "成功", errormsg: str = "Invalid API request.") -> tuple:
+def svdata(obj: object, code: int = 1, message: str = "成功", errormsg: str = "Invalid API request.",
+        errorcode: int=200) -> tuple:
     """
     Converts a json-serializable object into the KanColle APIv1 format response.
     :param obj: The object to convert.
@@ -31,7 +32,7 @@ def svdata(obj: object, code: int = 1, message: str = "成功", errormsg: str = 
             "api_result": code, "api_result_msg": message, "api_data": obj
         }
     # Yay arbitary formats.
-    return "svdata=" + json.dumps(res, separators=(',', ':')), 200, {"Content-Type": "application/json"}
+    return "svdata=" + json.dumps(res, separators=(',', ':')), errorcode, {"Content-Type": "application/json"}
 
 
 def load_datadump(filename: str) -> dict:
@@ -50,16 +51,16 @@ def load_datadump(filename: str) -> dict:
 def prepare_api_blueprint(bp):
     @bp.errorhandler(403)
     def api_403(e):
-        return svdata(None, 100, errormsg="Not authorized"), 403
+        return svdata(None, 100, errormsg="Not authorized", errorcode=403)
 
     @bp.errorhandler(400)
     def api_400(e):
         return svdata({"en_api_error": "Invalid data recieved."},
-                      201, errormsg="申し訳ありませんがブラウザを再起動し再ログインしてください。"), 400
+                      201, errormsg="申し訳ありませんがブラウザを再起動し再ログインしてください。", errorcode=400)
 
     @bp.errorhandler(404)
     def api_404(e):
-        return svdata(None, 100, errormsg="Could not find the appropriate data for the request"), 404
+        return svdata(None, 100, errormsg="Could not find the appropriate data for the request", errorcode=404)
 
 
 def pack_resources(r: list) -> str:
