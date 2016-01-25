@@ -93,6 +93,7 @@ def craft_ship(fuel: int, ammo: int, steel: int, baux: int, dockid: int):
     ship = get_ship_from_recipe(fuel, ammo, steel, baux)
     if ship:
         nship = Kanmusu(ship)
+        nship.active = False
         nship.number = len(g.admiral.kanmusu)
     else:
         print("Something bad happened. Where are your recipes?")
