@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import os
-
 import sqlalchemy
 from flask.ext.migrate import Migrate, MigrateCommand
 from flask.ext.script import Manager, Server
@@ -8,7 +7,6 @@ from flask.ext.script import Manager, Server
 from kcsrv import app
 from db import db, Role
 from offline import dbpopulate, kccheat
-
 
 if not os.path.exists('./config.py'):
     print("Your config file does not exist. "
@@ -23,7 +21,6 @@ migrate = Migrate(app, db)
 manager.add_command('db', MigrateCommand)
 
 from commands.user import manager as user_manager
-
 
 manager.add_command('user', user_manager)
 
@@ -50,9 +47,10 @@ def cheat(where, id, admiral_id, action=None):
     else:
         print("Unknown cheat")
 
+
 @manager.command
 def update_db():
-    """Merge the ships DB from api_start.json into the DB"""
+    """Update all parts of the DB"""
     dbpopulate.ships()
     dbpopulate.equip()
     dbpopulate.items()

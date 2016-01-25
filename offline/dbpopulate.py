@@ -149,8 +149,10 @@ def expeditions():
 
         resources = Resources()
         resources.update(*mission['resources'])
-        db.session.add(resources)
-        exped = Expedition(id=id, resources_granted=resources,
+        res_used = Resources()
+        res_used.update(int(float(mission["api_use_fuel"]) * 10), int(float(mission["api_use_bull"]) * 10), 0, 0)
+        db.session.add(resources, res_used)
+        exped = Expedition(id=id, resources_granted=resources, resources_used=res_used,
                            constraints=mission.get("restrictions", {}),
                            time_taken=mission['api_time'] * 60)
         print("Added mission", mission['api_id'])

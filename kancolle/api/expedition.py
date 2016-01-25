@@ -1,5 +1,7 @@
 """Expedition blueprint."""
 import datetime
+from math import floor
+
 from flask import Blueprint, g
 from flask import request, abort
 import time
@@ -145,7 +147,6 @@ def expd_result():
             kanmusu.experience += (kanmusu.level * 3)
             api_exp_get.append(kanmusu.level * 3)
             kanmusu.fix_level()
-            db.session.add(kanmusu)
 
         # Update resources.
         g.admiral.resources.add(*fleet.expedition.resources_granted.to_list())
@@ -154,6 +155,14 @@ def expd_result():
         g.admiral.fix_level()
 
         api_exp_get = [0 for _ in fleet.kanmusu]
+
+    # Update ship resource usage.
+    for kanmusu in fleet.kanmusu:
+        kanmusu.current_fuel = floor((kanmusu.current_fuel -
+                                      (kanmusu.current_fuel / (fleet.expedition.resources_used.fuel / 10))))
+        kanmusu.current_ammo = floor((kanmusu.current_ammo -
+                                      (kanmusu.current_ammo / (fleet.expedition.resources_used.ammo / 10))))
+        db.session.add(kanmusu)
 
     data = {
         "api_ship_id": [-1] + [kanmusu.number for kanmusu in fleet.kanmusu],
