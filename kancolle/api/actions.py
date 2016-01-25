@@ -79,6 +79,45 @@ def getship():
     return svdata(data)
 
 
+@api_actions.route("/api_req_hokyu/charge", methods=["GET", "POST"])
+def resupply():
+    # Get the ships. Misleading name of the year candidate.
+    ships = request.values.get("api_id_items")
+    ships = ships.split(',')
+    ships = [int(_) for _ in ships]
+    # Get kind.
+    kind = int(request.values.get("api_kind"))
+    api_ship = []
+    # New dict for api_ships
+    for ship_id in ships:
+        ship = Kanmusu.query.filter(Admiral.id == g.admiral.id, Kanmusu.number == ship_id).first_or_404()
+        # Assertion for autocompletion in pycharm
+        assert isinstance(ship, Kanmusu)
+        # Calculate requirements.
+        # Simply replenish up to the maximum stats amount.
+        if kind == 1:
+            g.admiral.resources.sub(ship.stats.fuel - ship.current_fuel, 0, 0, 0)
+            ship.current_fuel = ship.stats.fuel
+        elif kind == 2:
+            g.admiral.resources.sub(0, ship.stats.ammo - ship.current_ammo, 0, 0)
+            ship.current_ammo = ship.stats.ammo
+        elif kind == 3:
+            g.admiral.resources.sub(ship.stats.fuel - ship.current_fuel, 0, 0, 0)
+            ship.current_fuel = ship.stats.fuel
+            g.admiral.resources.sub(0, ship.stats.ammo - ship.current_ammo, 0, 0)
+            ship.current_ammo = ship.stats.ammo
+        api_ship.append({
+            "api_id": ship.number,
+            "api_fuel": ship.current_fuel,
+            "api_bull": ship.current_ammo,
+            "api_onslot": [0, 0, 0, 0, 0]  # ???
+        })
+        db.session.add(ship)
+    db.session.add(g.admiral)
+    db.session.commit()
+    return svdata({"api_ship": api_ship, "api_material": g.admiral.resources.to_list()})
+
+
 @api_actions.route('/api_req_hensei/change', methods=['GET', 'POST'])
 def change_pos():
     # This is a lot cleaner than before.

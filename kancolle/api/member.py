@@ -1,7 +1,5 @@
 from collections import OrderedDict
-
 from flask import request, g, Blueprint, redirect, url_for
-
 from db import Kanmusu, Admiral, Expedition
 from helpers import MemberHelper
 from helpers.MemberHelper import fleet
@@ -154,20 +152,6 @@ def mission():
             states[e.id] = 0
     return svdata([OrderedDict(api_mission_id=id, api_state=state) for (id, state) in states.items()])
 
-
-@api_member.route("/charge", methods=["GET", "POST"])
-def resupply():
-    # Get the ships. Misleading name of the year candidate.
-    ships = request.values.get("api_id_items")
-    ships = ships.split(',')
-    # New dict for api_ships
-    api_ships = {}
-    for ship_id in ships:
-        ship = Kanmusu.query.filter(Admiral.id == g.admiral.id, Kanmusu.number == ship_id).first_or_404()
-        # Assertion for autocompletion in pycharm
-        assert isinstance(ship, Kanmusu)
-        # Calculate requirements.
-        # Follows this formula: how many bars they use x 10% x their fuel/ammo cost
 
 @api_member.route("/deck", methods=["GET", "POST"])
 def fleets():
