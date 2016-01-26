@@ -1,5 +1,7 @@
 from collections import OrderedDict
+
 from flask import request, g, Blueprint, redirect, url_for
+
 from db import Kanmusu, Admiral, Expedition
 from helpers import MemberHelper
 from helpers.MemberHelper import fleet
@@ -151,6 +153,7 @@ def mission():
         else:
             states[e.id] = 0
     return svdata([OrderedDict(api_mission_id=id, api_state=state) for (id, state) in states.items()])
+
 
 
 @api_member.route("/deck", methods=["GET", "POST"])
