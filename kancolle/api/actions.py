@@ -52,8 +52,14 @@ def remodeling():
 @api_actions.route('/api_req_hensei/lock', methods=['POST'])
 def lock():
     """Heartlock/unheartlock a ship."""
-    kanmusu = g.admiral.kanmusu.filter_by(number=int(request.values.get("api_ship_id")) - 1).first_or_404()
-
+    try:
+        kanmusu = g.admiral.kanmusu[int(request.values.get("api_ship_id")) - 1]
+    except IndexError:
+        abort(404)
+        return
+    except ValueError:
+        abort(400)
+        return
     kanmusu.locked = not kanmusu.locked
 
     db.session.add(kanmusu)
@@ -186,6 +192,12 @@ def change_pos():
                 print("ID - {}".format(kanmusu.id))
                 # Fix fleet position to be 5, at least temporarily.
                 kanmusu.fleet_position = 5
+            elif current_ship_pos is None:
+                # .
+                # I what
+                # You're trying to remove a ship
+                # That doesn't exist
+                kanmusu.fleet_position -= 1
             elif kanmusu.fleet_position > current_ship_pos:
                 kanmusu.fleet_position -= 1
                 db.session.add(kanmusu)
