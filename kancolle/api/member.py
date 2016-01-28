@@ -2,11 +2,11 @@ from collections import OrderedDict
 
 from flask import request, g, Blueprint, redirect, url_for
 
-from db import Kanmusu, Admiral, Expedition
-from helpers import MemberHelper
-from helpers.MemberHelper import fleet
-from util import svdata
 from constants import HQ_LEVEL
+from db import Expedition
+from kancolle.helpers import MemberHelper
+from kancolle.helpers.MemberHelper import fleet
+from util import svdata
 
 api_member = Blueprint("api_game", __name__)
 

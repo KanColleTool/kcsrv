@@ -26,7 +26,7 @@ from flask import abort
 from flask import g
 from sqlalchemy import text
 
-from db import Kanmusu, db, Ship
+from db import Kanmusu, db
 from . import MemberHelper
 
 
