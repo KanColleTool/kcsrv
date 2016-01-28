@@ -117,9 +117,7 @@ class Admiral(db.Model):
         return None
 
     def add_kanmusu(self, kanmusu, fleet_number=None, position=None):
-        kanmusu.number = len(self.kanmusu)
-        if kanmusu.number == 0:
-            kanmusu.number = 1
+        kanmusu.number = len(self.kanmusu) + 1
         if fleet_number:
             self.fleets[fleet_number - 1].kanmusu.append(kanmusu)
             kanmusu.fleet_position = position if position else 1
